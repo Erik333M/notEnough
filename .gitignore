@@ -1,41 +1,54 @@
-# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
-
-# dependencies
+# Dependencies -------------------------------------------------------------
 node_modules/
 
-# Expo
+# Environment --------------------------------------------------------------
+# Secrets never enter the repo; .env.example documents the shape instead.
+.env
+.env.*
+!.env.example
+
+# Server runtime data ------------------------------------------------------
+# The JSON "database" is created on first run and holds real password hashes.
+server/data/
+
+# Expo / Metro -------------------------------------------------------------
 .expo/
 dist/
 web-build/
 expo-env.d.ts
+.metro-health-check*
 
-# Native
+# Generated native projects (regenerate with `npx expo prebuild`) -----------
+/ios
+/android
 .kotlin/
-*.orig.*
+
+# Signing material ---------------------------------------------------------
 *.jks
 *.p8
 *.p12
 *.key
+*.pem
 *.mobileprovision
+*.orig.*
 
-# Metro
-.metro-health-check*
+# Build output -------------------------------------------------------------
+*.tsbuildinfo
 
-# debug
+# Logs ---------------------------------------------------------------------
+*.log
 npm-debug.*
 yarn-debug.*
 yarn-error.*
 
-# macOS
+# Editors ------------------------------------------------------------------
+.idea/
+.vscode/
+
+# OS -----------------------------------------------------------------------
 .DS_Store
-*.pem
+Thumbs.db
 
-# local env files
-.env*.local
-
-# typescript
-*.tsbuildinfo
-
-# generated native folders
-/ios
-/android
+# Scratch ------------------------------------------------------------------
+# Unrelated tooling checkout that happens to live inside this folder.
+_skill_probe/

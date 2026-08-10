@@ -1,17 +1,22 @@
 {
   "expo": {
-    "name": "notEnough",
-    "slug": "notEnough",
-    "version": "1.0.0",
+    "name": "NOTenough",
+    "slug": "notenough",
+    "version": "1.1.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "dark",
+    "backgroundColor": "#05070F",
+    "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "UIBackgroundModes": ["remote-notification"]
+      }
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#05070F",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
@@ -20,6 +25,16 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      "expo-secure-store",
+      [
+        "expo-notifications",
+        {
+          "color": "#8B6BFF",
+          "defaultChannel": "goal-reminders"
+        }
+      ]
+    ]
   }
 }

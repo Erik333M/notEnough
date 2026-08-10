@@ -1,0 +1,21 @@
+# Normalise line endings so the repo is identical on Windows, macOS and CI.
+* text=auto eol=lf
+
+# Binary assets must never be normalised.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.ttf binary
+*.otf binary
+*.woff binary
+*.woff2 binary
+*.jks binary
+*.keystore binary
+
+# Keep generated lockfiles out of diff review noise.
+package-lock.json linguist-generated=true -diff
+
+# GitHub language stats should reflect the app, not vendored assets.
+docs/screenshots/* linguist-documentation
