@@ -72,14 +72,12 @@ npm run e2e                # 27 checks driving the real UI (needs `npm run web`)
 
 ```mermaid
 flowchart LR
-  subgraph device["Device"]
-    tap["User action"] --> reducer["Reducer<br/><i>source of truth</i>"]
-    reducer --> ui["UI repaints<br/><i>immediately</i>"]
-    reducer -. "debounced 450ms" .-> disk[("AsyncStorage")]
-  end
-  reducer -. "debounced 1.5s" .-> api["PUT /api/state"]
+  tap["User action"] --> reducer["Reducer<br/>source of truth"]
+  reducer --> ui["UI repaints<br/>immediately"]
+  reducer -.->|"debounced 450ms"| disk[("AsyncStorage")]
+  reducer -.->|"debounced 1.5s"| api["PUT /api/state"]
   api --> db[("db.json")]
-  db -. "GET /api/state<br/>on boot + foreground" .-> reducer
+  db -.->|"GET on boot<br/>and foreground"| reducer
 ```
 
 The local reducer is always the source of truth for what is on screen. Disk and the API are both
