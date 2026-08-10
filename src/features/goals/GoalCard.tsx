@@ -63,7 +63,14 @@ export const GoalCard = memo(function GoalCard({
 
   return (
     <Animated.View layout={LinearTransition.springify().damping(20)}>
-      <PressableScale onPress={onPress ? handlePress : undefined} haptic="light" scaleTo={0.985}>
+      <PressableScale
+        onPress={onPress ? handlePress : undefined}
+        haptic="light"
+        scaleTo={0.985}
+        // The card holds its own buttons, so it must not be one itself.
+        accessibilityRole="none"
+        accessibilityLabel={`${goal.title}, open to edit`}
+      >
         <GlassCard style={styles.card} tone={done ? 'strong' : 'default'}>
           <View style={styles.top}>
             <View style={[styles.icon, { backgroundColor: accentSoft[goal.accent] }]}>

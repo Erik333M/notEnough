@@ -52,3 +52,6 @@ Thumbs.db
 # Scratch ------------------------------------------------------------------
 # Unrelated tooling checkout that happens to live inside this folder.
 _skill_probe/
+
+# e2e run output (generated)
+e2e/screenshots/

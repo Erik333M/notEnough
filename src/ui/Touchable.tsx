@@ -22,7 +22,12 @@ type Props = {
   scaleTo?: number;
   haptic?: 'light' | 'medium' | 'heavy' | 'selection' | 'none';
   hitSlop?: number;
-  accessibilityRole?: 'button' | 'switch' | 'link' | 'tab';
+  /**
+   * `none` is for pressable *containers* that hold their own buttons. Nesting
+   * interactive roles is ambiguous for screen readers, and react-native-web
+   * renders it as a `<button>` inside a `<button>`, which is invalid HTML.
+   */
+  accessibilityRole?: 'button' | 'switch' | 'link' | 'tab' | 'none';
   accessibilityLabel?: string;
 };
 
