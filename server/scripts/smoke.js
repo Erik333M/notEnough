@@ -130,6 +130,45 @@ check('newer write accepted', newer.status === 200 && newer.body?.state?.goals?.
 const badPayload = await call('PUT', '/api/state', { token, body: { goals: 'nope' } });
 check('malformed state rejected with 400', badPayload.status === 400);
 
+// 3 Victories. The payload is whitelisted field by field on the way in, so a
+// new key that nobody added to the validator is dropped in silence and the
+// user's history quietly stops syncing — worth asserting, not assuming.
+const victories = {
+  targets: { strength: '30 push-ups' },
+  log: {
+    '2026-07-26': {
+      physical: { hygiene: true, strength: false, recovery: true },
+      mind: { deepWork: true, learn: true, reflection: false },
+      spiritual: { prayer: true, scripture: false, faith: true },
+    },
+  },
+};
+
+const withVictories = await call('PUT', '/api/state', {
+  token,
+  body: { ...payload, victories, updatedAt: now + 120_000 },
+});
+check('victories accepted on push', withVictories.status === 200);
+
+const pulledVictories = await call('GET', '/api/state', { token });
+check(
+  'victories survive a round trip',
+  pulledVictories.body?.state?.victories?.log?.['2026-07-26']?.physical?.hygiene === true &&
+    pulledVictories.body?.state?.victories?.targets?.strength === '30 push-ups',
+);
+
+const olderClient = await call('PUT', '/api/state', {
+  token,
+  body: { ...payload, updatedAt: now + 180_000 },
+});
+check('state without victories is still accepted', olderClient.status === 200);
+
+const badVictories = await call('PUT', '/api/state', {
+  token,
+  body: { ...payload, victories: { log: 'nope' }, updatedAt: now + 240_000 },
+});
+check('malformed victories rejected with 400', badVictories.status === 400);
+
 const deleted = await call('DELETE', '/api/auth/me', { token });
 check('account delete returns 204', deleted.status === 204);
 

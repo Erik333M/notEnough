@@ -10,6 +10,7 @@ import PlanScreen from '../screens/PlanScreen';
 import ProgressScreen from '../screens/ProgressScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import TimerScreen from '../screens/TimerScreen';
+import VictoriesScreen from '../screens/VictoriesScreen';
 import { useAuth } from '../state/AuthContext';
 import { useStats, useSync } from '../state/DataContext';
 import { Header } from './Header';
@@ -62,6 +63,8 @@ export function AppShell() {
       <Animated.View key={route} entering={FadeIn.duration(220)} style={styles.screen}>
         {route === 'home' ? (
           <HomeScreen bottomInset={bottomInset} navigate={navigate} />
+        ) : route === 'victories' ? (
+          <VictoriesScreen bottomInset={bottomInset} />
         ) : route === 'goals' ? (
           <GoalsScreen bottomInset={bottomInset} />
         ) : route === 'timer' ? (

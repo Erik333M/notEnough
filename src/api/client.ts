@@ -125,6 +125,7 @@ export type RemoteState = {
   log: Record<string, Record<string, number>>;
   runs: unknown[];
   plan: Record<string, unknown>;
+  victories: unknown;
   updatedAt: number;
 };
 

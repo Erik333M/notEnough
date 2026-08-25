@@ -64,5 +64,29 @@ export function requireStatePayload(body) {
     log,
     runs: runs.slice(0, 500),
     plan,
+    victories: normaliseVictories(body.victories),
   };
+}
+
+/**
+ * 3 Victories state, kept optional on purpose: a client older than the feature
+ * simply does not send it, and refusing those writes would lock existing
+ * installs out of sync. Absent or malformed becomes `null`, which the client's
+ * own migration turns back into a fresh default.
+ */
+function normaliseVictories(victories) {
+  if (!victories || typeof victories !== 'object' || Array.isArray(victories)) return null;
+
+  const { targets, log } = victories;
+  if (targets != null && (typeof targets !== 'object' || Array.isArray(targets))) {
+    throw new ValidationError('victories', 'victories.targets must be an object.');
+  }
+  if (log != null && (typeof log !== 'object' || Array.isArray(log))) {
+    throw new ValidationError('victories', 'victories.log must be an object.');
+  }
+  if (log && Object.keys(log).length > 3650) {
+    throw new ValidationError('victories', 'Too much victory history.');
+  }
+
+  return { targets: targets ?? {}, log: log ?? {} };
 }
