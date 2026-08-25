@@ -17,7 +17,24 @@ import { cancelReminder, resyncReminders, scheduleGoalReminder } from '../notifi
 import { createInitialState, migrate } from './defaults';
 import { activeGoals, currentStreak, dayCompletion, goalsClosed } from './selectors';
 import { push, reconcile, type SyncStatus } from './sync';
-import type { AppState, Goal, PlanConfig, Reminder, RunSession } from './types';
+import {
+  dayScore,
+  goalDef,
+  isGoalDone,
+  victoriesWon,
+  victoryDay,
+  victoryStreak,
+  withGoalDone,
+} from './victories';
+import type {
+  AppState,
+  Goal,
+  PlanConfig,
+  Reminder,
+  RunSession,
+  VictoryDay,
+  VictoryGoalKey,
+} from './types';
 
 /* ------------------------------------------------------------------ reducer */
 
@@ -31,7 +48,9 @@ type Action =
   | { type: 'addRun'; run: RunSession }
   | { type: 'deleteRun'; id: string }
   | { type: 'updatePlan'; patch: Partial<PlanConfig> }
-  | { type: 'clearDay'; day: string };
+  | { type: 'clearDay'; day: string }
+  | { type: 'toggleVictoryGoal'; day: string; goal: VictoryGoalKey }
+  | { type: 'setVictoryTarget'; goal: VictoryGoalKey; target: string };
 
 function writeLog(state: AppState, day: string, goalId: string, amount: number): AppState {
   const dayEntries = state.log[day];
@@ -88,6 +107,29 @@ function baseReducer(state: AppState, action: Action): AppState {
       return { ...state, log };
     }
 
+    case 'toggleVictoryGoal': {
+      // Only ever writes the addressed day, so yesterday can never be rewritten
+      // by today's tap.
+      const day = victoryDay(state.victories.log, action.day);
+      const next = withGoalDone(day, action.goal, !isGoalDone(day, action.goal));
+      return {
+        ...state,
+        victories: { ...state.victories, log: { ...state.victories.log, [action.day]: next } },
+      };
+    }
+
+    case 'setVictoryTarget': {
+      const target = action.target.trim() || goalDef(action.goal).defaultTarget;
+      if (state.victories.targets[action.goal] === target) return state;
+      return {
+        ...state,
+        victories: {
+          ...state.victories,
+          targets: { ...state.victories.targets, [action.goal]: target },
+        },
+      };
+    }
+
     default:
       return state;
   }
@@ -126,6 +168,9 @@ type Actions = {
   deleteRun: (id: string) => void;
   updatePlan: (patch: Partial<PlanConfig>) => void;
   clearToday: () => void;
+  /** Toggles one of the nine daily victory goals for today. */
+  toggleVictoryGoal: (goal: VictoryGoalKey) => void;
+  setVictoryTarget: (goal: VictoryGoalKey, target: string) => void;
 };
 
 /** Numbers several screens need. Computed once here, not once per consumer. */
@@ -135,6 +180,14 @@ type Stats = {
   todayCompletion: number;
   todayClosed: number;
   streak: number;
+  /** Today's nine victory goals, plus the counts derived from them. */
+  victoryToday: VictoryDay;
+  /** Goals closed today, 0..9. */
+  victoryScore: number;
+  /** Victories won today, 0..3. */
+  victoriesWon: number;
+  /** Consecutive days with all nine won. */
+  victoryStreak: number;
 };
 
 type Sync = {
@@ -428,6 +481,16 @@ export function DataProvider({
       clearToday() {
         dispatch({ type: 'clearDay', day: dayKey() });
       },
+
+      toggleVictoryGoal(goal) {
+        // Resolved at dispatch time, so a session left open past midnight logs
+        // against the new day rather than the one the screen mounted on.
+        dispatch({ type: 'toggleVictoryGoal', day: dayKey(), goal });
+      },
+
+      setVictoryTarget(goal, target) {
+        dispatch({ type: 'setVictoryTarget', goal, target });
+      },
     };
   }, []);
 
@@ -440,12 +503,17 @@ export function DataProvider({
     if (!state) return null;
     const today = dayKey();
     const goals = activeGoals(state);
+    const victoryToday = victoryDay(state.victories.log, today);
     return {
       todayKey: today,
       goals,
       todayCompletion: dayCompletion(state, today, goals),
       todayClosed: goalsClosed(state, today, goals),
       streak: currentStreak(state),
+      victoryToday,
+      victoryScore: dayScore(victoryToday),
+      victoriesWon: victoriesWon(victoryToday),
+      victoryStreak: victoryStreak(state.victories.log),
     };
   }, [state]);
 

@@ -162,6 +162,86 @@ await page.mouse.click(206, 24); // backdrop
 await page.waitForTimeout(800);
 check('editor dismisses via backdrop', !(await page.locator('body').innerText()).includes('New daily goal'));
 
+/* ------------------------------------------------------------- victories */
+
+await page.getByText('Victories', { exact: true }).first().click();
+await page.waitForTimeout(1000);
+
+const victoriesText = await page.locator('body').innerText();
+check(
+  'victories dashboard renders all three',
+  victoriesText.includes('PHYSICAL') &&
+    victoriesText.includes('MIND') &&
+    victoriesText.includes('SPIRIT'),
+);
+check('day starts at 0 / 9', victoriesText.includes('0 / 9') || victoriesText.includes('0/9'));
+check(
+  'each victory starts at 0 / 3',
+  (victoriesText.match(/0 \/ 3/g) ?? []).length >= 3,
+  `got ${(victoriesText.match(/0 \/ 3/g) ?? []).length}`,
+);
+await shot('09-victories');
+
+// Win the whole PHYSICAL victory: three taps, then the banner must appear.
+for (const goal of ['Hygiene & Care', 'Strength & Mobility', 'Fuel & Recovery']) {
+  await page.getByText(goal, { exact: true }).first().click();
+  await page.waitForTimeout(350);
+}
+await page.waitForTimeout(700);
+
+const afterPhysical = await page.locator('body').innerText();
+check('victory banner appears at 3 / 3', afterPhysical.includes('PHYSICAL VICTORY WON'));
+check('day total counted the three goals', afterPhysical.includes('3 / 9'));
+await shot('10-victory-won');
+
+// Same rule as the rest of the suite: the data assertion is made against the
+// API, so a dashboard that renders 3 / 9 for the wrong reason still fails.
+let victorySynced = null;
+for (let attempt = 0; attempt < 16; attempt += 1) {
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+  const { body } = await apiCall('GET', '/api/state', { token });
+  const days = Object.keys(body?.state?.victories?.log ?? {});
+  if (days.length > 0) {
+    victorySynced = body.state.victories.log[days[0]];
+    break;
+  }
+}
+check('victories reached the backend', victorySynced !== null);
+
+if (victorySynced) {
+  check(
+    'server holds the three physical goals',
+    victorySynced.physical?.hygiene === true &&
+      victorySynced.physical?.strength === true &&
+      victorySynced.physical?.recovery === true,
+  );
+  check(
+    'untouched victories stayed false',
+    victorySynced.mind?.deepWork === false && victorySynced.spiritual?.prayer === false,
+  );
+}
+
+// Tapping again must undo, not double-count.
+await page.getByText('Hygiene & Care', { exact: true }).first().click();
+await page.waitForTimeout(800);
+const afterUndo = await page.locator('body').innerText();
+check('tapping a won goal undoes it', afterUndo.includes('2 / 9'));
+check('banner clears when the victory is broken', !afterUndo.includes('PHYSICAL VICTORY WON'));
+
+// Custom targets: the category is fixed, the target is not.
+await page.getByText('Strength & Mobility', { exact: true }).first().click({ delay: 700 });
+await page.waitForTimeout(900);
+const editorOpen = await page.locator('body').innerText();
+check('target editor opens on long press', editorOpen.includes('Your target'));
+await shot('11-victory-target');
+
+await page.mouse.click(206, 24); // backdrop
+await page.waitForTimeout(700);
+check(
+  'target editor dismisses via backdrop',
+  !(await page.locator('body').innerText()).includes('Your target'),
+);
+
 /* ----------------------------------------------------------------- timer */
 
 await page.getByText('Timer', { exact: true }).first().click();

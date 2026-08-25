@@ -1,6 +1,13 @@
 import type { IconName } from '../state/types';
 
-export type RouteKey = 'home' | 'goals' | 'timer' | 'progress' | 'plan' | 'settings';
+export type RouteKey =
+  | 'home'
+  | 'victories'
+  | 'goals'
+  | 'timer'
+  | 'progress'
+  | 'plan'
+  | 'settings';
 
 export type RouteMeta = {
   key: RouteKey;
@@ -19,6 +26,14 @@ export const ROUTES: Record<RouteKey, RouteMeta> = {
     subtitle: 'Your daily goals',
     icon: 'today-outline',
     iconActive: 'today',
+  },
+  victories: {
+    key: 'victories',
+    label: 'Victories',
+    title: '3 Victories',
+    subtitle: 'Body, mind and spirit',
+    icon: 'shield-outline',
+    iconActive: 'shield',
   },
   goals: {
     key: 'goals',
@@ -63,5 +78,13 @@ export const ROUTES: Record<RouteKey, RouteMeta> = {
 };
 
 /** Routes shown in the bottom bar; the rest live in the slide-out menu. */
-export const TAB_ROUTES: RouteKey[] = ['home', 'goals', 'timer', 'progress'];
-export const MENU_ROUTES: RouteKey[] = ['home', 'goals', 'timer', 'progress', 'plan', 'settings'];
+export const TAB_ROUTES: RouteKey[] = ['home', 'victories', 'goals', 'timer', 'progress'];
+export const MENU_ROUTES: RouteKey[] = [
+  'home',
+  'victories',
+  'goals',
+  'timer',
+  'progress',
+  'plan',
+  'settings',
+];

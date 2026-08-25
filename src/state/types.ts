@@ -54,12 +54,49 @@ export type PlanConfig = {
   daysPerWeek: number;
 };
 
+/* ------------------------------------------------------------- 3 victories */
+
+/** BODY → MIND → SPIRIT. The order is the visual hierarchy, so it is fixed. */
+export type VictoryKey = 'physical' | 'mind' | 'spiritual';
+
+export type PhysicalSlot = 'hygiene' | 'strength' | 'recovery';
+export type MindSlot = 'deepWork' | 'learn' | 'reflection';
+export type SpiritualSlot = 'prayer' | 'scripture' | 'faith';
+
+/** The nine slots are a closed set — users customise targets, never the slots. */
+export type VictoryGoalKey = PhysicalSlot | MindSlot | SpiritualSlot;
+
+/**
+ * One day's completion, stored exactly as it reads: three victories of three
+ * goals. Nested rather than flat so a stored day is self-describing.
+ */
+export type VictoryDay = {
+  physical: Record<PhysicalSlot, boolean>;
+  mind: Record<MindSlot, boolean>;
+  spiritual: Record<SpiritualSlot, boolean>;
+};
+
+/** dayKey -> that day's nine booleans. Past days are only ever added to. */
+export type VictoryLog = Record<string, VictoryDay>;
+
+/**
+ * The user's custom target line per slot ("30 push-ups", "Read 20 pages").
+ * Title and description come from the fixed catalogue; only this is editable.
+ */
+export type VictoryTargets = Record<VictoryGoalKey, string>;
+
+export type VictoryState = {
+  targets: VictoryTargets;
+  log: VictoryLog;
+};
+
 export type AppState = {
   version: number;
   goals: Goal[];
   log: ProgressLog;
   runs: RunSession[];
   plan: PlanConfig;
+  victories: VictoryState;
   /**
    * Epoch ms of the last local mutation. This is the only input to the
    * last-write-wins rule the server enforces, so every mutating action must
