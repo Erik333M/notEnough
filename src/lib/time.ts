@@ -22,6 +22,31 @@ export function recentDayKeys(count: number, from: Date = new Date()): string[] 
 
 const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as const;
 
+const WEEKDAYS_LONG = [
+  'Sunday',
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday',
+] as const;
+
+const MONTHS = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+] as const;
+
 export function weekdayLabel(key: string): string {
   const [y, m, d] = key.split('-').map(Number);
   return WEEKDAYS[new Date(y, m - 1, d).getDay()];
@@ -29,6 +54,17 @@ export function weekdayLabel(key: string): string {
 
 export function dayOfMonth(key: string): string {
   return key.slice(8, 10);
+}
+
+/** "7 September 2026" from a day key, without parsing it into a Date. */
+export function longDateLabel(key: string): string {
+  const [year, month, day] = key.split('-').map(Number);
+  return `${day} ${MONTHS[month - 1]} ${year}`;
+}
+
+/** "Monday 7 September" — for the top of a screen, where the weekday helps. */
+export function weekdayDateLabel(date: Date = new Date()): string {
+  return `${WEEKDAYS_LONG[date.getDay()]} ${date.getDate()} ${MONTHS[date.getMonth()]}`;
 }
 
 export function clockLabel(hour: number, minute: number): string {

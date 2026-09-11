@@ -136,7 +136,14 @@ export function GoalEditor({ visible, goal, onClose, onSave, onDelete }: Props) 
               <SectionHeader
                 title={goal ? 'Edit goal' : 'New daily goal'}
                 meta={goal ? 'Changes apply from today' : 'It starts counting today'}
-                action={<RoundIconButton icon="close" size={34} onPress={onClose} />}
+                action={
+                  <RoundIconButton
+                    icon="close"
+                    size={34}
+                    onPress={onClose}
+                    accessibilityLabel="Close"
+                  />
+                }
               />
 
               <Field
@@ -178,11 +185,13 @@ export function GoalEditor({ visible, goal, onClose, onSave, onDelete }: Props) 
                       size={38}
                       disabled={target <= TARGET_STEP[kind]}
                       onPress={() => setTarget((t) => Math.max(TARGET_STEP[kind], t - TARGET_STEP[kind]))}
+                      accessibilityLabel="Decrease the daily target"
                     />
                     <RoundIconButton
                       icon="add"
                       size={38}
                       onPress={() => setTarget((t) => t + TARGET_STEP[kind])}
+                      accessibilityLabel="Increase the daily target"
                     />
                   </View>
                 </View>
@@ -299,9 +308,19 @@ function TimeUnit({
     <View style={styles.timeUnit}>
       <Text style={styles.timeUnitLabel}>{label}</Text>
       <View style={styles.timeUnitControls}>
-        <RoundIconButton icon="chevron-down" size={30} onPress={() => onChange(value - step)} />
+        <RoundIconButton
+          icon="chevron-down"
+          size={30}
+          onPress={() => onChange(value - step)}
+          accessibilityLabel="Decrease"
+        />
         <Text style={styles.timeUnitValue}>{`${value}`.padStart(2, '0')}</Text>
-        <RoundIconButton icon="chevron-up" size={30} onPress={() => onChange(value + step)} />
+        <RoundIconButton
+          icon="chevron-up"
+          size={30}
+          onPress={() => onChange(value + step)}
+          accessibilityLabel="Increase"
+        />
       </View>
     </View>
   );

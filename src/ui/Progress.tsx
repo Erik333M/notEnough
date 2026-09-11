@@ -1,5 +1,5 @@
-import { memo, useEffect, useMemo } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { LayoutChangeEvent, StyleSheet, Text, View } from 'react-native';
 import Animated, {
   useAnimatedProps,
   useAnimatedStyle,
@@ -9,7 +9,13 @@ import Animated, {
   withTiming,
   type SharedValue,
 } from 'react-native-reanimated';
-import Svg, { Circle, Defs, LinearGradient as SvgGradient, Stop } from 'react-native-svg';
+import Svg, {
+  Circle,
+  Defs,
+  Path,
+  LinearGradient as SvgGradient,
+  Stop,
+} from 'react-native-svg';
 
 import { accentColor, motion, palette, radius, type AccentName } from '../theme/theme';
 
@@ -262,7 +268,141 @@ const Column = memo(function Column({
   );
 });
 
+/**
+ * A point on a trend line.
+ *
+ * Deliberately has no id: points are positional and two readings can share a
+ * date (a benchmark tested twice in one session, a weight logged morning and
+ * evening), so anything date-derived would collide as a React key.
+ */
+export type LinePoint = { value: number };
+
+/**
+ * Trend line for a dated series.
+ *
+ * Deliberately unopinionated about direction: it plots the values it is given
+ * and says nothing about whether up is good. A faster 400 m and a heavier
+ * deadlift move opposite ways on the axis, so the *caller* labels what better
+ * means — a chart that quietly inverted itself per metric would be impossible
+ * to read across two screens.
+ *
+ * A flat series (every value identical) draws through the middle rather than
+ * collapsing onto the floor, which is what a naive min/max scale would do.
+ */
+export const LineChart = memo(function LineChart({
+  points,
+  accent = 'violet',
+  height = 150,
+  formatValue = (value: number) => `${value}`,
+}: {
+  points: LinePoint[];
+  accent?: AccentName;
+  height?: number;
+  formatValue?: (value: number) => string;
+}) {
+  const [width, setWidth] = useState(0);
+  const onLayout = useCallback(
+    (event: LayoutChangeEvent) => setWidth(event.nativeEvent.layout.width),
+    [],
+  );
+
+  const plot = useMemo(() => {
+    if (points.length < 2 || width <= 0) return null;
+
+    const values = points.map((p) => p.value);
+    const low = Math.min(...values);
+    const high = Math.max(...values);
+    // Guard the flat case: without this every point lands on the same edge.
+    const span = high - low || 1;
+    const flat = high === low;
+
+    const padY = 14;
+    const usableH = height - padY * 2;
+    const stepX = width / (points.length - 1);
+
+    const coords = points.map((point, index) => ({
+      x: index * stepX,
+      y: flat
+        ? padY + usableH / 2
+        : padY + usableH - ((point.value - low) / span) * usableH,
+    }));
+
+    const d = coords
+      .map((c, i) => `${i === 0 ? 'M' : 'L'}${c.x.toFixed(2)} ${c.y.toFixed(2)}`)
+      .join(' ');
+
+    return { coords, d, low, high, flat };
+  }, [points, width, height]);
+
+  return (
+    <View style={[styles.lineWrap, { height }]} onLayout={onLayout}>
+      {plot ? (
+        <>
+          <Svg width={width} height={height}>
+            <Path
+              d={plot.d}
+              stroke={accentColor[accent]}
+              strokeWidth={2}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              fill="none"
+            />
+            {plot.coords.map((c, i) => (
+              <Circle
+                // Index is the correct key here — the series is ordered and
+                // positional, and values are free to repeat.
+                key={i}
+                cx={c.x}
+                cy={c.y}
+                // The most recent reading is the one people look for.
+                r={i === plot.coords.length - 1 ? 4.5 : 2.5}
+                fill={
+                  i === plot.coords.length - 1 ? accentColor[accent] : palette.bg1
+                }
+                stroke={accentColor[accent]}
+                strokeWidth={1.5}
+              />
+            ))}
+          </Svg>
+
+          {plot.flat ? null : (
+            <>
+              <Text style={[styles.lineAxis, styles.lineAxisTop]}>
+                {formatValue(plot.high)}
+              </Text>
+              <Text style={[styles.lineAxis, styles.lineAxisBottom]}>
+                {formatValue(plot.low)}
+              </Text>
+            </>
+          )}
+        </>
+      ) : null}
+    </View>
+  );
+});
+
 const styles = StyleSheet.create({
+  lineWrap: {
+    width: '100%',
+    justifyContent: 'center',
+  },
+  lineAxis: {
+    position: 'absolute',
+    right: 0,
+    fontSize: 10,
+    fontWeight: '700',
+    color: palette.textFaint,
+    backgroundColor: palette.bg1,
+    paddingHorizontal: 3,
+    borderRadius: 3,
+    overflow: 'hidden',
+  },
+  lineAxisTop: {
+    top: 0,
+  },
+  lineAxisBottom: {
+    bottom: 0,
+  },
   ringCenter: {
     alignItems: 'center',
     justifyContent: 'center',
