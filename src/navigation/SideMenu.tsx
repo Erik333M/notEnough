@@ -1,7 +1,15 @@
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { memo, useCallback, useEffect } from 'react';
-import { Dimensions, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import {
+  Dimensions,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   runOnJS,
@@ -108,45 +116,54 @@ export const SideMenu = memo(function SideMenu({
             style={StyleSheet.absoluteFill}
           />
 
-          <View style={styles.profile}>
-            <LinearGradient
-              colors={gradients.accent}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.avatar}
-            >
-              <Text style={styles.avatarText}>{initials(userName)}</Text>
-            </LinearGradient>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.name} numberOfLines={1}>
-                {userName}
-              </Text>
-              <Text style={styles.email} numberOfLines={1}>
-                {userEmail}
+          {/*
+            Scrollable so the menu still works on a short screen. The list grew
+            past what a phone shows at once, and the flex spacer that used to
+            sit here pinned the overflow off-screen with no way to reach it.
+          */}
+          <ScrollView
+            style={styles.scroll}
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
+          >
+            <View style={styles.profile}>
+              <LinearGradient
+                colors={gradients.accent}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.avatar}
+              >
+                <Text style={styles.avatarText}>{initials(userName)}</Text>
+              </LinearGradient>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.name} numberOfLines={1}>
+                  {userName}
+                </Text>
+                <Text style={styles.email} numberOfLines={1}>
+                  {userEmail}
+                </Text>
+              </View>
+            </View>
+
+            <View style={styles.streakCard}>
+              <Ionicons name="flame" size={18} color={palette.amber} />
+              <Text style={styles.streakText}>
+                <Text style={styles.streakValue}>{streak}</Text>
+                {streak === 1 ? ' day streak' : ' day streak'}
               </Text>
             </View>
-          </View>
 
-          <View style={styles.streakCard}>
-            <Ionicons name="flame" size={18} color={palette.amber} />
-            <Text style={styles.streakText}>
-              <Text style={styles.streakValue}>{streak}</Text>
-              {streak === 1 ? ' day streak' : ' day streak'}
-            </Text>
-          </View>
-
-          <View style={styles.nav}>
-            {MENU_ROUTES.map((key) => (
-              <MenuRow
-                key={key}
-                routeKey={key}
-                active={key === active}
-                onSelect={handleSelect}
-              />
-            ))}
-          </View>
-
-          <View style={{ flex: 1 }} />
+            <View style={styles.nav}>
+              {MENU_ROUTES.map((key) => (
+                <MenuRow
+                  key={key}
+                  routeKey={key}
+                  active={key === active}
+                  onSelect={handleSelect}
+                />
+              ))}
+            </View>
+          </ScrollView>
 
           <Button label="Sign out" icon="log-out-outline" variant="glass" onPress={onLogout} />
           <Text style={styles.version}>NOTenough • v1.1</Text>
@@ -217,6 +234,15 @@ const styles = StyleSheet.create({
     borderRightColor: palette.hairlineStrong,
     overflow: 'hidden',
     gap: 14,
+  },
+  scroll: {
+    flex: 1,
+    // Cancels the panel's gap for this child so spacing stays inside the list.
+    marginBottom: -14,
+  },
+  scrollContent: {
+    gap: 14,
+    paddingBottom: 14,
   },
   profile: {
     flexDirection: 'row',
