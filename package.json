@@ -32,10 +32,10 @@
     "typescript": "~6.0.3"
   },
   "scripts": {
-    "start": "expo start",
+    "start": "expo start --lan",
     "dev": "bash scripts/dev.sh",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
+    "android": "expo start --lan --android",
+    "ios": "expo start --lan --ios",
     "web": "expo start --web",
     "typecheck": "tsc --noEmit",
     "e2e": "node e2e/drive.mjs",
