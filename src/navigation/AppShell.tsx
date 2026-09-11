@@ -7,8 +7,10 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import GoalsScreen from '../screens/GoalsScreen';
 import HomeScreen from '../screens/HomeScreen';
 import PlanScreen from '../screens/PlanScreen';
+import PrivacyScreen from '../screens/PrivacyScreen';
 import ProgressScreen from '../screens/ProgressScreen';
 import SettingsScreen from '../screens/SettingsScreen';
+import SuccessJourneyScreen from '../screens/SuccessJourneyScreen';
 import TimerScreen from '../screens/TimerScreen';
 import VictoriesScreen from '../screens/VictoriesScreen';
 import { useAuth } from '../state/AuthContext';
@@ -63,6 +65,8 @@ export function AppShell() {
       <Animated.View key={route} entering={FadeIn.duration(220)} style={styles.screen}>
         {route === 'home' ? (
           <HomeScreen bottomInset={bottomInset} navigate={navigate} />
+        ) : route === 'journey' ? (
+          <SuccessJourneyScreen bottomInset={bottomInset} />
         ) : route === 'victories' ? (
           <VictoriesScreen bottomInset={bottomInset} />
         ) : route === 'goals' ? (
@@ -73,8 +77,10 @@ export function AppShell() {
           <ProgressScreen bottomInset={bottomInset} />
         ) : route === 'plan' ? (
           <PlanScreen bottomInset={bottomInset} />
+        ) : route === 'privacy' ? (
+          <PrivacyScreen bottomInset={bottomInset} />
         ) : (
-          <SettingsScreen bottomInset={bottomInset} />
+          <SettingsScreen bottomInset={bottomInset} navigate={navigate} />
         )}
       </Animated.View>
 

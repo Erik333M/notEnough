@@ -217,11 +217,13 @@ export const Stepper = memo(function Stepper({
           icon="remove"
           disabled={value <= min}
           onPress={() => onChange(Math.max(min, value - step))}
+          accessibilityLabel={`Decrease ${label}`}
         />
         <RoundIconButton
           icon="add"
           disabled={value >= max}
           onPress={() => onChange(Math.min(max, value + step))}
+          accessibilityLabel={`Increase ${label}`}
         />
       </View>
     </View>
@@ -234,15 +236,27 @@ export const RoundIconButton = memo(function RoundIconButton({
   disabled,
   size = 40,
   accent,
+  accessibilityLabel,
 }: {
   icon: IconName;
   onPress: () => void;
   disabled?: boolean;
   size?: number;
   accent?: AccentName;
+  /**
+   * Required in practice: this button is icon-only, so without a label a
+   * screen reader announces nothing but "button".
+   */
+  accessibilityLabel?: string;
 }) {
   return (
-    <PressableScale onPress={onPress} disabled={disabled} scaleTo={0.9} haptic="light">
+    <PressableScale
+      onPress={onPress}
+      disabled={disabled}
+      scaleTo={0.9}
+      haptic="light"
+      accessibilityLabel={accessibilityLabel}
+    >
       <View
         style={[
           styles.roundButton,

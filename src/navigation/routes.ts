@@ -2,12 +2,14 @@ import type { IconName } from '../state/types';
 
 export type RouteKey =
   | 'home'
+  | 'journey'
   | 'victories'
   | 'goals'
   | 'timer'
   | 'progress'
   | 'plan'
-  | 'settings';
+  | 'settings'
+  | 'privacy';
 
 export type RouteMeta = {
   key: RouteKey;
@@ -26,6 +28,14 @@ export const ROUTES: Record<RouteKey, RouteMeta> = {
     subtitle: 'Your daily goals',
     icon: 'today-outline',
     iconActive: 'today',
+  },
+  journey: {
+    key: 'journey',
+    label: 'Journey',
+    title: 'Success Journey',
+    subtitle: 'Today’s page',
+    icon: 'book-outline',
+    iconActive: 'book',
   },
   victories: {
     key: 'victories',
@@ -67,6 +77,14 @@ export const ROUTES: Record<RouteKey, RouteMeta> = {
     icon: 'sparkles-outline',
     iconActive: 'sparkles',
   },
+  privacy: {
+    key: 'privacy',
+    label: 'Privacy',
+    title: 'Privacy',
+    subtitle: 'What this app knows about you',
+    icon: 'lock-closed-outline',
+    iconActive: 'lock-closed',
+  },
   settings: {
     key: 'settings',
     label: 'Settings',
@@ -78,13 +96,22 @@ export const ROUTES: Record<RouteKey, RouteMeta> = {
 };
 
 /** Routes shown in the bottom bar; the rest live in the slide-out menu. */
-export const TAB_ROUTES: RouteKey[] = ['home', 'victories', 'goals', 'timer', 'progress'];
+export const TAB_ROUTES: RouteKey[] = [
+  'home',
+  'journey',
+  'victories',
+  'goals',
+  'timer',
+  'progress',
+];
 export const MENU_ROUTES: RouteKey[] = [
   'home',
+  'journey',
   'victories',
   'goals',
   'timer',
   'progress',
   'plan',
   'settings',
+  'privacy',
 ];

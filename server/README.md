@@ -5,7 +5,7 @@ persist to a single JSON file — no database to install.
 
 ```bash
 npm install
-npm start      # http://localhost:4000
+npm start      # http://localhost:4137
 npm run dev    # same, with --watch
 npm run smoke  # 22 end-to-end checks against a running server
 ```
@@ -16,7 +16,7 @@ All values have working dev defaults; see [.env.example](.env.example).
 
 | Variable | Default | Notes |
 |---|---|---|
-| `PORT` | `4000` | The app assumes this unless `EXPO_PUBLIC_API_URL` is set. |
+| `PORT` | `4137` | The app assumes this unless `EXPO_PUBLIC_API_URL` is set. Deliberately not 4000, which other local dev servers commonly hold. |
 | `JWT_SECRET` | dev placeholder | **Required** when `NODE_ENV=production` — the server refuses to boot without it. |
 | `TOKEN_TTL` | `30d` | Session token lifetime. |
 | `DB_FILE` | `./data/db.json` | Created on first write. Gitignored — it holds real password hashes. |

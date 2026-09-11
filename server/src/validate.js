@@ -65,7 +65,49 @@ export function requireStatePayload(body) {
     runs: runs.slice(0, 500),
     plan,
     victories: normaliseVictories(body.victories),
+    journey: normaliseJourney(body.journey),
   };
+}
+
+/**
+ * Success Journey state.
+ *
+ * The server does not model the feature — the client owns that shape and
+ * re-validates every field on read. What matters here is that the key is
+ * *carried through at all*: this function is built explicitly, so a slice with
+ * no passthrough would be silently dropped on the first sync and the user's
+ * whole workbook would vanish on their next device.
+ *
+ * Optional for the same reason victories is: a client older than the feature
+ * simply does not send it, and refusing those writes would lock existing
+ * installs out of sync.
+ */
+function normaliseJourney(journey) {
+  if (!journey || typeof journey !== 'object' || Array.isArray(journey)) return null;
+
+  const { entries, checks } = journey;
+
+  if (entries != null && (typeof entries !== 'object' || Array.isArray(entries))) {
+    throw new ValidationError('journey', 'journey.entries must be an object.');
+  }
+  if (checks != null && (typeof checks !== 'object' || Array.isArray(checks))) {
+    throw new ValidationError('journey', 'journey.checks must be an object.');
+  }
+  if (entries && Object.keys(entries).length > 4000) {
+    throw new ValidationError('journey', 'Too much journey history.');
+  }
+
+  for (const field of ['movements', 'benchmarks', 'results', 'measurements', 'habits']) {
+    const value = journey[field];
+    if (value != null && !Array.isArray(value)) {
+      throw new ValidationError('journey', `journey.${field} must be an array.`);
+    }
+    if (Array.isArray(value) && value.length > 5000) {
+      throw new ValidationError('journey', `Too many entries in journey.${field}.`);
+    }
+  }
+
+  return journey;
 }
 
 /**

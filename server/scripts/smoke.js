@@ -7,7 +7,7 @@
  * write conflict rule.
  */
 
-const base = process.argv[2] ?? 'http://localhost:4000';
+const base = process.argv[2] ?? 'http://localhost:4137';
 let failures = 0;
 
 function check(label, condition, detail = '') {

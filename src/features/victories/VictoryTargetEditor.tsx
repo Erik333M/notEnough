@@ -95,7 +95,14 @@ export function VictoryTargetEditor({ goal, target, onClose, onSave }: Props) {
                 <SectionHeader
                   title={def.title}
                   meta={`${parent.mark} ${parent.label} • the category is fixed`}
-                  action={<RoundIconButton icon="close" size={34} onPress={onClose} />}
+                  action={
+                    <RoundIconButton
+                      icon="close"
+                      size={34}
+                      onPress={onClose}
+                      accessibilityLabel="Close"
+                    />
+                  }
                 />
 
                 <GlassCard tone="sunken" sheen={false} style={styles.purpose}>

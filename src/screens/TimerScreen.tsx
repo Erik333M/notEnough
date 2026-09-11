@@ -111,6 +111,7 @@ function StopwatchPanel() {
               onPress={reset}
               disabled={!started}
               size={52}
+              accessibilityLabel="Reset the stopwatch"
             />
             <PressableScale
               onPress={running ? pause : start}
@@ -126,7 +127,14 @@ function StopwatchPanel() {
                 />
               </View>
             </PressableScale>
-            <RoundIconButton icon="flag" onPress={lap} disabled={!running} size={52} accent="cyan" />
+            <RoundIconButton
+              icon="flag"
+              onPress={lap}
+              disabled={!running}
+              size={52}
+              accent="cyan"
+              accessibilityLabel="Record a lap"
+            />
           </View>
         </GlassCard>
       </Appear>
@@ -155,6 +163,7 @@ function StopwatchPanel() {
               size={44}
               onPress={() => setDistance(0)}
               disabled={distance === 0}
+              accessibilityLabel="Clear the distance"
             />
           </View>
           <Button
@@ -346,7 +355,13 @@ function IntervalPanel() {
           </LiveProgressRing>
 
           <View style={styles.controlRow}>
-            <RoundIconButton icon="refresh" onPress={handleReset} disabled={!started} size={52} />
+            <RoundIconButton
+              icon="refresh"
+              onPress={handleReset}
+              disabled={!started}
+              size={52}
+              accessibilityLabel="Reset"
+            />
             <PressableScale
               onPress={running ? pause : start}
               haptic="heavy"
@@ -367,6 +382,7 @@ function IntervalPanel() {
               disabled={!started}
               size={52}
               accent="lime"
+              accessibilityLabel="Save this session"
             />
           </View>
         </GlassCard>
@@ -442,6 +458,7 @@ const IntervalStepper = memo(function IntervalStepper({
           size={36}
           disabled={disabled || value <= min}
           onPress={() => onChange(Math.max(min, value - step))}
+          accessibilityLabel={`Decrease ${label}`}
         />
         <Text style={styles.intervalValue}>
           {value}
@@ -452,6 +469,7 @@ const IntervalStepper = memo(function IntervalStepper({
           size={36}
           disabled={disabled || value >= max}
           onPress={() => onChange(Math.min(max, value + step))}
+          accessibilityLabel={`Increase ${label}`}
         />
       </View>
     </View>

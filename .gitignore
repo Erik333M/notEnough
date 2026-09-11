@@ -55,3 +55,4 @@ _skill_probe/
 
 # e2e run output (generated)
 e2e/screenshots/
+e2e/journey/screenshots/

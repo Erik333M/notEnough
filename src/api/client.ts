@@ -8,7 +8,14 @@ import Constants from 'expo-constants';
  * not the exception.
  */
 
-const DEFAULT_PORT = 4000;
+/**
+ * 4000 is the most contested port on a dev machine — plenty of unrelated
+ * projects grab it, and when one already holds it this server fails to bind
+ * while the app happily talks to whatever *is* listening. That misfires as a
+ * confusing CORS error rather than "connection refused", so the default is
+ * deliberately off the beaten track. Override with EXPO_PUBLIC_API_URL.
+ */
+const DEFAULT_PORT = 4137;
 const TIMEOUT_MS = 8000;
 
 /**
@@ -126,6 +133,7 @@ export type RemoteState = {
   runs: unknown[];
   plan: Record<string, unknown>;
   victories: unknown;
+  journey: unknown;
   updatedAt: number;
 };
 

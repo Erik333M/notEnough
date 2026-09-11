@@ -132,6 +132,85 @@ export const Field = forwardRef<TextInput, Props>(function Field(
   );
 });
 
+type AreaProps = {
+  label: string;
+  value: string;
+  onChangeText: (value: string) => void;
+  placeholder?: string;
+  onBlur?: () => void;
+  /** Visible rows before it scrolls. */
+  minLines?: number;
+  maxLength?: number;
+  accessibilityHint?: string;
+};
+
+/**
+ * Multi-line sibling of `Field`.
+ *
+ * Kept in the same module so both share one focus-ring treatment. It grows to
+ * `minLines` and then scrolls internally rather than pushing the form around
+ * as the user types, and it deliberately has no `returnKeyType` — Return
+ * inserts a newline here, so dismissal is by tapping away or the form's Done.
+ */
+export const TextArea = memo(function TextArea({
+  label,
+  value,
+  onChangeText,
+  placeholder,
+  onBlur,
+  minLines = 3,
+  maxLength,
+  accessibilityHint,
+}: AreaProps) {
+  const focus = useSharedValue(0);
+
+  const handleFocus = useCallback(() => {
+    focus.value = withTiming(1, { duration: motion.fast });
+  }, [focus]);
+
+  const handleBlur = useCallback(() => {
+    focus.value = withTiming(0, { duration: motion.fast });
+    onBlur?.();
+  }, [focus, onBlur]);
+
+  const wrapStyle = useAnimatedStyle(() => ({
+    borderColor: interpolateColor(
+      focus.value,
+      [0, 1],
+      [palette.hairline, 'rgba(139,107,255,0.75)'],
+    ),
+    backgroundColor: interpolateColor(
+      focus.value,
+      [0, 1],
+      [palette.glassSunken, 'rgba(255,255,255,0.08)'],
+    ),
+  }));
+
+  return (
+    <View style={styles.group}>
+      <Text style={styles.label}>{label}</Text>
+      <Animated.View style={[styles.areaWrap, { minHeight: 22 * minLines + 24 }, wrapStyle]}>
+        <TextInput
+          value={value}
+          onChangeText={onChangeText}
+          placeholder={placeholder}
+          placeholderTextColor={palette.textFaint}
+          style={styles.area}
+          multiline
+          textAlignVertical="top"
+          maxLength={maxLength}
+          autoCapitalize="sentences"
+          onFocus={handleFocus}
+          onBlur={handleBlur}
+          selectionColor={palette.violet}
+          accessibilityLabel={label}
+          accessibilityHint={accessibilityHint}
+        />
+      </Animated.View>
+    </View>
+  );
+});
+
 const ErrorText = memo(function ErrorText({ text }: { text: string }) {
   return (
     <View style={styles.errorRow}>
@@ -166,6 +245,20 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: palette.text,
     padding: 0,
+  },
+  areaWrap: {
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    borderRadius: radius.md,
+    borderWidth: StyleSheet.hairlineWidth * 2,
+  },
+  area: {
+    fontSize: 15,
+    lineHeight: 22,
+    fontWeight: '600',
+    color: palette.text,
+    padding: 0,
+    margin: 0,
   },
   errorRow: {
     flexDirection: 'row',
