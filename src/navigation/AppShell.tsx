@@ -13,6 +13,7 @@ import SettingsScreen from '../screens/SettingsScreen';
 import SuccessJourneyScreen from '../screens/SuccessJourneyScreen';
 import TimerScreen from '../screens/TimerScreen';
 import VictoriesScreen from '../screens/VictoriesScreen';
+import { notificationsSupported } from '../notifications/notifications';
 import { useAuth } from '../state/AuthContext';
 import { useStats, useSync } from '../state/DataContext';
 import { Header } from './Header';
@@ -39,13 +40,20 @@ export function AppShell() {
   const openMenu = useCallback(() => setMenuOpen(true), []);
   const closeMenu = useCallback(() => setMenuOpen(false), []);
 
-  // Tapping a goal reminder drops the user straight on Today.
+  // Tapping a goal reminder drops the user straight on Today. Guarded because
+  // Expo Go no longer supports this module and the failure is a hard client
+  // exit rather than a catchable error.
   useEffect(() => {
-    const sub = Notifications.addNotificationResponseReceivedListener(() => {
-      setRoute('home');
-      setMenuOpen(false);
-    });
-    return () => sub.remove();
+    if (!notificationsSupported()) return;
+    try {
+      const sub = Notifications.addNotificationResponseReceivedListener(() => {
+        setRoute('home');
+        setMenuOpen(false);
+      });
+      return () => sub.remove();
+    } catch {
+      return;
+    }
   }, []);
 
   const meta = ROUTES[route];

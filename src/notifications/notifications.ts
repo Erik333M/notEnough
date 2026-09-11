@@ -1,3 +1,4 @@
+import Constants, { ExecutionEnvironment } from 'expo-constants';
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
 
@@ -14,14 +15,38 @@ import { GOAL_UNIT } from '../state/types';
 
 const CHANNEL_ID = 'goal-reminders';
 
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldPlaySound: true,
-    shouldSetBadge: false,
-    shouldShowBanner: true,
-    shouldShowList: true,
-  }),
-});
+/**
+ * Expo Go is not a supported host for this module any more.
+ *
+ * SDK 53 removed notification support from Expo Go on Android, and what
+ * remains elsewhere is inconsistent — calls can take the whole client down
+ * rather than throwing something JavaScript can catch, which shows up as the
+ * app closing the instant the bundle finishes loading.
+ *
+ * So in Expo Go every entry point below becomes a no-op. Reminders are a
+ * development-build and production feature; testing the rest of the app in
+ * Expo Go should not require one.
+ */
+const IN_EXPO_GO = Constants.executionEnvironment === ExecutionEnvironment.StoreClient;
+
+/** True where scheduling is actually supported. */
+const SUPPORTED = Platform.OS !== 'web' && !IN_EXPO_GO;
+
+/** Lets callers skip registering listeners this module cannot back. */
+export function notificationsSupported(): boolean {
+  return SUPPORTED;
+}
+
+if (SUPPORTED) {
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldPlaySound: true,
+      shouldSetBadge: false,
+      shouldShowBanner: true,
+      shouldShowList: true,
+    }),
+  });
+}
 
 let permissionPromise: Promise<boolean> | null = null;
 
@@ -30,7 +55,7 @@ export function ensureNotificationPermission(): Promise<boolean> {
   if (permissionPromise) return permissionPromise;
 
   permissionPromise = (async () => {
-    if (Platform.OS === 'web') return false;
+    if (!SUPPORTED) return false;
     try {
       if (Platform.OS === 'android') {
         await Notifications.setNotificationChannelAsync(CHANNEL_ID, {
@@ -91,7 +116,7 @@ export async function scheduleGoalReminder(goal: Goal): Promise<string | null> {
 }
 
 export async function cancelReminder(id: string | null | undefined): Promise<void> {
-  if (!id) return;
+  if (!id || !SUPPORTED) return;
   try {
     await Notifications.cancelScheduledNotificationAsync(id);
   } catch {
@@ -107,6 +132,8 @@ export async function cancelReminder(id: string | null | undefined): Promise<voi
 export async function resyncReminders(
   goals: Goal[],
 ): Promise<Record<string, string | null> | null> {
+  if (!SUPPORTED) return null;
+
   const active = goals.filter((g) => !g.archived && g.reminder.enabled);
   if (active.length === 0) {
     try {
