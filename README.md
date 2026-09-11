@@ -32,7 +32,18 @@ The premise is in the name: when a target becomes comfortable, the app raises it
 
 ## Run it
 
-Two terminals, no configuration, no database to install.
+One command, no configuration, no database to install.
+
+```bash
+npm run dev     # starts the API, then Metro — scan the QR with Expo Go
+```
+
+That is the path for testing on a real phone: it health-checks the API before
+Metro takes over the terminal, prints the QR where you can scan it, and stops
+both on Ctrl+C. Your phone needs to be on the same Wi-Fi. **No Expo account is
+required** — Expo Go loads the bundle straight off your LAN.
+
+Or run the two halves yourself:
 
 ```bash
 # 1 — API
