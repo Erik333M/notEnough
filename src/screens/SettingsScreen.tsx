@@ -12,6 +12,7 @@ import { useAuth } from '../state/AuthContext';
 import { useActions, useAppState, useSync } from '../state/DataContext';
 import { palette, radius } from '../theme/theme';
 import { Button } from '../ui/Button';
+import type { RouteKey } from '../navigation/routes';
 import { Appear, Pill, SectionHeader } from '../ui/Controls';
 import { Field } from '../ui/Field';
 import { GlassCard } from '../ui/Glass';
@@ -25,7 +26,13 @@ const SYNC_LABEL = {
   error: 'Sync failed',
 } as const;
 
-export default function SettingsScreen({ bottomInset }: { bottomInset: number }) {
+export default function SettingsScreen({
+  bottomInset,
+  navigate,
+}: {
+  bottomInset: number;
+  navigate: (key: RouteKey) => void;
+}) {
   const { user, rename, logout, deleteAccount, offline } = useAuth();
   const state = useAppState();
   const sync = useSync();
@@ -190,6 +197,12 @@ export default function SettingsScreen({ bottomInset }: { bottomInset: number })
           <SectionHeader title="Data" meta="Cached locally, owned by your account" />
           <Button label="Clear today's progress" icon="refresh" variant="glass" onPress={handleClearToday} />
           <Button label="Sign out" icon="log-out-outline" variant="glass" onPress={() => void logout()} />
+          <Button
+            label="Privacy policy"
+            icon="lock-closed-outline"
+            variant="glass"
+            onPress={() => navigate('privacy')}
+          />
           <Button label="Delete account" icon="trash-outline" variant="danger" onPress={handleDelete} />
         </GlassCard>
       </Appear>
