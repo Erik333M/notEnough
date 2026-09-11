@@ -40,17 +40,26 @@ if [ ! -d server/node_modules ]; then
   (cd server && npm install --silent)
 fi
 
-# Refuse to start a second API rather than silently talking to whatever else
-# already holds the port — that failure looks like a CORS error, not a clash.
+# Something already on the port is usually *our own* API from an earlier run,
+# and refusing outright just makes people hunt for a process to kill. So ask
+# it who it is: if it answers as this project's API, reuse it. Only refuse
+# when a stranger holds the port, because talking to one of those surfaces as
+# a CORS error and is genuinely hard to diagnose.
+API_PID=""
 if lsof -ti:"$API_PORT" >/dev/null 2>&1; then
-  warn "Port $API_PORT is already in use."
-  warn "Something else is on it. Stop that, or run: PORT=4138 npm run dev"
-  exit 1
+  if curl -fsS --max-time 2 "http://localhost:$API_PORT/api/health" 2>/dev/null \
+      | grep -q 'notenough-api'; then
+    say "Reusing the API already running on :$API_PORT"
+  else
+    warn "Port $API_PORT is held by something that is not this project's API."
+    warn "Stop it, or pick another port:  PORT=4138 npm run dev"
+    exit 1
+  fi
+else
+  say "Starting the API on :$API_PORT"
+  node server/src/index.js &
+  API_PID=$!
 fi
-
-say "Starting the API on :$API_PORT"
-node server/src/index.js &
-API_PID=$!
 
 # Metro runs in the foreground so its QR code lands in your terminal; the API
 # is a child that has to go down with it, however it exits.
@@ -59,7 +68,9 @@ API_PID=$!
 # would take the trap with it, and an API that outlives Metro then holds the
 # port against the next `npm run dev`.
 cleanup() {
-  if kill -0 "$API_PID" 2>/dev/null; then
+  # Only stop what this run started. An API we merely borrowed belongs to
+  # whoever launched it and must outlive us.
+  if [ -n "$API_PID" ] && kill -0 "$API_PID" 2>/dev/null; then
     say "Stopping the API"
     kill "$API_PID" 2>/dev/null || true
   fi
