@@ -9,7 +9,7 @@
  * screen, so a UI that renders the right thing for the wrong reason still fails.
  *
  *   npm run web            # terminal 1 — serves the app on :8081
- *   cd server && npm start # terminal 2 — API on :4000
+ *   cd server && npm start # terminal 2 — API on :4137
  *   npm run e2e            # terminal 3
  *
  * Override targets with APP_URL / API_URL. Pass --headed to watch it run.
@@ -20,7 +20,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const APP = process.env.APP_URL ?? 'http://localhost:8081';
-const API = process.env.API_URL ?? 'http://localhost:4000';
+const API = process.env.API_URL ?? 'http://localhost:4137';
 const HEADED = process.argv.includes('--headed');
 const SHOTS = path.join(process.cwd(), 'e2e', 'screenshots');
 

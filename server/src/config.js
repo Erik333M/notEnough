@@ -4,7 +4,13 @@ import { fileURLToPath } from 'node:url';
 const here = path.dirname(fileURLToPath(import.meta.url));
 
 export const config = {
-  port: Number(process.env.PORT ?? 4000),
+  /**
+   * Deliberately not 4000: that port is commonly taken by other local dev
+   * servers, and a failed bind here surfaces in the app as a CORS error
+   * against someone else's service rather than an obvious connection failure.
+   * Must match DEFAULT_PORT in src/api/client.ts.
+   */
+  port: Number(process.env.PORT ?? 4137),
 
   /**
    * Dev default so the project runs with zero setup. A real deployment must set
