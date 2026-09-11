@@ -9,6 +9,7 @@ import { AppShell } from './src/navigation/AppShell';
 import AuthScreen from './src/screens/AuthScreen';
 import { AuthProvider, useAuth } from './src/state/AuthContext';
 import { DataProvider } from './src/state/DataContext';
+import { ErrorBoundary } from './src/ui/ErrorBoundary';
 import { BootSplash } from './src/ui/Feedback';
 import { Screen } from './src/ui/Screen';
 import { ToastProvider } from './src/ui/Toast';
@@ -17,14 +18,20 @@ export default function App() {
   return (
     <GestureHandlerRootView style={styles.root}>
       <SafeAreaProvider>
-        <Screen>
-          <StatusBar style="light" />
-          <AuthProvider>
-            <ToastProvider>
-              <Root />
-            </ToastProvider>
-          </AuthProvider>
-        </Screen>
+        {/*
+          Outside Screen so a crash in the canvas itself still renders the
+          message rather than a blank window.
+        */}
+        <ErrorBoundary>
+          <Screen>
+            <StatusBar style="light" />
+            <AuthProvider>
+              <ToastProvider>
+                <Root />
+              </ToastProvider>
+            </AuthProvider>
+          </Screen>
+        </ErrorBoundary>
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );
