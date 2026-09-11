@@ -24,9 +24,9 @@ The premise is in the name: when a target becomes comfortable, the app raises it
 
 ## Contents
 
-- [Run it](#run-it) · [What it does](#what-it-does) · [Architecture](#architecture)
+- [Run it](#run-it) · [What it does](#what-it-does) · [Success Journey](#success-journey) · [Architecture](#architecture)
 - [How the hard parts work](#how-the-hard-parts-work) — [sync](#offline-first-sync) · [auth](#auth-and-sessions) · [reminders](#reminders-that-cannot-drift) · [storage](#a-json-file-that-behaves-like-a-database)
-- [Performance](#performance) · [Verification](#verification) · [Known limits](#known-limits)
+- [Performance](#performance) · [Verification](#verification) · [Privacy](PRIVACY.md) · [Known limits](#known-limits)
 
 ---
 
@@ -36,7 +36,7 @@ Two terminals, no configuration, no database to install.
 
 ```bash
 # 1 — API
-cd server && npm install && npm start     # http://localhost:4000
+cd server && npm install && npm start     # http://localhost:4137
 
 # 2 — app
 npm install && npx expo start             # scan the QR with Expo Go
@@ -65,6 +65,32 @@ npm run e2e                # 27 checks driving the real UI (needs `npm run web`)
 - **Progress** — current and best streak, a 7-day completion chart, a 4-week heat grid, and run
   history with pace.
 - **Accounts** with a real backend, and a session that keeps working when the network does not.
+- **3 Victories** — nine fixed daily goals across body, mind and spirit, with custom targets.
+- **Success Journey** — the paper training workbook, as an app: a page per day, a workout
+  builder over a searchable movement library, benchmarks you re-test, body measurements with
+  trend lines, and standing habits. See below.
+
+### Success Journey
+
+A daily workbook that opens on today and asks for almost nothing.
+
+- **Today's page** — a theme, one decision, one habit, and six Plus One dimensions. Every field
+  is optional; a single ticked box is a finished day. Autosaves on a pause, on blur, on leaving
+  the screen and on backgrounding, so there is no Save button anywhere.
+- **Workout builder** — M/G/W tags, rounds, movement lines with search over a seeded catalogue
+  you can extend, and a free-text result so any scoring style fits.
+- **Benchmarks** — 31 seeded tests plus your own. The measurement type decides both how a result
+  is entered and which direction counts as a personal best.
+- **Measurements** — weight and seven optional readings, charted once there are two of them,
+  in kg/cm or lb/in. Nothing is prescribed and no target is suggested.
+- **Habits** — adopt a suggestion or write your own, tick daily, keep the streak. Stopping one
+  archives it and keeps every day you already ticked.
+- **Onboarding** — three screens, all skippable. The health questions sit behind an explicit
+  "why we ask" gate and never leave the device. See [PRIVACY.md](PRIVACY.md).
+
+Seed catalogues for movements, benchmarks and habits are plain JSON in
+`src/state/journey/data/`, merged at read time so replacing a file reaches every existing
+install rather than stranding a stale copy per user.
 
 ---
 
