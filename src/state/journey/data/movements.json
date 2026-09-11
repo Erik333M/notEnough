@@ -1,0 +1,47 @@
+{
+  "$comment": "Seed movement catalogue. Replace this list wholesale — nothing outside this file knows any movement name. Each entry: id (stable, kebab-case), name, category (strength | weightlifting | gymnastics | monostructural), aliases (optional, folded into search).",
+  "movements": [
+    { "id": "back-squat", "name": "Back squat", "category": "strength" },
+    { "id": "front-squat", "name": "Front squat", "category": "strength" },
+    { "id": "overhead-squat", "name": "Overhead squat", "category": "strength" },
+    { "id": "deadlift", "name": "Deadlift", "category": "strength" },
+    { "id": "bench-press", "name": "Bench press", "category": "strength" },
+    { "id": "strict-press", "name": "Strict press", "category": "strength", "aliases": ["shoulder press"] },
+    { "id": "push-press", "name": "Push press", "category": "strength" },
+    { "id": "lunge", "name": "Walking lunge", "category": "strength" },
+
+    { "id": "clean", "name": "Clean", "category": "weightlifting" },
+    { "id": "clean-and-jerk", "name": "Clean and jerk", "category": "weightlifting", "aliases": ["c&j"] },
+    { "id": "snatch", "name": "Snatch", "category": "weightlifting" },
+    { "id": "thruster", "name": "Thruster", "category": "weightlifting" },
+    { "id": "kettlebell-swing", "name": "Kettlebell swing", "category": "weightlifting", "aliases": ["kb swing"] },
+    { "id": "kettlebell-clean", "name": "Kettlebell clean", "category": "weightlifting" },
+    { "id": "kettlebell-snatch", "name": "Kettlebell snatch", "category": "weightlifting" },
+    { "id": "dumbbell-snatch", "name": "Dumbbell snatch", "category": "weightlifting", "aliases": ["db snatch"] },
+    { "id": "wall-ball", "name": "Wall ball", "category": "weightlifting" },
+
+    { "id": "pull-up", "name": "Pull-up", "category": "gymnastics" },
+    { "id": "chest-to-bar", "name": "Chest to bar", "category": "gymnastics", "aliases": ["c2b"] },
+    { "id": "toes-to-bar", "name": "Toes to bar", "category": "gymnastics", "aliases": ["t2b"] },
+    { "id": "push-up", "name": "Push-up", "category": "gymnastics" },
+    { "id": "burpee", "name": "Burpee", "category": "gymnastics" },
+    { "id": "air-squat", "name": "Air squat", "category": "gymnastics" },
+    { "id": "sit-up", "name": "Sit-up", "category": "gymnastics" },
+    { "id": "box-jump", "name": "Box jump", "category": "gymnastics" },
+    { "id": "pistol", "name": "Pistol squat", "category": "gymnastics" },
+    { "id": "handstand-push-up", "name": "Handstand push-up", "category": "gymnastics", "aliases": ["hspu"] },
+    { "id": "muscle-up", "name": "Muscle-up", "category": "gymnastics" },
+    { "id": "plank", "name": "Plank hold", "category": "gymnastics" },
+
+    { "id": "run-400m", "name": "400 m run", "category": "monostructural" },
+    { "id": "run-800m", "name": "800 m run", "category": "monostructural" },
+    { "id": "run-1600m", "name": "1600 m run", "category": "monostructural" },
+    { "id": "row-500m", "name": "500 m row", "category": "monostructural" },
+    { "id": "row-1000m", "name": "1000 m row", "category": "monostructural" },
+    { "id": "double-under", "name": "Double under", "category": "monostructural", "aliases": ["du"] },
+    { "id": "single-under", "name": "Single under", "category": "monostructural" },
+    { "id": "air-bike", "name": "Air bike", "category": "monostructural", "aliases": ["assault bike"] },
+    { "id": "ski-erg", "name": "Ski erg", "category": "monostructural" },
+    { "id": "shuttle-run", "name": "Shuttle run", "category": "monostructural" }
+  ]
+}

@@ -1,3 +1,5 @@
+import { createJourneyState } from './journey/factory';
+import { JOURNEY_SCHEMA_VERSION, migrateJourney } from './journey/schema';
 import { createVictoryState, defaultVictoryTargets, emptyVictoryDay } from './victories';
 import type { AppState, Goal, VictoryDay, VictoryLog, VictoryState } from './types';
 
@@ -71,6 +73,7 @@ export function createInitialState(): AppState {
       daysPerWeek: 5,
     },
     victories: createVictoryState(),
+    journey: createJourneyState(JOURNEY_SCHEMA_VERSION),
     updatedAt: Date.now(),
   };
 }
@@ -129,6 +132,9 @@ export function migrate(raw: unknown): AppState {
     runs: Array.isArray(value.runs) ? value.runs : [],
     plan: { ...base.plan, ...(value.plan ?? {}) },
     victories: migrateVictories(value.victories),
+    // Total by design: an account older than the feature, or one whose slice
+    // came back malformed, gets a fresh valid slice rather than an error.
+    journey: migrateJourney(value.journey),
     updatedAt: Number(value.updatedAt) || 0,
   };
 }

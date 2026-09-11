@@ -15,6 +15,8 @@ import { flushWrites, queueWrite, readJSON, storageKeys } from '../lib/storage';
 import { dayKey } from '../lib/time';
 import { cancelReminder, resyncReminders, scheduleGoalReminder } from '../notifications/notifications';
 import { createInitialState, migrate } from './defaults';
+import { createJourneyActions, type JourneyActions } from './journey/actions';
+import { journeyReducer, type JourneyAction } from './journey/reducer';
 import { activeGoals, currentStreak, dayCompletion, goalsClosed } from './selectors';
 import { push, reconcile, type SyncStatus } from './sync';
 import {
@@ -50,7 +52,9 @@ type Action =
   | { type: 'updatePlan'; patch: Partial<PlanConfig> }
   | { type: 'clearDay'; day: string }
   | { type: 'toggleVictoryGoal'; day: string; goal: VictoryGoalKey }
-  | { type: 'setVictoryTarget'; goal: VictoryGoalKey; target: string };
+  | { type: 'setVictoryTarget'; goal: VictoryGoalKey; target: string }
+  /** Forwarded wholesale to the Success Journey sub-reducer. */
+  | { type: 'journey'; action: JourneyAction };
 
 function writeLog(state: AppState, day: string, goalId: string, amount: number): AppState {
   const dayEntries = state.log[day];
@@ -130,6 +134,13 @@ function baseReducer(state: AppState, action: Action): AppState {
       };
     }
 
+    case 'journey': {
+      // The sub-reducer follows the same identity rule as this one, so an
+      // unchanged slice propagates as an unchanged state and skips the stamp.
+      const journey = journeyReducer(state.journey, action.action);
+      return journey === state.journey ? state : { ...state, journey };
+    }
+
     default:
       return state;
   }
@@ -171,6 +182,8 @@ type Actions = {
   /** Toggles one of the nine daily victory goals for today. */
   toggleVictoryGoal: (goal: VictoryGoalKey) => void;
   setVictoryTarget: (goal: VictoryGoalKey, target: string) => void;
+  /** Success Journey. Namespaced because the feature owns ~30 of its own. */
+  journey: JourneyActions;
 };
 
 /** Numbers several screens need. Computed once here, not once per consumer. */
@@ -491,6 +504,8 @@ export function DataProvider({
       setVictoryTarget(goal, target) {
         dispatch({ type: 'setVictoryTarget', goal, target });
       },
+
+      journey: createJourneyActions((action) => dispatch({ type: 'journey', action })),
     };
   }, []);
 

@@ -1,0 +1,37 @@
+{
+  "$comment": "Seed benchmark tests. Replace wholesale. Each entry: id (stable, kebab-case), name, group (monostructural | gymnastics | weightlifting), metric. Metric decides both the input control and which direction counts as a personal best: time = seconds, lower wins; duration = seconds, higher wins; reps = count, higher wins; weight = kilograms, higher wins.",
+  "benchmarks": [
+    { "id": "bm-run-100m", "name": "100 m run", "group": "monostructural", "metric": "time" },
+    { "id": "bm-run-400m", "name": "400 m run", "group": "monostructural", "metric": "time" },
+    { "id": "bm-run-800m", "name": "800 m run", "group": "monostructural", "metric": "time" },
+    { "id": "bm-run-1500m", "name": "1500 m run", "group": "monostructural", "metric": "time" },
+    { "id": "bm-row-500m", "name": "500 m row", "group": "monostructural", "metric": "time" },
+    { "id": "bm-row-1000m", "name": "1000 m row", "group": "monostructural", "metric": "time" },
+    { "id": "bm-bike-30cal", "name": "30 cal air bike", "group": "monostructural", "metric": "time" },
+    { "id": "bm-bike-60cal", "name": "60 cal air bike", "group": "monostructural", "metric": "time" },
+    { "id": "bm-double-unders", "name": "Double unders, max effort", "group": "monostructural", "metric": "reps" },
+
+    { "id": "bm-burpees", "name": "Burpees, max effort", "group": "gymnastics", "metric": "reps" },
+    { "id": "bm-push-ups", "name": "Push-ups, max effort", "group": "gymnastics", "metric": "reps" },
+    { "id": "bm-pull-ups", "name": "Pull-ups, max effort", "group": "gymnastics", "metric": "reps" },
+    { "id": "bm-toes-to-bar", "name": "Toes to bar, max effort", "group": "gymnastics", "metric": "reps" },
+    { "id": "bm-air-squats", "name": "Air squats, max effort", "group": "gymnastics", "metric": "reps" },
+    { "id": "bm-box-jumps", "name": "Box jumps, max effort", "group": "gymnastics", "metric": "reps" },
+    { "id": "bm-sit-ups", "name": "Sit-ups, max effort", "group": "gymnastics", "metric": "reps" },
+    { "id": "bm-pistols", "name": "Pistol squats, max effort", "group": "gymnastics", "metric": "reps" },
+    { "id": "bm-hspu", "name": "Handstand push-ups, max effort", "group": "gymnastics", "metric": "reps" },
+
+    { "id": "bm-kb-thruster", "name": "Kettlebell thruster, max effort", "group": "weightlifting", "metric": "reps" },
+    { "id": "bm-kb-snatch", "name": "Kettlebell snatch, max effort", "group": "weightlifting", "metric": "reps" },
+    { "id": "bm-kb-push-press", "name": "Kettlebell push press, max effort", "group": "weightlifting", "metric": "reps" },
+    { "id": "bm-kb-clean", "name": "Kettlebell clean, max effort", "group": "weightlifting", "metric": "reps" },
+    { "id": "bm-kb-swing", "name": "Kettlebell swing, max effort", "group": "weightlifting", "metric": "reps" },
+    { "id": "bm-front-squat-1rm", "name": "Front squat, one rep max", "group": "weightlifting", "metric": "weight" },
+    { "id": "bm-back-squat-1rm", "name": "Back squat, one rep max", "group": "weightlifting", "metric": "weight" },
+    { "id": "bm-overhead-squat-1rm", "name": "Overhead squat, one rep max", "group": "weightlifting", "metric": "weight" },
+    { "id": "bm-deadlift-1rm", "name": "Deadlift, one rep max", "group": "weightlifting", "metric": "weight" },
+    { "id": "bm-strict-press-1rm", "name": "Strict press, one rep max", "group": "weightlifting", "metric": "weight" },
+    { "id": "bm-push-press-1rm", "name": "Push press, one rep max", "group": "weightlifting", "metric": "weight" },
+    { "id": "bm-clean-1rm", "name": "Clean, one rep max", "group": "weightlifting", "metric": "weight" }
+  ]
+}

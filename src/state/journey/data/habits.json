@@ -1,0 +1,25 @@
+{
+  "$comment": "Seed habit templates — a deliberately small, generic starter set. Replace wholesale with your own copy. Each entry: id (stable, kebab-case), title, group (health | mind | finance | relationships | environment).",
+  "templates": [
+    { "id": "ht-water", "title": "Drink water through the day", "group": "health" },
+    { "id": "ht-sleep", "title": "Same bedtime every night", "group": "health" },
+    { "id": "ht-move", "title": "Move for twenty minutes", "group": "health" },
+    { "id": "ht-stretch", "title": "Stretch before bed", "group": "health" },
+
+    { "id": "ht-read", "title": "Read a few pages", "group": "mind" },
+    { "id": "ht-plan", "title": "Plan tomorrow before you stop", "group": "mind" },
+    { "id": "ht-focus", "title": "One block of focused work", "group": "mind" },
+    { "id": "ht-no-phone", "title": "First hour without the phone", "group": "mind" },
+
+    { "id": "ht-track-spend", "title": "Note what you spent", "group": "finance" },
+    { "id": "ht-no-impulse", "title": "Sleep on any unplanned purchase", "group": "finance" },
+
+    { "id": "ht-reach-out", "title": "Message someone you care about", "group": "relationships" },
+    { "id": "ht-thanks", "title": "Thank someone specifically", "group": "relationships" },
+    { "id": "ht-listen", "title": "One conversation without your phone out", "group": "relationships" },
+
+    { "id": "ht-tidy", "title": "Reset one surface before bed", "group": "environment" },
+    { "id": "ht-prep", "title": "Lay out tomorrow's kit", "group": "environment" },
+    { "id": "ht-outside", "title": "Get outside once", "group": "environment" }
+  ]
+}
