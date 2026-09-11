@@ -1,5 +1,6 @@
 import type { Ionicons } from '@expo/vector-icons';
 import type { AccentName } from '../theme/theme';
+import type { GroupState } from './group/types';
 import type { JourneyState } from './journey/types';
 
 export type IconName = keyof typeof Ionicons.glyphMap;
@@ -103,6 +104,11 @@ export type AppState = {
    * `state/journey/types.ts`; this is the only place it touches AppState.
    */
   journey: JourneyState;
+  /**
+   * Training groups — the trainer-facing feature. Local to this account:
+   * players here are records the trainer typed in, not people who can sign in.
+   */
+  groups: GroupState;
   /**
    * Epoch ms of the last local mutation. This is the only input to the
    * last-write-wins rule the server enforces, so every mutating action must

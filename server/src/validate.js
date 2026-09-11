@@ -66,7 +66,33 @@ export function requireStatePayload(body) {
     plan,
     victories: normaliseVictories(body.victories),
     journey: normaliseJourney(body.journey),
+    groups: normaliseGroups(body.groups),
   };
+}
+
+/**
+ * Training-group state.
+ *
+ * Same contract as the journey slice: the client owns the shape and
+ * re-validates it on read, so the server only checks the envelope is
+ * well-formed and bounded. What matters is that the key is carried through at
+ * all — this object is rebuilt field by field, so a slice with no passthrough
+ * would be silently dropped on the first sync.
+ */
+function normaliseGroups(groups) {
+  if (!groups || typeof groups !== 'object' || Array.isArray(groups)) return null;
+
+  for (const field of ['groups', 'players', 'plans', 'tasks', 'assignments']) {
+    const value = groups[field];
+    if (value != null && !Array.isArray(value)) {
+      throw new ValidationError('groups', `groups.${field} must be an array.`);
+    }
+    if (Array.isArray(value) && value.length > 50000) {
+      throw new ValidationError('groups', `Too many entries in groups.${field}.`);
+    }
+  }
+
+  return groups;
 }
 
 /**
