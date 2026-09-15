@@ -9,7 +9,8 @@ export type RouteKey =
   | 'progress'
   | 'plan'
   | 'settings'
-  | 'privacy';
+  | 'privacy'
+  | 'teams';
 
 export type RouteMeta = {
   key: RouteKey;
@@ -85,6 +86,14 @@ export const ROUTES: Record<RouteKey, RouteMeta> = {
     icon: 'lock-closed-outline',
     iconActive: 'lock-closed',
   },
+  teams: {
+    key: 'teams',
+    label: 'Teams',
+    title: 'Teams',
+    subtitle: 'Squads you coach or train with',
+    icon: 'people-outline',
+    iconActive: 'people',
+  },
   settings: {
     key: 'settings',
     label: 'Settings',
@@ -104,7 +113,7 @@ export const TAB_ROUTES: RouteKey[] = [
   'timer',
   'progress',
 ];
-export const MENU_ROUTES: RouteKey[] = [
+const BASE_MENU_ROUTES: RouteKey[] = [
   'home',
   'journey',
   'victories',
@@ -115,3 +124,22 @@ export const MENU_ROUTES: RouteKey[] = [
   'settings',
   'privacy',
 ];
+
+/**
+ * The menu, given what this account can do.
+ *
+ * Teams appears for anyone in a squad — coach or athlete — and for nobody
+ * else, so a solo user's app is exactly the app they had before. It sits in
+ * the slide-out rather than the tab bar because six tabs is already the most
+ * that fits, and a coach manages a squad occasionally rather than living in it.
+ *
+ * Derived here, in one place, from one boolean. No component decides for
+ * itself whether to show a team affordance.
+ */
+export function menuRoutes({ hasTeams }: { hasTeams: boolean }): RouteKey[] {
+  if (!hasTeams) return BASE_MENU_ROUTES;
+  const next = [...BASE_MENU_ROUTES];
+  // Directly under Plan, with the training features, not beside Settings.
+  next.splice(next.indexOf('plan') + 1, 0, 'teams');
+  return next;
+}

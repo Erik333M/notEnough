@@ -51,9 +51,9 @@ const Orb = memo(function Orb({
 
   return (
     <Animated.View
-      pointerEvents="none"
       style={[
         {
+          pointerEvents: 'none',
           position: 'absolute',
           top,
           left,

@@ -54,7 +54,7 @@ type Action =
   | { type: 'toggleVictoryGoal'; day: string; goal: VictoryGoalKey }
   | { type: 'setVictoryTarget'; goal: VictoryGoalKey; target: string }
   /** Forwarded wholesale to the Success Journey sub-reducer. */
-  | { type: 'journey'; action: JourneyAction };
+  | { type: 'journey'; action: JourneyAction }
 
 function writeLog(state: AppState, day: string, goalId: string, amount: number): AppState {
   const dayEntries = state.log[day];
@@ -140,6 +140,7 @@ function baseReducer(state: AppState, action: Action): AppState {
       const journey = journeyReducer(state.journey, action.action);
       return journey === state.journey ? state : { ...state, journey };
     }
+
 
     default:
       return state;
@@ -506,6 +507,7 @@ export function DataProvider({
       },
 
       journey: createJourneyActions((action) => dispatch({ type: 'journey', action })),
+
     };
   }, []);
 

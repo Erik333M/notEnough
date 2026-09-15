@@ -56,8 +56,10 @@ export const GlassCard = memo(function GlassCard({
           colors={gradients.glassSheen}
           start={{ x: 0.2, y: 0 }}
           end={{ x: 0.8, y: 1 }}
-          pointerEvents="none"
-          style={[StyleSheet.absoluteFill, { borderRadius: radiusSize, opacity: 0.5 }]}
+          style={[
+            StyleSheet.absoluteFill,
+            { pointerEvents: 'none', borderRadius: radiusSize, opacity: 0.5 },
+          ]}
         />
       )}
       {children}

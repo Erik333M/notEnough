@@ -57,10 +57,9 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           key={toast.id}
           entering={SlideInUp.springify().damping(18)}
           exiting={SlideOutUp.duration(220)}
-          pointerEvents="none"
           // Clears the header block (42pt control + padding) instead of
           // covering the screen title.
-          style={[styles.wrap, { top: insets.top + 66 }]}
+          style={[styles.wrap, { pointerEvents: 'none', top: insets.top + 66 }]}
         >
           <View style={styles.toast}>
             <Ionicons

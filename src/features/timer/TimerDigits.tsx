@@ -40,7 +40,6 @@ export const TimerDigits = memo(function TimerDigits({
       animatedProps={animatedProps}
       editable={false}
       defaultValue={mode === 'countdown' ? formatCountdown(value.value) : formatClock(value.value)}
-      pointerEvents="none"
       underlineColorAndroid="transparent"
       accessibilityRole="text"
       style={[

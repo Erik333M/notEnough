@@ -10,6 +10,7 @@ import {
 import { API_BASE_URL } from '../api/client';
 import { useAuth } from '../state/AuthContext';
 import { useActions, useAppState, useSync } from '../state/DataContext';
+import { useCapabilities } from '../state/TeamsContext';
 import { palette, radius } from '../theme/theme';
 import { Button } from '../ui/Button';
 import type { RouteKey } from '../navigation/routes';
@@ -37,6 +38,7 @@ export default function SettingsScreen({
   const state = useAppState();
   const sync = useSync();
   const { clearToday } = useActions();
+  const capabilities = useCapabilities();
   const { notify } = useToast();
 
   const [name, setName] = useState(user?.name ?? '');
@@ -204,6 +206,30 @@ export default function SettingsScreen({
             onPress={() => navigate('privacy')}
           />
           <Button label="Delete account" icon="trash-outline" variant="danger" onPress={handleDelete} />
+        </GlassCard>
+      </Appear>
+
+      {/*
+        Available to every account, with no separate signup — creating a team is
+        the only way to become a coach, and it is a fact about that team rather
+        than about you.
+      */}
+      <Appear delay={150}>
+        <GlassCard style={styles.stack}>
+          <SectionHeader
+            title="Teams"
+            meta={capabilities.hasTeams ? 'Squads you coach or train with' : 'Coach a squad, or join one'}
+          />
+          <Text style={styles.copy}>
+            A coach sees only the work they set you. Your own goals, journey and measurements are
+            never shared with anyone.
+          </Text>
+          <Button
+            label={capabilities.hasTeams ? 'Your teams' : 'Create or join a team'}
+            icon="people-outline"
+            variant="glass"
+            onPress={() => navigate('teams')}
+          />
         </GlassCard>
       </Appear>
 

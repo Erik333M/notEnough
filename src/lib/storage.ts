@@ -74,4 +74,13 @@ export const storageKeys = {
   appState: (userId: string) => `ne.state.v2.${userId}`,
   /** Server `updatedAt` we last reconciled with, per user. */
   syncStamp: (userId: string) => `ne.sync.v1.${userId}`,
+  /**
+   * Which of the three opening answers this person picked.
+   *
+   * A preference, not an identity: it chooses the first screen and nothing
+   * else. It is never sent to the server, never becomes a role, and anyone can
+   * create or join a team later whatever they answered — which is why it lives
+   * in device storage rather than anywhere durable.
+   */
+  intent: (userId: string) => `ne.intent.v1.${userId}`,
 } as const;

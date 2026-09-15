@@ -23,7 +23,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { gradients, motion, palette, radius } from '../theme/theme';
 import { Button } from '../ui/Button';
 import { PressableScale } from '../ui/Touchable';
-import { MENU_ROUTES, ROUTES, type RouteKey } from './routes';
+import { ROUTES, type RouteKey } from './routes';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const MENU_WIDTH = Math.min(320, SCREEN_WIDTH * 0.82);
@@ -34,6 +34,8 @@ type Props = {
   userName: string;
   userEmail: string;
   streak: number;
+  /** Computed by the shell from this account's capabilities. */
+  routes: RouteKey[];
   onSelect: (key: RouteKey) => void;
   onClose: () => void;
   onLogout: () => void;
@@ -50,6 +52,7 @@ export const SideMenu = memo(function SideMenu({
   userName,
   userEmail,
   streak,
+  routes,
   onSelect,
   onClose,
   onLogout,
@@ -98,7 +101,7 @@ export const SideMenu = memo(function SideMenu({
   );
 
   return (
-    <View style={StyleSheet.absoluteFill} pointerEvents={open ? 'auto' : 'none'}>
+    <View style={[StyleSheet.absoluteFill, { pointerEvents: open ? 'auto' : 'none' }]}>
       <Animated.View style={[styles.backdrop, backdropStyle]}>
         <Pressable style={StyleSheet.absoluteFill} onPress={onClose} accessibilityLabel="Close menu" />
       </Animated.View>
@@ -154,7 +157,7 @@ export const SideMenu = memo(function SideMenu({
             </View>
 
             <View style={styles.nav}>
-              {MENU_ROUTES.map((key) => (
+              {routes.map((key) => (
                 <MenuRow
                   key={key}
                   routeKey={key}

@@ -26,6 +26,10 @@ await page.getByPlaceholder('Alex Carter').fill('Phase Two');
 await page.getByPlaceholder('you@example.com').fill(email);
 await page.getByPlaceholder('At least 6 characters').fill('runfast123');
 await page.getByText('Create account', { exact: true }).last().click();
+// A new account is asked once how it will use the app; these drives are all
+// solo-path, so they answer and move on.
+await page.getByText('How will you use this?').waitFor({ timeout: 20000 });
+await page.getByText('Train on my own', { exact: true }).click();
 await page.getByText('Daily goals', { exact: true }).first().waitFor({ timeout: 20000 });
 await page.waitForTimeout(1000);
 

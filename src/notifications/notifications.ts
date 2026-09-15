@@ -136,27 +136,40 @@ export async function resyncReminders(
 
   const active = goals.filter((g) => !g.archived && g.reminder.enabled);
   if (active.length === 0) {
-    try {
-      await Notifications.cancelAllScheduledNotificationsAsync();
-    } catch {
-      /* noop */
-    }
+    await cancelGoalReminders();
     return {};
   }
 
   const granted = await ensureNotificationPermission();
   if (!granted) return null;
 
-  try {
-    await Notifications.cancelAllScheduledNotificationsAsync();
-  } catch {
-    /* noop */
-  }
+  await cancelGoalReminders();
 
   const entries = await Promise.all(
     active.map(async (goal) => [goal.id, await scheduleGoalReminder(goal)] as const),
   );
   return Object.fromEntries(entries);
+}
+
+/**
+ * Cancels the goal reminders and nothing else.
+ *
+ * Deliberately not `cancelAllScheduledNotificationsAsync`: the teams feature
+ * schedules session reminders through the same OS queue, and a blanket cancel
+ * here would silently delete them every time a goal changed. Ours are the ones
+ * carrying a `goalId`.
+ */
+async function cancelGoalReminders(): Promise<void> {
+  try {
+    const scheduled = await Notifications.getAllScheduledNotificationsAsync();
+    await Promise.all(
+      scheduled
+        .filter((entry) => entry.content.data?.goalId != null)
+        .map((entry) => Notifications.cancelScheduledNotificationAsync(entry.identifier)),
+    );
+  } catch {
+    /* noop */
+  }
 }
 
 export async function scheduledCount(): Promise<number> {

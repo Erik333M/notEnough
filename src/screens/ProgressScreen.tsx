@@ -1,10 +1,17 @@
 import { Ionicons } from '@expo/vector-icons';
-import { memo, useCallback, useMemo } from 'react';
+import { memo, useCallback, useMemo, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import Animated, { FadeIn, LinearTransition } from 'react-native-reanimated';
 
 import { dayKey, dayOfMonth, formatDuration, formatMinutes, formatPace, recentDayKeys } from '../lib/time';
+import { AchievementCard } from '../features/achievements/AchievementCard';
+import type { Achievement } from '../features/achievements/derive';
+import { ShareAchievementSheet } from '../features/achievements/ShareAchievementSheet';
+import { useAchievements } from '../features/achievements/useAchievements';
+import { useSharing } from '../features/achievements/useSharing';
+import { useMyWork } from '../features/teams/useMyWork';
 import { useActions, useAppState, useStats } from '../state/DataContext';
+import { useTeams } from '../state/TeamsContext';
 import {
   activeDayCount,
   bestStreak,
@@ -29,6 +36,14 @@ export default function ProgressScreen({ bottomInset }: { bottomInset: number })
   const shared = useStats();
   const { deleteRun } = useActions();
   const { notify } = useToast();
+
+  // Achievements are derived, not stored — see useAchievements. The work count
+  // comes from the same fetch Today uses, so this costs a solo user nothing.
+  const work = useMyWork();
+  const achievements = useAchievements(work.completed);
+  const { memberships } = useTeams();
+  const { sharedIds, share } = useSharing();
+  const [sharing, setSharing] = useState<Achievement | null>(null);
 
   // Screen-specific history math, memoised per state change. The 7-day series
   // is built once and the average derived from it — it used to be computed
@@ -148,6 +163,41 @@ export default function ProgressScreen({ bottomInset }: { bottomInset: number })
           )}
         </GlassCard>
       </Appear>
+
+      {achievements.length > 0 ? (
+        <Appear delay={140}>
+          <SectionHeader
+            title="Achievements"
+            meta={
+              memberships.length > 0
+                ? 'Yours until you choose to share one'
+                : 'Read from what you have already done'
+            }
+          />
+          <View style={styles.achievements}>
+            {achievements.map((achievement) => (
+              <AchievementCard
+                key={achievement.id}
+                achievement={achievement}
+                shared={sharedIds.has(achievement.id)}
+                onShare={memberships.length > 0 ? () => setSharing(achievement) : undefined}
+              />
+            ))}
+          </View>
+        </Appear>
+      ) : null}
+
+      <ShareAchievementSheet
+        achievement={sharing}
+        teams={memberships}
+        onClose={() => setSharing(null)}
+        onShare={async (teamId, note) => {
+          if (!sharing) return false;
+          const ok = await share(sharing, teamId, note);
+          notify(ok ? 'Shared with your team.' : 'Could not share that right now.', ok ? 'success' : 'error');
+          return ok;
+        }}
+      />
     </ScrollView>
   );
 }
@@ -230,6 +280,7 @@ function heatColor(value: number): string {
 }
 
 const styles = StyleSheet.create({
+  achievements: { gap: 10 },
   content: {
     paddingHorizontal: 18,
     gap: 14,

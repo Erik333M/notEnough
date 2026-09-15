@@ -135,6 +135,8 @@ export function migrate(raw: unknown): AppState {
     // Total by design: an account older than the feature, or one whose slice
     // came back malformed, gets a fresh valid slice rather than an error.
     journey: migrateJourney(value.journey),
+    // Total by the same rule: an account older than the feature, or one whose
+    // slice came back malformed, gets a fresh valid slice rather than an error.
     updatedAt: Number(value.updatedAt) || 0,
   };
 }

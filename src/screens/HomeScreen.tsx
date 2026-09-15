@@ -1,8 +1,12 @@
 import { Ionicons } from '@expo/vector-icons';
-import { memo, useCallback, useMemo } from 'react';
+import { memo, useCallback, useMemo, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
+import type { Assignment } from '../api/teams';
 import { GoalCard } from '../features/goals/GoalCard';
+import { AssignedWorkCard } from '../features/teams/AssignedWorkCard';
+import { LogResultSheet } from '../features/teams/LogResultSheet';
+import { useMyWork } from '../features/teams/useMyWork';
 import { dayKey } from '../lib/time';
 import type { RouteKey } from '../navigation/routes';
 import { useActions, useAppState, useStats } from '../state/DataContext';
@@ -15,6 +19,14 @@ import { GlassCard } from '../ui/Glass';
 import { ProgressRing } from '../ui/Progress';
 import { PressableScale } from '../ui/Touchable';
 
+/**
+ * Today.
+ *
+ * Work a coach set you sits directly under the hero, above your own goals:
+ * it has a deadline someone else is watching, and it is the one thing here
+ * you did not choose. For a solo user the card does not render at all — the
+ * hook makes no request without a membership, so the screen is unchanged.
+ */
 export default function HomeScreen({
   bottomInset,
   navigate,
@@ -26,6 +38,8 @@ export default function HomeScreen({
   const stats = useStats();
   const { addProgress, completeGoal } = useActions();
   const { user } = useAuth();
+  const work = useMyWork();
+  const [logging, setLogging] = useState<Assignment | null>(null);
 
   // Streak / completion come from the shared stats memo in the data layer.
   // Only the plan projection is local to this screen, and it depends on `plan`
@@ -91,6 +105,12 @@ export default function HomeScreen({
         </GlassCard>
       </Appear>
 
+      {work.overdue.length > 0 || work.today.length > 0 ? (
+        <Appear delay={40}>
+          <AssignedWorkCard overdue={work.overdue} today={work.today} onOpen={setLogging} />
+        </Appear>
+      ) : null}
+
       <Appear delay={60}>
         <View style={styles.quickRow}>
           <QuickAction
@@ -150,6 +170,12 @@ export default function HomeScreen({
           </Text>
         </GlassCard>
       </Appear>
+
+      <LogResultSheet
+        assignment={logging}
+        onClose={() => setLogging(null)}
+        onSave={async (input) => (logging ? work.log(logging, input) : false)}
+      />
     </ScrollView>
   );
 }

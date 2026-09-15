@@ -2,7 +2,7 @@ import crypto from 'node:crypto';
 import { Router } from 'express';
 
 import { hashPassword, publicUser, requireAuth, signToken, verifyPassword } from '../auth.js';
-import { findUserByEmail, write } from '../db.js';
+import { findUserByEmail, purgeUserData, write } from '../db.js';
 import { requireEmail, requirePassword, requireString } from '../validate.js';
 
 export const authRouter = Router();
@@ -102,6 +102,9 @@ authRouter.delete('/me', requireAuth, async (req, res, next) => {
     await write((data) => {
       data.users = data.users.filter((row) => row.id !== id);
       delete data.states[id];
+      // Memberships, assignments and results go too. Leaving them would keep a
+      // deleted person on their coach's roster forever.
+      purgeUserData(data, id);
     });
     return res.status(204).end();
   } catch (error) {

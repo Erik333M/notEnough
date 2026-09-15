@@ -1,3 +1,5 @@
+import crypto from 'node:crypto';
+
 /**
  * Hand-rolled validation instead of a schema library: the surface is three
  * endpoints wide, and every rejection needs to name the field so the mobile
@@ -132,3 +134,197 @@ function normaliseVictories(victories) {
 
   return { targets: targets ?? {}, log: log ?? {} };
 }
+
+/* ------------------------------------------------------- teams and work */
+
+/**
+ * Invite codes.
+ *
+ * Six characters from an alphabet with no O/0 and no I/1, because these get
+ * read aloud across a gym and typed by someone who is out of breath. Uppercase
+ * on the way in so the athlete never has to care about their keyboard's shift
+ * state.
+ */
+const INVITE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+const INVITE_LENGTH = 6;
+
+export function makeInviteCode(random = crypto.randomBytes(INVITE_LENGTH)) {
+  let code = '';
+  for (let i = 0; i < INVITE_LENGTH; i += 1) {
+    code += INVITE_ALPHABET[random[i] % INVITE_ALPHABET.length];
+  }
+  return code;
+}
+
+export function requireInviteCode(value) {
+  const code = requireString(value, 'code', { min: INVITE_LENGTH, max: INVITE_LENGTH }).toUpperCase();
+  for (const character of code) {
+    if (!INVITE_ALPHABET.includes(character)) {
+      throw new ValidationError('code', 'That invite code is not valid.');
+    }
+  }
+  return code;
+}
+
+export const TASK_KINDS = ['check', 'reps', 'minutes', 'distance'];
+
+/** A local-time YYYY-MM-DD, kept opaque exactly as the client stores it. */
+export function requireDayKey(value, field = 'dueDate') {
+  const day = requireString(value, field, { min: 10, max: 10 });
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) {
+    throw new ValidationError(field, 'Use a YYYY-MM-DD date.');
+  }
+  return day;
+}
+
+export function requireNumber(value, field, { min = 0, max = 1e6 } = {}) {
+  const number = typeof value === 'number' ? value : Number(value);
+  if (!Number.isFinite(number)) throw new ValidationError(field, `${field} must be a number.`);
+  if (number < min || number > max) {
+    throw new ValidationError(field, `Keep ${field} between ${min} and ${max}.`);
+  }
+  return number;
+}
+
+export function optionalString(value, field, max = 500) {
+  if (value == null || value === '') return '';
+  return requireString(value, field, { min: 0, max });
+}
+
+export function requireTeamInput(body) {
+  return {
+    name: requireString(body?.name, 'name', { min: 2, max: 60 }),
+    notes: optionalString(body?.notes, 'notes', 500),
+  };
+}
+
+/**
+ * One piece of work a coach is handing out.
+ *
+ * `assigneeUserIds` is always a list, even for one athlete: assigning to a
+ * whole squad is the common case, and a route that takes one id would grow a
+ * second bulk path beside it within a week.
+ */
+export function requireAssignmentInput(body) {
+  const ids = Array.isArray(body?.assigneeUserIds) ? body.assigneeUserIds : [];
+  if (ids.length === 0) {
+    throw new ValidationError('assigneeUserIds', 'Choose at least one athlete.');
+  }
+  if (ids.length > 200) throw new ValidationError('assigneeUserIds', 'Too many athletes at once.');
+  for (const id of ids) {
+    if (typeof id !== 'string' || !id) {
+      throw new ValidationError('assigneeUserIds', 'Invalid athlete.');
+    }
+  }
+
+  const kind = typeof body?.kind === 'string' ? body.kind : 'check';
+  if (!TASK_KINDS.includes(kind)) throw new ValidationError('kind', 'Unknown task type.');
+
+  return {
+    assigneeUserIds: [...new Set(ids)],
+    title: requireString(body?.title, 'title', { min: 2, max: 120 }),
+    detail: optionalString(body?.detail, 'detail', 1000),
+    kind,
+    target: requireNumber(body?.target ?? 1, 'target', { min: 0, max: 100000 }),
+    dueDate: requireDayKey(body?.dueDate),
+  };
+}
+
+export function requireResultInput(body) {
+  return {
+    amount: requireNumber(body?.amount ?? 0, 'amount', { min: 0, max: 100000 }),
+    done: Boolean(body?.done),
+    notes: optionalString(body?.notes, 'notes', 1000),
+  };
+}
+
+/* ---------------------------------------------------------------- sessions */
+
+/**
+ * A training session.
+ *
+ * There is deliberately no separate "plan" entity. A reusable plan is just a
+ * session with `isTemplate` set — same fields, same tasks, same screens — so a
+ * coach learns one idea ("a session") and two verbs ("save as template",
+ * "start from template") rather than two overlapping concepts with their own
+ * menus. A template carries no date; a real session does.
+ */
+export function requireSessionInput(body) {
+  const isTemplate = Boolean(body?.isTemplate);
+  const rawDate = body?.date;
+
+  if (!isTemplate && (rawDate == null || rawDate === '')) {
+    throw new ValidationError('date', 'Pick a date for this session.');
+  }
+
+  return {
+    name: requireString(body?.name, 'name', { min: 2, max: 80 }),
+    notes: optionalString(body?.notes, 'notes', 1000),
+    isTemplate,
+    date: isTemplate ? null : requireDayKey(rawDate, 'date'),
+    /** Off unless the coach says otherwise: private is the safe default. */
+    shareResults: Boolean(body?.shareResults),
+  };
+}
+
+export function requireTaskInput(body) {
+  const kind = typeof body?.kind === 'string' ? body.kind : 'check';
+  if (!TASK_KINDS.includes(kind)) throw new ValidationError('kind', 'Unknown task type.');
+
+  return {
+    title: requireString(body?.title, 'title', { min: 2, max: 120 }),
+    detail: optionalString(body?.detail, 'detail', 1000),
+    kind,
+    target: requireNumber(body?.target ?? 1, 'target', { min: 0, max: 100000 }),
+  };
+}
+
+/** Who a session is being handed to, and when it is due. */
+export function requireHandoutInput(body) {
+  const ids = Array.isArray(body?.assigneeUserIds) ? body.assigneeUserIds : [];
+  if (ids.length === 0) throw new ValidationError('assigneeUserIds', 'Choose at least one athlete.');
+  if (ids.length > 200) throw new ValidationError('assigneeUserIds', 'Too many athletes at once.');
+  for (const id of ids) {
+    if (typeof id !== 'string' || !id) throw new ValidationError('assigneeUserIds', 'Invalid athlete.');
+  }
+  return {
+    assigneeUserIds: [...new Set(ids)],
+    dueDate: body?.dueDate == null ? null : requireDayKey(body.dueDate),
+  };
+}
+
+/** One session cannot hold more tasks than a coach could sanely hand out. */
+export const MAX_TASKS_PER_SESSION = 40;
+
+/* ------------------------------------------------------------------ shares */
+
+/**
+ * Something an athlete chose to show their team.
+ *
+ * Stored as a flat snapshot — a title, a line of detail, a number — and never
+ * as a reference into the author's own training. The feed therefore cannot be
+ * used to read anything live: what was published is all there is, and it stops
+ * being true the moment the author moves on, which is the correct behaviour
+ * for a boast about a particular day.
+ */
+export const SHARE_KINDS = ['streak', 'personalBest', 'habit', 'work'];
+
+export function requireShareInput(body) {
+  const kind = typeof body?.kind === 'string' ? body.kind : '';
+  if (!SHARE_KINDS.includes(kind)) throw new ValidationError('kind', 'Unknown achievement.');
+
+  return {
+    kind,
+    /** The author's own id for it, so the same thing is not posted twice. */
+    achievementId: requireString(body?.achievementId, 'achievementId', { min: 1, max: 120 }),
+    title: requireString(body?.title, 'title', { min: 2, max: 120 }),
+    detail: optionalString(body?.detail, 'detail', 240),
+    value: requireNumber(body?.value ?? 0, 'value', { min: 0, max: 1e9 }),
+    achievedAt: requireDayKey(body?.achievedAt, 'achievedAt'),
+    /** A word from the author, optional and short by design. */
+    note: optionalString(body?.note, 'note', 240),
+  };
+}
+
+/** Enough for a season of a busy squad; old posts fall off the read, not the store. */
+export const SHARE_PAGE = 60;

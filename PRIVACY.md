@@ -1,6 +1,6 @@
 # Privacy Policy
 
-**Last updated: 11 September 2026**
+**Last updated: 15 September 2026**
 
 NOTenough is a training journal. This document describes exactly what the app
 stores, where it stores it, and what you can delete. It describes the app as it
@@ -17,6 +17,8 @@ and the file paths are given so you can check.
   the operator of this app runs** — not to any third party.
 - Your **injuries, medical conditions and emergency contact are never synced**.
   They are stored in your device's secure keystore and never leave the phone.
+- If you join a team, your coach sees **only the work they set you** and what you
+  recorded against it. Your own training is never visible to them.
 - There is **no analytics, no tracking, no advertising, and no third-party SDK**
   receiving your data.
 - You can delete your health answers and your entire account from inside the
@@ -45,7 +47,8 @@ Only if you create an account, and only when the app can reach the server.
 | --- | --- |
 | Name, email address | To identify your account. |
 | Password | Sent once when you register or sign in. It is stored only as a scrypt hash with a per-account salt — never in plain text. |
-| Your journal state | So the same account shows the same journal on another device. |
+| Your journal state | So the same account shows the same journal on another device. Stored as one private block per account, which the server does not read into. |
+| Team work — only if you are in a team | Sessions a coach set you, and the results you logged against them. Stored separately from your journal, because more than one person can see it. |
 
 The server is the small Node service in [`server/`](server/). It is run by you
 or by whoever operates this app. It uses no external database and no
@@ -75,6 +78,65 @@ Deletion is immediate and cannot be undone.
 
 Relevant code: [`src/state/journey/intake.ts`](src/state/journey/intake.ts).
 
+## If you join a team
+
+Teams are optional. Until you create one or join one with an invite code,
+nothing in this section applies to you and no other person can see anything of
+yours.
+
+### What a coach can see
+
+When a coach sets you work, **that assignment and the result you log against it
+are visible to them**. That is the whole of it.
+
+Your own training is never visible to a coach, in any team, at any time — your
+daily journal, your goals, your habits, your body measurements, and your answers
+to the starting questions.
+
+This is enforced by **how the data is stored**, not by a setting that could be
+switched. Two things make it structural:
+
+1. Your own training lives in a private per-account block that the server never
+   reads into and has no route to serve to anyone else.
+2. The function that decides whether a result may be read is given **the
+   assignment, never a person** —
+   [`canViewProgress`](server/src/permissions.js). There is deliberately no
+   function anywhere that answers "show me this user's training", so no request
+   can be written that returns it.
+
+Access follows the **work**, not the person. If you are on two rosters, the coach
+of one team sees nothing of the other team's work, even though you are the same
+athlete in both.
+
+### What other members see
+
+| What | Who sees it |
+| --- | --- |
+| Your name and role | Everyone on that team's roster. |
+| Your email address | **Nobody** — not other athletes, and not your coach. Rosters carry names only. |
+| Your results | Your coach. Teammates only if the coach opens that one session's board. |
+
+A coach can open a **single session** so teammates can see each other's results
+on it. It is off unless the coach turns it on, it applies only to that one
+session, and turning it off takes the view away again.
+
+### Leaving, and deleting
+
+| You want to | Do this | What happens |
+| --- | --- | --- |
+| End a coach's access | Teams → open the team → *Leave* | Access ends immediately. Everything you recorded stays yours and stays in your account. |
+| Remove everything | Settings → *Delete account* | Your memberships, assignments and results are deleted along with your account. |
+
+Leaving a team never deletes your data. The coach simply stops being able to
+reach it, because their access was never stored on the result — it was derived
+from a membership that no longer exists.
+
+Relevant code: [`server/src/permissions.js`](server/src/permissions.js),
+[`server/src/routes/teams.js`](server/src/routes/teams.js),
+[`server/src/routes/work.js`](server/src/routes/work.js). The rules are covered
+by tests in [`server/scripts/`](server/scripts/), including the case where one
+athlete is on two rosters.
+
 ## What the app does not do
 
 - **No analytics or telemetry.** There is no analytics SDK in the project.
@@ -93,6 +155,7 @@ Relevant code: [`src/state/journey/intake.ts`](src/state/journey/intake.ts).
 | Delete your health answers | Journey → Progress → *Delete my answers* | Removed from the keystore immediately. |
 | Delete your account and everything synced | Settings → *Delete account* | Your account row and your stored journal are both removed from the server. |
 | Stop syncing | Settings → *Sign out* | The token is cleared. The app keeps working offline. |
+| End your coach's access | Teams → open the team → *Leave* | Access ends at once; your results stay with you. |
 | Use the app with no account at all | Never sign in | Nothing is sent anywhere. |
 
 Account deletion is implemented in

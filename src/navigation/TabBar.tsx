@@ -28,12 +28,16 @@ export const TabBar = memo(function TabBar({
   bottomInset: number;
 }) {
   const [width, setWidth] = useState(0);
-  const index = Math.max(0, TAB_ROUTES.indexOf(active));
-  const pos = useSharedValue(index);
+  // -1 on the routes that live only in the slide-out menu. Clamping that to 0
+  // would park the pill under Today and tell you that you are somewhere you
+  // are not, so the indicator is hidden instead and no tab reads as current.
+  const index = TAB_ROUTES.indexOf(active);
+  const onATab = index >= 0;
+  const pos = useSharedValue(Math.max(0, index));
 
   useEffect(() => {
-    pos.value = withSpring(index, motion.spring);
-  }, [index, pos]);
+    if (onATab) pos.value = withSpring(index, motion.spring);
+  }, [index, onATab, pos]);
 
   const onLayout = useCallback((e: LayoutChangeEvent) => setWidth(e.nativeEvent.layout.width), []);
 
@@ -46,15 +50,14 @@ export const TabBar = memo(function TabBar({
 
   return (
     <View
-      style={[styles.wrap, { bottom: Math.max(bottomInset, 10) }]}
+      style={[styles.wrap, { pointerEvents: 'box-none', bottom: Math.max(bottomInset, 10) }]}
       onLayout={onLayout}
-      pointerEvents="box-none"
     >
       {Platform.OS === 'ios' ? (
         <BlurView intensity={38} tint="dark" style={StyleSheet.absoluteFill} />
       ) : null}
-      <View style={styles.tint} pointerEvents="none" />
-      {itemWidth > 0 ? <Animated.View style={[styles.indicator, indicator]} /> : null}
+      <View style={[styles.tint, { pointerEvents: 'none' }]} />
+      {itemWidth > 0 && onATab ? <Animated.View style={[styles.indicator, indicator]} /> : null}
 
       {TAB_ROUTES.map((key) => (
         <TabItem key={key} routeKey={key} active={key === active} onSelect={onSelect} />
