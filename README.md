@@ -24,7 +24,7 @@ The premise is in the name: when a target becomes comfortable, the app raises it
 
 ## Contents
 
-- [Run it](#run-it) · [What it does](#what-it-does) · [Success Journey](#success-journey) · [Architecture](#architecture)
+- [Run it](#run-it) · [What it does](#what-it-does) · [Success Journey](#success-journey) · [Teams and coaching](#teams-and-coaching) · [Architecture](#architecture)
 - [How the hard parts work](#how-the-hard-parts-work) — [sync](#offline-first-sync) · [auth](#auth-and-sessions) · [reminders](#reminders-that-cannot-drift) · [storage](#a-json-file-that-behaves-like-a-database)
 - [Performance](#performance) · [Verification](#verification) · [Privacy](PRIVACY.md) · [Known limits](#known-limits)
 
@@ -80,6 +80,8 @@ npm run e2e                # 27 checks driving the real UI (needs `npm run web`)
 - **Success Journey** — the paper training workbook, as an app: a page per day, a workout
   builder over a searchable movement library, benchmarks you re-test, body measurements with
   trend lines, and standing habits. See below.
+- **Teams and coaching** — coaches build sessions and hand them to a squad; athletes see the work
+  on Today and log what they actually did. A coach sees only the work they set. See below.
 
 ### Success Journey
 
@@ -105,6 +107,42 @@ install rather than stranding a stale copy per user.
 
 ---
 
+## Teams and coaching
+
+One account type. There is no `role` column anywhere: roles are **team-scoped memberships**, so the
+same person can coach one squad and train in another, and a solo user simply has none — which is
+what keeps the whole feature invisible to them rather than present and disabled.
+
+- **Creating a team** is available to every account and is the only way to become a coach. Athletes
+  join with a six-character invite code from an alphabet with no O/0 or I/1, because it gets read
+  aloud across a gym.
+- **Sessions** are the one concept. A reusable plan is a session with no date — same fields, same
+  editor — so a coach learns one noun and two verbs rather than two overlapping ideas. Templates
+  copy their tasks on use, so editing one never rewrites work already handed out.
+- **Handing out** is idempotent: it creates only what is missing, so adding a latecomer and pressing
+  the button again gives them their rows without duplicating anyone else's.
+- **Logging is honest.** Someone who rowed 18 of 20 records 18 and can still mark it done. `done` is
+  stored, never inferred from whether the number reached the target.
+- **Achievements** are derived from data the app already holds — streaks, personal bests, habit
+  runs, finished work — and shared only by an explicit tap, to one named team at a time.
+
+### The visibility rule
+
+A coach can read a result **because of where the work came from** — an assignment they gave inside
+their own team — and for no other reason.
+
+This is structural rather than a setting. Your own training lives in a private per-account block the
+server never reads into, and [`canViewProgress`](server/src/permissions.js) takes an *assignment,
+never a user id* — so there is no function that answers "show me this person's training" and no
+route that could be written to return it. The test that proves it puts one athlete on two rosters:
+the second coach must see nothing of the first coach's work, which is exactly where owner-based
+access control fails.
+
+Athletes get a plain-language screen listing what their coach can and cannot see; the second list is
+deliberately the longer one. [PRIVACY.md](PRIVACY.md) says the same thing at length.
+
+---
+
 ## Architecture
 
 ```mermaid
@@ -115,33 +153,47 @@ flowchart LR
   reducer -.->|"debounced 1.5s"| api["PUT /api/state"]
   api --> db[("db.json")]
   db -.->|"GET on boot<br/>and foreground"| reducer
+
+  teamtap["Team action"] --> teamapi["/api/teams<br/>/api/sessions<br/>/api/work"]
+  teamapi --> perms{"permissions.js<br/>one gate"}
+  perms --> db
 ```
 
 The local reducer is always the source of truth for what is on screen. Disk and the API are both
 background echoes of it, so **a tap never waits on I/O** and the UI cannot stall on a slow network.
+
+Team data is the exception, and deliberately so: it belongs to more than one person, so it is
+fetched rather than synced and every read passes through a single authorization module. Personal
+state and shared work are separate stores — that separation *is* the privacy boundary, rather than a
+rule someone has to remember to apply.
 
 ```
 App.tsx                    auth gate + providers
 src/
   api/client.ts            typed fetch layer; every call returns ok|error, never throws
   navigation/              tab bar, slide-out menu, header, route table
-  screens/                 Today, Goals, Timer, Progress, Plan, Settings, Auth
+  screens/                 Today, Goals, Timer, Progress, Plan, Teams, Settings, Auth
   features/
     goals/                 goal card + editor sheet
     timer/                 stopwatch engine, worklet clock formatters, 60fps digits
+    teams/                 roster, sessions, handout, assigned work, visibility copy
+    achievements/          derived milestones, the share sheet
   state/
     AuthContext.tsx        session, token storage, the offline rule
     DataContext.tsx        reducer + persistence + sync + shared derived stats
     sync.ts                reconciliation rules (pull / push / conflict)
+    TeamsContext.tsx       memberships → one capabilities object the UI reads
     selectors.ts           streaks, completion, projections — pure functions
   ui/                      design-system primitives (glass, progress, controls, toast)
   theme/theme.ts           the only place colours, radii and motion curves are defined
 server/
   src/db.js                JSON store: serialised writes, atomic rename
   src/auth.js              scrypt hashing, JWT issuing, auth middleware
-  src/routes/              /api/auth, /api/state
-  scripts/smoke.js         end-to-end contract test
+  src/permissions.js       the only place authorization is decided
+  src/routes/              /api/auth, /api/state, /api/teams, /api/sessions, /api/work
+  scripts/                 smoke + team, session and sharing authorization tests
 e2e/drive.mjs              Playwright drive of the running app
+e2e/teams/                 two-context coach/athlete drive, plus pure-logic tests
 ```
 
 `server/` has [its own README](server/README.md) with the endpoint and configuration tables.
@@ -243,6 +295,19 @@ rejection, field-tagged validation errors, login, wrong-password handling, accou
 resistance, `401` on unauthenticated access, state push/pull, the stale-write `409` rule, and that a
 token dies with its account.
 
+**`cd server && npm test`** — 102 checks covering team authorization, sessions and sharing. Mostly
+negative: an athlete cannot assign work, a coach cannot log a result for someone, a coach of another
+team sees nothing of this one, a roster never carries an email address, and saving private training
+publishes nothing at all.
+
+**`npm run e2e:teams`** — 71 checks driving **two browser contexts at once**, a coach and an athlete,
+because the whole point of the feature is that two people see different things. It runs the full
+loop: create a team, join with the code, build a session, hand it out, log a short result, read it
+back as the coach, share an achievement, see it on the wall.
+
+**`npm run test:achievements`** and **`npm run test:reminders`** — 44 checks over the pure logic
+behind achievements and notification scheduling, compiled on the fly so nothing native is involved.
+
 **`npm run e2e`** — 27 checks driving the real UI in Chrome via Playwright
 ([`e2e/drive.mjs`](e2e/drive.mjs)):
 
@@ -259,9 +324,11 @@ Data assertions are made **against the API, not the screen**, so a UI that rende
 for the wrong reason still fails. Plus `npm run typecheck` (strict, clean) and a production Metro
 bundle for Android and web.
 
-Both suites have earned their keep. The browser drive caught a toast covering the header title, a
-sync request being silently dropped when one was already in flight, and nested `<button>` elements
-in the goal card — none of which typecheck or a bundle would ever surface.
+Every suite has earned its keep. The browser drives caught a toast covering the header title, a sync
+request silently dropped when one was already in flight, nested `<button>` elements in the goal card,
+a coach being assigned their own squad's work, the wrong member being removed when leaving a team,
+and a tab bar highlighting a screen you were not on — none of which typecheck or a bundle would ever
+surface.
 
 ---
 
@@ -286,7 +353,13 @@ Deliberate, given the scope — and the next things I would build:
 - Distance is entered by tap, not GPS. `expo-location` would make pace measured rather than
   self-reported.
 - Scheduled notifications and haptics are the one thing the browser drive cannot prove — they need
-  a device or an emulator.
+  a device or an emulator. Notifications are also a deliberate no-op in Expo Go, which removed
+  support in SDK 53; they need a development build.
+- Session reminders are **local**, scheduled from work the device has already seen. A coach handing
+  out work while a phone is in a locker cannot ring it — that would need a push service, and with it
+  a token to collect, which the privacy policy currently promises not to do.
+- Teams are fetched rather than synced, so the team screens are the one part of the app that needs a
+  connection. Everything personal still works offline.
 
 ## Licence
 
