@@ -295,3 +295,36 @@ export function requireHandoutInput(body) {
 
 /** One session cannot hold more tasks than a coach could sanely hand out. */
 export const MAX_TASKS_PER_SESSION = 40;
+
+/* ------------------------------------------------------------------ shares */
+
+/**
+ * Something an athlete chose to show their team.
+ *
+ * Stored as a flat snapshot — a title, a line of detail, a number — and never
+ * as a reference into the author's own training. The feed therefore cannot be
+ * used to read anything live: what was published is all there is, and it stops
+ * being true the moment the author moves on, which is the correct behaviour
+ * for a boast about a particular day.
+ */
+export const SHARE_KINDS = ['streak', 'personalBest', 'habit', 'work'];
+
+export function requireShareInput(body) {
+  const kind = typeof body?.kind === 'string' ? body.kind : '';
+  if (!SHARE_KINDS.includes(kind)) throw new ValidationError('kind', 'Unknown achievement.');
+
+  return {
+    kind,
+    /** The author's own id for it, so the same thing is not posted twice. */
+    achievementId: requireString(body?.achievementId, 'achievementId', { min: 1, max: 120 }),
+    title: requireString(body?.title, 'title', { min: 2, max: 120 }),
+    detail: optionalString(body?.detail, 'detail', 240),
+    value: requireNumber(body?.value ?? 0, 'value', { min: 0, max: 1e9 }),
+    achievedAt: requireDayKey(body?.achievedAt, 'achievedAt'),
+    /** A word from the author, optional and short by design. */
+    note: optionalString(body?.note, 'note', 240),
+  };
+}
+
+/** Enough for a season of a busy squad; old posts fall off the read, not the store. */
+export const SHARE_PAGE = 60;

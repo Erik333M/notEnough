@@ -6,6 +6,7 @@ import { config } from './config.js';
 import { authRouter } from './routes/auth.js';
 import { stateRouter } from './routes/state.js';
 import { sessionActionsRouter } from './routes/session-actions.js';
+import { sharesRouter } from './routes/shares.js';
 import { sessionsRouter } from './routes/sessions.js';
 import { teamsRouter } from './routes/teams.js';
 import { workRouter } from './routes/work.js';
@@ -33,6 +34,7 @@ app.get('/api/health', (_req, res) => {
 app.use('/api/auth', authRouter);
 app.use('/api/state', stateRouter);
 app.use('/api/teams', teamsRouter);
+app.use('/api/teams', sharesRouter);
 // Two routers, one path: session-actions holds the verbs (hand out, start from
 // template) that would have pushed the sessions file past a readable size.
 app.use('/api/sessions', sessionsRouter);

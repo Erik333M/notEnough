@@ -120,6 +120,18 @@ export function canLogResult(data, userId, assignment) {
   return Boolean(assignment) && assignment.assigneeUserId === userId;
 }
 
+/**
+ * Take a shared achievement down.
+ *
+ * The person who posted it, or a coach of that team. A coach needs it to keep
+ * a feed clean; nobody else gets to delete somebody's post.
+ */
+export function canRemoveShare(data, userId, share) {
+  if (!share) return false;
+  if (share.userId === userId) return true;
+  return isCoach(data, userId, share.teamId);
+}
+
 /* ------------------------------------------------------------- projections */
 
 /**

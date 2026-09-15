@@ -12,7 +12,7 @@
     "start": "node src/index.js",
     "dev": "node --watch src/index.js",
     "smoke": "node scripts/smoke.js",
-    "test": "node scripts/teams.test.js && node scripts/sessions.test.js"
+    "test": "node scripts/teams.test.js && node scripts/sessions.test.js && node scripts/shares.test.js"
   },
   "dependencies": {
     "cors": "^2.8.5",

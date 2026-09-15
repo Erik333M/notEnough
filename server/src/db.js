@@ -41,6 +41,7 @@ import { config } from './config.js';
  * @property {Object[]} sessionTasks
  * @property {Object[]} assignments
  * @property {Object[]} results
+ * @property {Object[]} shares
  */
 
 /**
@@ -62,6 +63,7 @@ const EMPTY = {
   sessionTasks: [],
   assignments: [],
   results: [],
+  shares: [],
 };
 
 /** @type {Schema | null} */
@@ -88,6 +90,7 @@ async function load() {
       sessionTasks: Array.isArray(parsed.sessionTasks) ? parsed.sessionTasks : [],
       assignments: Array.isArray(parsed.assignments) ? parsed.assignments : [],
       results: Array.isArray(parsed.results) ? parsed.results : [],
+      shares: Array.isArray(parsed.shares) ? parsed.shares : [],
     };
   } catch (error) {
     if (error.code !== 'ENOENT') {
@@ -157,6 +160,9 @@ export function purgeUserData(data, userId) {
   data.memberships = data.memberships.filter((row) => row.userId !== userId);
   data.results = data.results.filter((row) => row.userId !== userId && !theirs.has(row.assignmentId));
   data.assignments = data.assignments.filter((row) => row.assigneeUserId !== userId);
+  // Their posts go too. A boast with no author behind it is a ghost on a feed
+  // nobody can remove.
+  data.shares = data.shares.filter((row) => row.userId !== userId);
 }
 
 export async function findUserByEmail(email) {
