@@ -1,0 +1,136 @@
+/**
+ * The only place in the server that decides who may see or change what.
+ *
+ * Every route asks this module. Nothing does its own comparison of ids, because
+ * an authorization rule that exists in two places is a rule that will disagree
+ * with itself the first time one copy is edited.
+ *
+ * ── The rule this feature is built on ───────────────────────────────────────
+ *
+ * Visibility is scoped by ORIGIN, not by ownership.
+ *
+ * A coach can see a result because of where the work came from — an assignment
+ * they gave inside their own team — and for no other reason. Being someone's
+ * coach grants no access to anything that user did on their own: their journey,
+ * personal goals, measurements and intake stay in their private state blob,
+ * which this server never reads into and no endpoint here can reach.
+ *
+ * That is enforced structurally rather than by discipline. Note the signature
+ * of `canViewProgress`: it takes an *assignment*, never a user id. There is
+ * deliberately no function anywhere that answers "show me everything user X
+ * has done", so no route can be written that asks it.
+ *
+ * These are pure predicates over a database snapshot — no I/O, so a route can
+ * call them inside the write queue against the same `data` it is about to
+ * mutate, and a check can never go stale between testing and writing.
+ */
+
+/* ------------------------------------------------------------- membership */
+
+/**
+ * The caller's active membership of a team, or null.
+ *
+ * `pending` never counts. An invite that has been issued but not accepted, or a
+ * membership a coach has suspended, must not grant a single byte of access.
+ */
+export function membershipOf(data, userId, teamId) {
+  if (!userId || !teamId) return null;
+  return (
+    data.memberships.find(
+      (row) => row.userId === userId && row.teamId === teamId && row.status === 'active',
+    ) ?? null
+  );
+}
+
+export function isCoach(data, userId, teamId) {
+  return membershipOf(data, userId, teamId)?.role === 'coach';
+}
+
+export function isMember(data, userId, teamId) {
+  return membershipOf(data, userId, teamId) !== null;
+}
+
+/** Teams the user actually belongs to. The only way to enumerate teams. */
+export function teamsFor(data, userId) {
+  const mine = data.memberships.filter((row) => row.userId === userId && row.status === 'active');
+  return mine
+    .map((row) => {
+      const team = data.teams.find((candidate) => candidate.id === row.teamId);
+      return team ? { team, membership: row } : null;
+    })
+    .filter(Boolean);
+}
+
+/* ------------------------------------------------------- the four gates */
+
+/** Rename, archive, remove members, rotate the invite code. Coaches only. */
+export function canManageTeam(data, userId, teamId) {
+  return isCoach(data, userId, teamId);
+}
+
+/**
+ * See the team exists, its name, and its roster.
+ *
+ * Any active member, because an athlete has to know which team they are in and
+ * who is coaching them. The roster deliberately carries names and roles only —
+ * see `rosterOf` for why an email never appears in it.
+ */
+export function canViewTeam(data, userId, teamId) {
+  return isMember(data, userId, teamId);
+}
+
+/** Give out work. Coaches of that team, and no one else. */
+export function canAssignSession(data, userId, teamId) {
+  return isCoach(data, userId, teamId);
+}
+
+/**
+ * Read the progress recorded against one assignment.
+ *
+ * Takes the assignment, never a user id — that is the whole safeguard. Access
+ * is derived from the work's origin: you may read it if you were the one asked
+ * to do it, or if you coach the team it was set in. A coach of a different team
+ * fails both tests even when the same athlete is on both rosters, because the
+ * question being asked is about this piece of work, not about that person.
+ */
+export function canViewProgress(data, userId, assignment) {
+  if (!assignment) return false;
+  if (assignment.assigneeUserId === userId) return true;
+  return isCoach(data, userId, assignment.teamId);
+}
+
+/**
+ * Record progress against an assignment.
+ *
+ * The assignee alone. A coach sets the work and reads the outcome; they do not
+ * get to log an athlete's result for them, because a record of what someone
+ * did should have been written by the person who did it.
+ */
+export function canLogResult(data, userId, assignment) {
+  return Boolean(assignment) && assignment.assigneeUserId === userId;
+}
+
+/* ------------------------------------------------------------- projections */
+
+/**
+ * The roster as it leaves the server.
+ *
+ * Names and roles, never email addresses. A team invite is not consent to hand
+ * your address to everyone else who scanned the same code, and a coach does not
+ * need one to run a session — they invited these people, so they know who they
+ * are. Keeping it out means a leaked roster response leaks nothing reusable.
+ */
+export function rosterOf(data, teamId, users) {
+  return data.memberships
+    .filter((row) => row.teamId === teamId)
+    .map((row) => {
+      const user = users.find((candidate) => candidate.id === row.userId);
+      return {
+        userId: row.userId,
+        name: user?.name ?? 'Unknown',
+        role: row.role,
+        status: row.status,
+        joinedAt: row.createdAt,
+      };
+    });
+}

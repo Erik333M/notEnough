@@ -1,3 +1,5 @@
+import crypto from 'node:crypto';
+
 /**
  * Hand-rolled validation instead of a schema library: the surface is three
  * endpoints wide, and every rejection needs to name the field so the mobile
@@ -157,4 +159,107 @@ function normaliseVictories(victories) {
   }
 
   return { targets: targets ?? {}, log: log ?? {} };
+}
+
+/* ------------------------------------------------------- teams and work */
+
+/**
+ * Invite codes.
+ *
+ * Six characters from an alphabet with no O/0 and no I/1, because these get
+ * read aloud across a gym and typed by someone who is out of breath. Uppercase
+ * on the way in so the athlete never has to care about their keyboard's shift
+ * state.
+ */
+const INVITE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+const INVITE_LENGTH = 6;
+
+export function makeInviteCode(random = crypto.randomBytes(INVITE_LENGTH)) {
+  let code = '';
+  for (let i = 0; i < INVITE_LENGTH; i += 1) {
+    code += INVITE_ALPHABET[random[i] % INVITE_ALPHABET.length];
+  }
+  return code;
+}
+
+export function requireInviteCode(value) {
+  const code = requireString(value, 'code', { min: INVITE_LENGTH, max: INVITE_LENGTH }).toUpperCase();
+  for (const character of code) {
+    if (!INVITE_ALPHABET.includes(character)) {
+      throw new ValidationError('code', 'That invite code is not valid.');
+    }
+  }
+  return code;
+}
+
+export const TASK_KINDS = ['check', 'reps', 'minutes', 'distance'];
+
+/** A local-time YYYY-MM-DD, kept opaque exactly as the client stores it. */
+export function requireDayKey(value, field = 'dueDate') {
+  const day = requireString(value, field, { min: 10, max: 10 });
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) {
+    throw new ValidationError(field, 'Use a YYYY-MM-DD date.');
+  }
+  return day;
+}
+
+export function requireNumber(value, field, { min = 0, max = 1e6 } = {}) {
+  const number = typeof value === 'number' ? value : Number(value);
+  if (!Number.isFinite(number)) throw new ValidationError(field, `${field} must be a number.`);
+  if (number < min || number > max) {
+    throw new ValidationError(field, `Keep ${field} between ${min} and ${max}.`);
+  }
+  return number;
+}
+
+export function optionalString(value, field, max = 500) {
+  if (value == null || value === '') return '';
+  return requireString(value, field, { min: 0, max });
+}
+
+export function requireTeamInput(body) {
+  return {
+    name: requireString(body?.name, 'name', { min: 2, max: 60 }),
+    notes: optionalString(body?.notes, 'notes', 500),
+  };
+}
+
+/**
+ * One piece of work a coach is handing out.
+ *
+ * `assigneeUserIds` is always a list, even for one athlete: assigning to a
+ * whole squad is the common case, and a route that takes one id would grow a
+ * second bulk path beside it within a week.
+ */
+export function requireAssignmentInput(body) {
+  const ids = Array.isArray(body?.assigneeUserIds) ? body.assigneeUserIds : [];
+  if (ids.length === 0) {
+    throw new ValidationError('assigneeUserIds', 'Choose at least one athlete.');
+  }
+  if (ids.length > 200) throw new ValidationError('assigneeUserIds', 'Too many athletes at once.');
+  for (const id of ids) {
+    if (typeof id !== 'string' || !id) {
+      throw new ValidationError('assigneeUserIds', 'Invalid athlete.');
+    }
+  }
+
+  const kind = typeof body?.kind === 'string' ? body.kind : 'check';
+  if (!TASK_KINDS.includes(kind)) throw new ValidationError('kind', 'Unknown task type.');
+
+  return {
+    assigneeUserIds: [...new Set(ids)],
+    title: requireString(body?.title, 'title', { min: 2, max: 120 }),
+    detail: optionalString(body?.detail, 'detail', 1000),
+    kind,
+    target: requireNumber(body?.target ?? 1, 'target', { min: 0, max: 100000 }),
+    dueDate: requireDayKey(body?.dueDate),
+  };
+}
+
+export function requireResultInput(body) {
+  return {
+    amount: requireNumber(body?.amount ?? 0, 'amount', { min: 0, max: 100000 }),
+    done: Boolean(body?.done),
+    notes: optionalString(body?.notes, 'notes', 1000),
+  };
 }

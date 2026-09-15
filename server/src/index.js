@@ -5,6 +5,8 @@ import os from 'node:os';
 import { config } from './config.js';
 import { authRouter } from './routes/auth.js';
 import { stateRouter } from './routes/state.js';
+import { teamsRouter } from './routes/teams.js';
+import { workRouter } from './routes/work.js';
 import { ValidationError } from './validate.js';
 
 const app = express();
@@ -28,6 +30,8 @@ app.get('/api/health', (_req, res) => {
 
 app.use('/api/auth', authRouter);
 app.use('/api/state', stateRouter);
+app.use('/api/teams', teamsRouter);
+app.use('/api/work', workRouter);
 
 app.use((_req, res) => {
   res.status(404).json({ error: 'not_found', message: 'No such endpoint.' });

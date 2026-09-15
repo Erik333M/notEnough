@@ -35,10 +35,23 @@ import { config } from './config.js';
  * @typedef {Object} Schema
  * @property {UserRow[]} users
  * @property {Record<string, StateRow>} states
+ * @property {Object[]} teams
+ * @property {Object[]} memberships
+ * @property {Object[]} assignments
+ * @property {Object[]} results
+ */
+
+/**
+ * `states` holds one opaque blob per user and is private to that user: the
+ * server never reads inside it and no route can serve part of it to anyone
+ * else. The four collections beside it are the shared half of the app — work a
+ * coach handed out and the results recorded against it. The split is the
+ * privacy boundary, and it is a storage boundary rather than a rule someone has
+ * to remember to apply.
  */
 
 /** @type {Schema} */
-const EMPTY = { users: [], states: {} };
+const EMPTY = { users: [], states: {}, teams: [], memberships: [], assignments: [], results: [] };
 
 /** @type {Schema | null} */
 let cache = null;
@@ -51,9 +64,17 @@ async function load() {
   try {
     const raw = await fs.readFile(config.dbFile, 'utf8');
     const parsed = JSON.parse(raw);
+    // Each collection is defaulted independently, so a database file written
+    // before this feature existed loads as an account with no teams rather
+    // than crashing on a missing key. That is the whole migration for existing
+    // solo users: zero memberships, everything works exactly as before.
     cache = {
       users: Array.isArray(parsed.users) ? parsed.users : [],
       states: parsed.states && typeof parsed.states === 'object' ? parsed.states : {},
+      teams: Array.isArray(parsed.teams) ? parsed.teams : [],
+      memberships: Array.isArray(parsed.memberships) ? parsed.memberships : [],
+      assignments: Array.isArray(parsed.assignments) ? parsed.assignments : [],
+      results: Array.isArray(parsed.results) ? parsed.results : [],
     };
   } catch (error) {
     if (error.code !== 'ENOENT') {
@@ -101,6 +122,28 @@ export function write(mutator) {
     () => undefined,
   );
   return next;
+}
+
+/**
+ * Everything belonging to a deleted account, removed in one pass.
+ *
+ * Called from the delete-account route. Their memberships go, and with them any
+ * access anyone had to their results; the results themselves go too, because
+ * they are that person's record of their own work. Assignments a coach wrote
+ * for them are removed as well — an assignment with no one to do it is not
+ * history worth keeping, it is a row that would render as a ghost on the
+ * coach's roster forever.
+ *
+ * Teams they coached are left standing: other people's memberships and work
+ * live in them, and deleting your account should not delete a squad.
+ */
+export function purgeUserData(data, userId) {
+  const theirs = new Set(
+    data.assignments.filter((row) => row.assigneeUserId === userId).map((row) => row.id),
+  );
+  data.memberships = data.memberships.filter((row) => row.userId !== userId);
+  data.results = data.results.filter((row) => row.userId !== userId && !theirs.has(row.assignmentId));
+  data.assignments = data.assignments.filter((row) => row.assigneeUserId !== userId);
 }
 
 export async function findUserByEmail(email) {
