@@ -96,7 +96,17 @@ export function canAssignSession(data, userId, teamId) {
 export function canViewProgress(data, userId, assignment) {
   if (!assignment) return false;
   if (assignment.assigneeUserId === userId) return true;
-  return isCoach(data, userId, assignment.teamId);
+  if (isCoach(data, userId, assignment.teamId)) return true;
+
+  // A session board the coach has opened to the squad. Off by default and set
+  // per session, because "everyone can see Tuesday's conditioning" and "1RM
+  // testing stays private" are both reasonable and only the coach knows which
+  // is which. Teammates get in only while that switch is on, and only for the
+  // session it was set on.
+  if (!assignment.sessionId) return false;
+  const session = data.sessions.find((row) => row.id === assignment.sessionId);
+  if (!session?.shareResults) return false;
+  return isMember(data, userId, assignment.teamId);
 }
 
 /**

@@ -259,6 +259,61 @@ try {
 
   const remaining = await call('GET', `/api/sessions/${session.id}`, { token: coach.token });
   check('remaining tasks are renumbered from zero', remaining.body.tasks[0].order === 0);
+  /* --------------------------------------------------- sharing the board */
+
+  console.log('\n sharing a session board');
+  const privateByDefault = await call('GET', `/api/sessions/${started.body.session.id}`, {
+    token: coach.token,
+  });
+  check('a new session is private by default', privateByDefault.body.session.shareResults === false);
+
+  const board = (await call('POST', '/api/sessions', {
+    token: coach.token,
+    body: { teamId: team.id, name: 'Open board', date: '2026-10-05' },
+  })).body.session;
+  await call('POST', `/api/sessions/${board.id}/tasks`, {
+    token: coach.token,
+    body: { title: 'Sprints', kind: 'reps', target: 10 },
+  });
+  await call('POST', `/api/sessions/${board.id}/handout`, {
+    token: coach.token,
+    body: { assigneeUserIds: [alice.id, bob.id] },
+  });
+  const bobRow = (await call('GET', '/api/work/mine', { token: bob.token })).body.assignments.find(
+    (row) => row.sessionId === board.id,
+  );
+  await call('PUT', `/api/work/assignments/${bobRow.id}/result`, {
+    token: bob.token,
+    body: { amount: 10, done: true },
+  });
+
+  const closedView = await call('GET', `/api/sessions/${board.id}`, { token: alice.token });
+  check('while private, a teammate sees only their own row', closedView.body.assignments.length === 1);
+
+  const athleteOpens = await call('PATCH', `/api/sessions/${board.id}`, {
+    token: alice.token,
+    body: { shareResults: true },
+  });
+  check('an athlete cannot open the board', athleteOpens.status === 403, `got ${athleteOpens.status}`);
+
+  await call('PATCH', `/api/sessions/${board.id}`, { token: coach.token, body: { shareResults: true } });
+  const openView = await call('GET', `/api/sessions/${board.id}`, { token: alice.token });
+  check('once shared, a teammate sees the squad', openView.body.assignments.length === 2, `got ${openView.body.assignments.length}`);
+  check("and can see a teammate's result", openView.body.assignments.some((row) => row.result?.amount === 10));
+
+  const rivalOnOpenBoard = await call('GET', `/api/sessions/${board.id}`, { token: rival.token });
+  check('sharing does not let an outsider in', rivalOnOpenBoard.status === 403, `got ${rivalOnOpenBoard.status}`);
+
+  const otherSessionStillClosed = await call('GET', `/api/sessions/${session.id}`, { token: alice.token });
+  check(
+    'sharing one session does not open another',
+    otherSessionStillClosed.body.assignments.every((row) => row.assigneeUserId === alice.id),
+  );
+
+  await call('PATCH', `/api/sessions/${board.id}`, { token: coach.token, body: { shareResults: false } });
+  const reclosed = await call('GET', `/api/sessions/${board.id}`, { token: alice.token });
+  check('closing the board takes the view away again', reclosed.body.assignments.length === 1);
+
 } catch (error) {
   failures += 1;
   console.error('\n  [FAIL] test run threw —', error.message);

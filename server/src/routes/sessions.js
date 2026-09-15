@@ -132,12 +132,17 @@ sessionsRouter.patch('/:sessionId', async (req, res, next) => {
     const { sessionId } = req.params;
     const userId = req.user.id;
     const archived = typeof req.body?.archived === 'boolean' ? req.body.archived : null;
+    const shareResults =
+      typeof req.body?.shareResults === 'boolean' ? req.body.shareResults : null;
     const input = req.body?.name === undefined ? null : requireSessionInput(req.body);
 
     const updated = await write((data) => {
       const session = data.sessions.find((row) => row.id === sessionId);
       if (!session || !canAssignSession(data, userId, session.teamId)) return null;
       if (input) Object.assign(session, input);
+      // Flippable on its own, so opening a board is one tap and not a re-save
+      // of the whole session.
+      if (shareResults !== null) session.shareResults = shareResults;
       if (archived !== null) session.archived = archived;
       return session;
     });

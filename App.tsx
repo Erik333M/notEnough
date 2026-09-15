@@ -9,6 +9,7 @@ import { AppShell } from './src/navigation/AppShell';
 import AuthScreen from './src/screens/AuthScreen';
 import { AuthProvider, useAuth } from './src/state/AuthContext';
 import { DataProvider } from './src/state/DataContext';
+import { TeamsProvider } from './src/state/TeamsContext';
 import { ErrorBoundary } from './src/ui/ErrorBoundary';
 import { BootSplash } from './src/ui/Feedback';
 import { Screen } from './src/ui/Screen';
@@ -75,9 +76,16 @@ function Root() {
       token={token}
       onUnauthorized={() => void invalidateSession()}
     >
-      <Animated.View entering={FadeIn.duration(320)} style={styles.root}>
-        <AppShell />
-      </Animated.View>
+      {/*
+        Inside the data layer so a screen can read both, and keyed with it by
+        user id. Teams are fetched rather than synced: they belong to more than
+        one person, so a local copy is stale the moment a coach changes it.
+      */}
+      <TeamsProvider token={token}>
+        <Animated.View entering={FadeIn.duration(320)} style={styles.root}>
+          <AppShell />
+        </Animated.View>
+      </TeamsProvider>
     </DataProvider>
   );
 }

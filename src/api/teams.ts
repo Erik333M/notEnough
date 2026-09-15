@@ -54,6 +54,14 @@ export type Session = {
   notes: string;
   isTemplate: boolean;
   date: DayKey | null;
+  /**
+   * Whether teammates can see each other's results for this session.
+   *
+   * Off by default and set per session: an open board for Tuesday's
+   * conditioning and a private one for 1RM testing are both reasonable, and
+   * only the coach knows which is which.
+   */
+  shareResults: boolean;
   createdBy: string;
   createdAt: string;
   archived: boolean;
@@ -147,14 +155,21 @@ export const teamsApi = {
   createSession: (
     token: string,
     teamId: string,
-    body: { name: string; notes?: string; date: DayKey | null; isTemplate?: boolean },
+    body: { name: string; notes?: string; date: DayKey | null; isTemplate?: boolean; shareResults?: boolean },
   ): Promise<ApiResult<{ session: Session; tasks: SessionTask[] }>> =>
     request('/api/sessions', { method: 'POST', token, body: { ...body, teamId } }),
 
   updateSession: (
     token: string,
     sessionId: string,
-    body: { name?: string; notes?: string; date?: DayKey | null; isTemplate?: boolean; archived?: boolean },
+    body: {
+      name?: string;
+      notes?: string;
+      date?: DayKey | null;
+      isTemplate?: boolean;
+      archived?: boolean;
+      shareResults?: boolean;
+    },
   ): Promise<ApiResult<{ session: Session }>> =>
     request(`/api/sessions/${sessionId}`, { method: 'PATCH', token, body }),
 

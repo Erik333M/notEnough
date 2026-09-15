@@ -129,10 +129,9 @@ workRouter.get('/teams/:teamId', async (req, res, next) => {
     const coach = isCoach(data, userId, teamId);
     const rows = data.assignments
       .filter((row) => row.teamId === teamId)
-      .filter((row) => (coach ? true : row.assigneeUserId === userId))
-      // Belt and braces: the filter above already scopes this, and the gate is
-      // applied per row anyway so a future change to that filter cannot quietly
-      // widen what leaves the server.
+      // The gate alone decides who sees what. It knows about coaches, about
+      // your own work, and about sessions the coach has opened to the squad,
+      // so no route needs its own idea of the rule.
       .filter((row) => canViewProgress(data, userId, row))
       .map((row) => withResult(data, row))
       .sort((a, b) => a.dueDate.localeCompare(b.dueDate));

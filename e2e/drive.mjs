@@ -91,6 +91,16 @@ await page.getByPlaceholder('you@example.com').fill(email);
 await page.getByPlaceholder('At least 6 characters').fill(password);
 await page.getByText('Create account', { exact: true }).last().click();
 
+/* ----------------------------------------------------------------- intent */
+
+// A new account is asked once how it will use the app. This drive is the solo
+// path, so it answers accordingly — the question is skippable and sets nothing
+// but the opening screen.
+await page.getByText('How will you use this?').waitFor({ timeout: 20000 });
+check('new accounts are asked how they will use the app', true);
+await page.getByText('Train on my own', { exact: true }).click();
+await page.waitForTimeout(800);
+
 /* ------------------------------------------------------------------ today */
 
 await page.getByText('Daily goals', { exact: true }).first().waitFor({ timeout: 20000 });

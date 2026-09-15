@@ -39,7 +39,8 @@
     "web": "expo start --web",
     "typecheck": "tsc --noEmit",
     "e2e": "node e2e/drive.mjs",
-    "e2e:journey": "node e2e/journey/run.mjs"
+    "e2e:journey": "node e2e/journey/run.mjs",
+    "e2e:teams": "node e2e/teams/drive.mjs"
   },
   "private": true
 }

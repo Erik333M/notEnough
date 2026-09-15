@@ -137,6 +137,9 @@ sessionActionsRouter.post('/:templateId/start', async (req, res, next) => {
         notes: req.body?.notes === undefined ? template.notes : input.notes,
         isTemplate: false,
         date: input.date,
+        // Carried from the template, so a coach who always runs open boards
+        // does not have to remember the switch every week.
+        shareResults: Boolean(template.shareResults),
         createdBy: userId,
         createdAt: now,
         archived: false,
@@ -196,6 +199,7 @@ sessionActionsRouter.post('/:sessionId/save-as-template', async (req, res, next)
         notes: source.notes,
         isTemplate: true,
         date: null,
+        shareResults: Boolean(source.shareResults),
         createdBy: userId,
         createdAt: now,
         archived: false,

@@ -262,6 +262,8 @@ export function requireSessionInput(body) {
     notes: optionalString(body?.notes, 'notes', 1000),
     isTemplate,
     date: isTemplate ? null : requireDayKey(rawDate, 'date'),
+    /** Off unless the coach says otherwise: private is the safe default. */
+    shareResults: Boolean(body?.shareResults),
   };
 }
 
