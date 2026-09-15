@@ -22,6 +22,8 @@ export type MyWork = {
   upcoming: Assignment[];
   /** Everything due today or overdue, finished or not. */
   outstanding: number;
+  /** Every task ever finished, across every team — what achievements count. */
+  completed: number;
   loading: boolean;
   reload: () => Promise<void>;
   log: (
@@ -99,6 +101,7 @@ export function useMyWork(): MyWork {
       today: dueToday,
       upcoming,
       outstanding: [...overdue, ...dueToday].filter((row) => !row.result?.done).length,
+      completed: assignments.filter((row) => row.result?.done).length,
       loading,
       reload,
       log,

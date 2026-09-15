@@ -108,6 +108,30 @@ export type Assignment = {
   result: Result | null;
 };
 
+export type ShareKind = 'streak' | 'personalBest' | 'habit' | 'work';
+
+/**
+ * An achievement someone chose to show their team.
+ *
+ * A flat snapshot, never a pointer into the author's data — the feed says what
+ * it says and stops there.
+ */
+export type Share = {
+  id: string;
+  teamId: string;
+  userId: string;
+  /** Captured when posted, so a later rename does not rewrite old posts. */
+  authorName: string;
+  kind: ShareKind;
+  achievementId: string;
+  title: string;
+  detail: string;
+  value: number;
+  achievedAt: DayKey;
+  note: string;
+  createdAt: string;
+};
+
 type TeamsList = { teams: { team: Team; role: TeamRole }[] };
 type TeamDetail = { team: Team; role: TeamRole; roster: RosterEntry[] };
 type SessionDetail = {
@@ -219,6 +243,37 @@ export const teamsApi = {
     name?: string,
   ): Promise<ApiResult<{ session: Session; tasks: SessionTask[] }>> =>
     request(`/api/sessions/${sessionId}/save-as-template`, { method: 'POST', token, body: { name } }),
+
+  /* ----------------------------------------------------------- shares */
+
+  /**
+   * Publish one achievement to one team.
+   *
+   * Only ever called from an explicit tap. The payload is a snapshot — what it
+   * says is all it is — so a feed can never be read back into anybody's
+   * training.
+   */
+  share: (
+    token: string,
+    teamId: string,
+    body: {
+      kind: ShareKind;
+      achievementId: string;
+      title: string;
+      detail?: string;
+      value: number;
+      achievedAt: DayKey;
+      note?: string;
+    },
+  ): Promise<ApiResult<{ share: Share }>> =>
+    request(`/api/teams/${teamId}/shares`, { method: 'POST', token, body }),
+
+  shares: (token: string, teamId: string): Promise<ApiResult<{ shares: Share[] }>> =>
+    request(`/api/teams/${teamId}/shares`, { token }),
+
+  /** The author, or a coach keeping their feed clean. */
+  removeShare: (token: string, teamId: string, shareId: string): Promise<ApiResult<null>> =>
+    request(`/api/teams/${teamId}/shares/${shareId}`, { method: 'DELETE', token }),
 
   /* ------------------------------------------------------------- work */
 

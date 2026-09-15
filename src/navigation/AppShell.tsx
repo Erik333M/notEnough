@@ -31,6 +31,8 @@ export function AppShell() {
   /** `undefined` while the stored answer is being read; `null` means unasked. */
   const [intent, setIntent] = useState<Intent | null | undefined>(undefined);
   const [teamsAction, setTeamsAction] = useState<'join' | 'create' | undefined>(undefined);
+  /** Bumped when the current route is re-selected; see `navigate`. */
+  const [resetNonce, setResetNonce] = useState(0);
 
   const { user, logout } = useAuth();
   const capabilities = useCapabilities();
@@ -44,10 +46,22 @@ export function AppShell() {
   // Space reserved under every screen so the floating tab bar never covers content.
   const bottomInset = TAB_BAR_HEIGHT + Math.max(insets.bottom, 10) + 24;
 
-  const navigate = useCallback((next: RouteKey) => {
-    setTeamsAction(undefined);
-    setRoute(next);
-  }, []);
+  /**
+   * Re-selecting the route you are already on returns it to its root.
+   *
+   * Features that own a stack (Journey, Teams) stay where they were otherwise,
+   * so tapping Teams while three screens deep inside a team appeared to do
+   * nothing at all. Bumping the key remounts the screen, which resets its
+   * stack — the behaviour a tab bar is expected to have.
+   */
+  const navigate = useCallback(
+    (next: RouteKey) => {
+      setTeamsAction(undefined);
+      setRoute(next);
+      if (next === route) setResetNonce((value) => value + 1);
+    },
+    [route],
+  );
 
   useEffect(() => {
     if (!user) return;
@@ -132,7 +146,11 @@ export function AppShell() {
       />
 
       {/* Keyed so each route gets a fresh mount + entrance animation. */}
-      <Animated.View key={route} entering={FadeIn.duration(220)} style={styles.screen}>
+      <Animated.View
+        key={`${route}:${resetNonce}`}
+        entering={FadeIn.duration(220)}
+        style={styles.screen}
+      >
         {route === 'home' ? (
           <HomeScreen bottomInset={bottomInset} navigate={navigate} />
         ) : route === 'journey' ? (

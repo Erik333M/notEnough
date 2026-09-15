@@ -82,7 +82,9 @@ async function openTeamsTab(page) {
   // Teams lives in the slide-out menu, not the tab bar.
   await page.getByLabel('Open menu').click();
   await page.waitForTimeout(700);
-  await page.getByText('Teams', { exact: true }).first().click();
+  // `.last()` on purpose: when you are already on the Teams route the shell
+  // header shows the same word, and it is not the thing to click.
+  await page.getByText('Teams', { exact: true }).last().click();
   await page.waitForTimeout(1600);
 }
 
@@ -346,6 +348,60 @@ try {
     (await coachSide.page.getByLabel('Mark done: 2k row').count()) === 0,
   );
   await coachSide.page.screenshot({ path: path.join(SHOTS, '11-coach-progress.png') });
+
+  /* ------------------------------------------------------ sharing a win */
+
+  console.log('\n sharing an achievement');
+  await athleteSide.page.getByText('Progress', { exact: true }).first().click();
+  await athleteSide.page.waitForTimeout(2500);
+  text = await athleteSide.page.locator('body').innerText();
+  check('achievements appear on Progress', text.includes('Achievements'), text.slice(0, 500));
+  check(
+    'finishing a coach-set task earns one',
+    text.includes('First session done'),
+    text.slice(0, 600),
+  );
+
+  await athleteSide.page.getByLabel('Share: First session done').click();
+  await athleteSide.page.waitForTimeout(900);
+  text = await athleteSide.page.locator('body').innerText();
+  check('the share sheet previews the exact words', text.includes('First session done'));
+  check(
+    'and states plainly what it reveals',
+    text.includes('Nothing else') && text.includes('not your journal'),
+    text.slice(0, 600),
+  );
+  check('it names the team it will go to', text.includes('Thursday squad'));
+  await athleteSide.page.screenshot({ path: path.join(SHOTS, '12-share-sheet.png') });
+
+  await athleteSide.page.getByText('Share with Thursday squad', { exact: true }).click();
+  await athleteSide.page.waitForTimeout(2500);
+  text = await athleteSide.page.locator('body').innerText();
+  check('the card marks itself shared', text.includes('Shared'), text.slice(0, 600));
+
+  /* ----------------------------------------------------------- the wall */
+
+  console.log('\n the team wall');
+  const feed = await apiCall('GET', `/api/teams/${teamIdForWork}/shares`, { token: coachToken });
+  check('the post reached the team', feed.body.shares.length === 1, `got ${feed.body.shares?.length}`);
+  check('it carries the author name', feed.body.shares[0]?.authorName === 'Athlete Bo');
+  check(
+    'it is a snapshot, not a pointer into their data',
+    feed.body.shares[0]?.title === 'First session done' && feed.body.shares[0]?.achievementId === 'work:1',
+  );
+
+  await openTeamsTab(coachSide.page);
+  await coachSide.page.getByText('Thursday squad', { exact: true }).first().click();
+  await coachSide.page.waitForTimeout(2000);
+  text = await coachSide.page.locator('body').innerText();
+  check('the coach sees it on the wall', text.includes('Wall') && text.includes('First session done'), text.slice(0, 600));
+  check('and who posted it', text.includes('Athlete Bo'));
+  await coachSide.page.screenshot({ path: path.join(SHOTS, '13-team-wall.png') });
+
+  const soloFeedCheck = await apiCall('GET', `/api/teams/${teamIdForWork}/shares`, {
+    token: athleteLogin.body.token,
+  });
+  check('the athlete can read their own team wall', soloFeedCheck.status === 200);
 
   /* --------------------------------------------------------- the solo user */
 

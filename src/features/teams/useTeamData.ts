@@ -6,6 +6,7 @@ import {
   type RosterEntry,
   type Session,
   type SessionTask,
+  type Share,
   type Team,
   type TeamRole,
 } from '../../api/teams';
@@ -73,6 +74,8 @@ export type TeamDetail = {
   roster: RosterEntry[];
   sessions: Session[];
   templates: Session[];
+  /** What the team has chosen to show each other. */
+  shares: Share[];
 };
 
 export function useTeamDetail(teamId: string): Async<TeamDetail> {
@@ -80,10 +83,11 @@ export function useTeamDetail(teamId: string): Async<TeamDetail> {
     async (token: string): Promise<TeamDetail | null> => {
       // Three reads, one wait. The roster is useless without the sessions
       // beside it, so serialising them would only make the screen slower.
-      const [detail, sessions, templates] = await Promise.all([
+      const [detail, sessions, templates, shares] = await Promise.all([
         teamsApi.detail(token, teamId),
         teamsApi.sessions(token, teamId, false),
         teamsApi.sessions(token, teamId, true),
+        teamsApi.shares(token, teamId),
       ]);
       if (!detail.ok || !sessions.ok || !templates.ok) return null;
       return {
@@ -92,6 +96,9 @@ export function useTeamDetail(teamId: string): Async<TeamDetail> {
         roster: detail.data.roster,
         sessions: sessions.data.sessions,
         templates: templates.data.sessions,
+        // A failed feed read must not blank the whole team screen — the roster
+        // and the sessions are the part somebody came here for.
+        shares: shares.ok ? shares.data.shares : [],
       };
     },
     [teamId],

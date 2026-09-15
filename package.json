@@ -41,7 +41,8 @@
     "e2e": "node e2e/drive.mjs",
     "e2e:journey": "node e2e/journey/run.mjs",
     "e2e:teams": "node e2e/teams/drive.mjs",
-    "test:reminders": "node e2e/teams/reminders.test.mjs"
+    "test:reminders": "node e2e/teams/reminders.test.mjs",
+    "test:achievements": "node e2e/teams/achievements.test.mjs"
   },
   "private": true
 }
