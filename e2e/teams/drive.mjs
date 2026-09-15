@@ -78,6 +78,14 @@ async function signUp(person, label) {
   return { context, page };
 }
 
+async function openTeamsTab(page) {
+  // Teams lives in the slide-out menu, not the tab bar.
+  await page.getByLabel('Open menu').click();
+  await page.waitForTimeout(700);
+  await page.getByText('Teams', { exact: true }).first().click();
+  await page.waitForTimeout(1600);
+}
+
 try {
   console.log(`\nDriving ${APP} against ${API}\n`);
 
@@ -175,6 +183,132 @@ try {
   });
   const athleteTeams = await apiCall('GET', '/api/teams', { token: athleteLogin.body.token });
   check('the membership is real, not just rendered', athleteTeams.body.teams[0]?.role === 'athlete');
+
+  /* --------------------------------------------------- building a session */
+
+  console.log('\n the coach builds a session');
+  await openTeamsTab(coachSide.page);
+  await coachSide.page.getByText('Thursday squad', { exact: true }).first().click();
+  await coachSide.page.waitForTimeout(1800);
+  text = await coachSide.page.locator('body').innerText();
+  check('the team opens on its roster', text.includes('Roster'), text.slice(0, 200));
+  check('the invite code is shown to the coach', text.includes(inviteCode), text.slice(0, 300));
+  check('the roster has both people', text.includes('Coach Ada') && text.includes('Athlete Bo'));
+  // Scoped to the athlete's address on purpose: the coach's own email appears
+  // in the side-menu header, which is theirs to see. What must never appear is
+  // somebody else's.
+  check(
+    'the coach cannot see an athlete’s email anywhere',
+    !text.includes(athlete.email),
+    text.slice(0, 400),
+  );
+  await coachSide.page.screenshot({ path: path.join(SHOTS, '06-team-coach.png') });
+
+  await coachSide.page.getByText('New session', { exact: true }).click();
+  await coachSide.page.waitForTimeout(700);
+  await coachSide.page.getByPlaceholder('e.g. Tuesday conditioning').fill('Tuesday conditioning');
+  await coachSide.page.getByText('Create session', { exact: true }).click();
+  await coachSide.page.waitForTimeout(2000);
+
+  text = await coachSide.page.locator('body').innerText();
+  check('creating a session opens it', text.includes('Tuesday conditioning'), text.slice(0, 200));
+  check('an empty session says what to do next', text.includes('Nothing in this session yet'));
+  check('handing out is blocked until there is a task', text.includes('Hand out to the squad'));
+
+  await coachSide.page.getByText('Add task', { exact: true }).click();
+  await coachSide.page.waitForTimeout(700);
+  await coachSide.page.getByPlaceholder('e.g. 2k row').fill('2k row');
+  await coachSide.page.getByText('Reps', { exact: true }).click();
+  await coachSide.page.waitForTimeout(300);
+  await coachSide.page.getByText('Add task', { exact: true }).last().click();
+  await coachSide.page.waitForTimeout(1800);
+
+  text = await coachSide.page.locator('body').innerText();
+  check('the task is listed', text.includes('2k row'), text.slice(0, 300));
+  check('its target is shown in its own unit', text.includes('20 reps'), text.slice(0, 300));
+  check('sharing is off by default', text.includes('Private to each athlete'));
+  await coachSide.page.screenshot({ path: path.join(SHOTS, '07-session-built.png') });
+
+  /* ------------------------------------------------------------ handing out */
+
+  console.log('\n handing it out');
+  await coachSide.page.getByText('Hand out to the squad', { exact: true }).click();
+  await coachSide.page.waitForTimeout(2200);
+  text = await coachSide.page.locator('body').innerText();
+  check('progress appears once handed out', text.includes('Athlete Bo'), text.slice(0, 400));
+  check('nothing is done yet', text.includes('0/1'), text.slice(0, 400));
+
+  // Checked against the data rather than the toast: a toast auto-dismisses, so
+  // asserting on it tests how fast this script reads the page.
+  const teamIdForWork = teams.body.teams[0].team.id;
+  const before = await apiCall('GET', `/api/work/teams/${teamIdForWork}`, { token: coachToken });
+  await coachSide.page.getByText('Hand out again', { exact: true }).click();
+  await coachSide.page.waitForTimeout(2200);
+  const after = await apiCall('GET', `/api/work/teams/${teamIdForWork}`, { token: coachToken });
+  check(
+    'handing out twice creates no duplicates',
+    after.body.assignments.length === before.body.assignments.length,
+    `${before.body.assignments.length} → ${after.body.assignments.length}`,
+  );
+  // One task, one athlete, one row — and specifically NOT a row for the coach,
+  // who holds an active membership but is not part of the squad being set work.
+  check('one task, one athlete, one row', after.body.assignments.length === 1, `got ${after.body.assignments.length}`);
+  check(
+    'the coach did not assign the work to themselves',
+    !after.body.assignments.some((row) => row.assigneeUserId === teams.body.teams[0].team.ownerId),
+  );
+
+  /* ------------------------------------------------- the athlete does the work */
+
+  console.log('\n the athlete logs it');
+  await athleteSide.page.getByText('Thursday squad', { exact: true }).first().click();
+  await athleteSide.page.waitForTimeout(1800);
+  text = await athleteSide.page.locator('body').innerText();
+  check('the athlete sees the session', text.includes('Tuesday conditioning'), text.slice(0, 300));
+  check('the athlete gets no invite code', !text.includes(inviteCode));
+  check('the athlete cannot create sessions', !text.includes('New session'));
+
+  await athleteSide.page.getByText('Tuesday conditioning', { exact: true }).first().click();
+  await athleteSide.page.waitForTimeout(1800);
+  text = await athleteSide.page.locator('body').innerText();
+  check('the athlete sees their task', text.includes('2k row'), text.slice(0, 300));
+  check('the athlete gets no sharing switch', !text.includes('Let the squad see each other'));
+  check('the athlete is told they can tick it', text.includes('Tap a task to mark it done'));
+  await athleteSide.page.screenshot({ path: path.join(SHOTS, '08-session-athlete.png') });
+
+  await athleteSide.page.getByLabel('Mark done: 2k row').click();
+  await athleteSide.page.waitForTimeout(2000);
+  text = await athleteSide.page.locator('body').innerText();
+  check('the athlete’s own row reads done', text.includes('1/1'), text.slice(0, 400));
+
+  /* ------------------------------------------------------ the coach sees it */
+
+  console.log('\n the coach sees the result');
+  const coachWork = await apiCall('GET', `/api/work/teams/${teamIdForWork}`, { token: coachToken });
+  check('the coach can read the result through the API', coachWork.body.assignments.some((row) => row.result?.done));
+  check(
+    'the result is the athlete’s own row',
+    coachWork.body.assignments.every((row) => row.teamId === teamIdForWork),
+  );
+
+  // And on screen, which is the actual deliverable. A reload drops back to
+  // Today, so navigate rather than assume the route survived.
+  await coachSide.page.reload({ waitUntil: 'networkidle' });
+  await coachSide.page.waitForTimeout(3000);
+  await openTeamsTab(coachSide.page);
+  await coachSide.page.getByText('Thursday squad', { exact: true }).first().click();
+  await coachSide.page.waitForTimeout(1800);
+  await coachSide.page.getByText('Tuesday conditioning', { exact: true }).first().click();
+  await coachSide.page.waitForTimeout(2200);
+
+  text = await coachSide.page.locator('body').innerText();
+  check('the coach sees the athlete on the progress list', text.includes('Athlete Bo'), text.slice(0, 400));
+  check('the coach sees it marked complete', text.includes('1/1'), text.slice(0, 400));
+  check(
+    'the coach cannot tick an athlete’s task for them',
+    (await coachSide.page.getByLabel('Mark done: 2k row').count()) === 0,
+  );
+  await coachSide.page.screenshot({ path: path.join(SHOTS, '09-coach-progress.png') });
 
   /* --------------------------------------------------------- the solo user */
 

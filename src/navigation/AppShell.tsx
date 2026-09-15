@@ -148,11 +148,7 @@ export function AppShell() {
         ) : route === 'plan' ? (
           <PlanScreen bottomInset={bottomInset} />
         ) : route === 'teams' ? (
-          <TeamsScreen
-            bottomInset={bottomInset}
-            initialAction={teamsAction}
-            onOpenTeam={() => undefined}
-          />
+          <TeamsScreen bottomInset={bottomInset} initialAction={teamsAction} />
         ) : route === 'privacy' ? (
           <PrivacyScreen bottomInset={bottomInset} />
         ) : (
