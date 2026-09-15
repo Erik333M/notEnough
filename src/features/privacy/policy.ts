@@ -25,11 +25,12 @@ export type PolicySection = {
   rows?: PolicyRow[];
 };
 
-export const POLICY_UPDATED = '11 September 2026';
+export const POLICY_UPDATED = '15 September 2026';
 
 export const POLICY_SUMMARY = [
   'Everything you write is kept on your device first. The app works fully offline.',
   'Your injuries, medical conditions and emergency contact are never synced.',
+  'A coach sees only the work they set you — never your own training.',
   'No analytics, no tracking, no advertising, no third-party SDKs.',
 ];
 
@@ -79,7 +80,13 @@ export const POLICY_SECTIONS: PolicySection[] = [
       },
       {
         term: 'Your journal state',
-        detail: 'So the same account shows the same journal on another device.',
+        detail:
+          'So the same account shows the same journal on another device. Stored as one private block per account that the server does not read into and cannot serve to anyone else.',
+      },
+      {
+        term: 'Team work, only if you are in a team',
+        detail:
+          'Sessions a coach set you and the results you logged against them. Kept separately from your journal, because more than one person can see it. See "If you join a team".',
       },
     ],
   },
@@ -92,6 +99,45 @@ export const POLICY_SECTIONS: PolicySection[] = [
       'The starting questions cover injuries, medical conditions and who to contact in an emergency. Those answers are treated differently from everything else.',
       'They are written to the secure keystore under their own key, entirely outside the structure that gets synced — there is no code path that can upload them. Nothing about them is written to logs, and every question is optional.',
       'You can delete them at any time from Journey → Progress. Deletion is immediate and cannot be undone.',
+    ],
+  },
+  {
+    id: 'teams',
+    title: 'If you join a team',
+    icon: 'people-outline',
+    accent: 'violet',
+    body: [
+      'Teams are optional and off until you join or create one. If you never do, nothing in this section applies to you and nobody can see anything of yours.',
+      'When a coach sets you work, that assignment and the result you log against it are visible to them. That is the whole of what they see. Your own training — your journal, goals, habits, measurements and your answers to the starting questions — is never visible to a coach, in any team, at any time.',
+      'This is enforced by how the data is stored rather than by a setting. Your own training lives in a private area the server does not read into, and the code that decides who may see a result is given the assignment, never a person — so there is no way to ask the server for someone\'s training, and no request that could return it.',
+      'A coach can open a single session so teammates see each other\'s results on it. That is off unless the coach turns it on, applies only to the one session, and can be turned off again.',
+    ],
+    rows: [
+      {
+        term: 'What your coach sees',
+        detail:
+          'Work they set you, in their own team, and what you recorded against it. Nothing else.',
+      },
+      {
+        term: 'What other members see',
+        detail:
+          'Your name and role on the roster. Your email address is never shown to anyone, including your coach.',
+      },
+      {
+        term: 'Coaches in your other teams',
+        detail:
+          'See nothing of this team. Access follows the work, not the person, so being on two rosters keeps two separate views.',
+      },
+      {
+        term: 'Leaving a team',
+        detail:
+          'Ends their access immediately. Everything you recorded stays yours and stays in your account.',
+      },
+      {
+        term: 'Deleting your account',
+        detail:
+          'Removes your memberships, your assignments and your results along with everything else.',
+      },
     ],
   },
   {
@@ -135,6 +181,11 @@ export const POLICY_SECTIONS: PolicySection[] = [
       {
         term: 'Stop syncing',
         detail: 'Settings → Sign out. The token is cleared and the app keeps working offline.',
+      },
+      {
+        term: 'Your coach\'s access',
+        detail:
+          'Teams → open the team → Leave. Access ends at once; your results stay with you.',
       },
       { term: 'Never sync at all', detail: 'Do not sign in. Nothing is sent anywhere.' },
     ],

@@ -50,14 +50,13 @@ export const TabBar = memo(function TabBar({
 
   return (
     <View
-      style={[styles.wrap, { bottom: Math.max(bottomInset, 10) }]}
+      style={[styles.wrap, { pointerEvents: 'box-none', bottom: Math.max(bottomInset, 10) }]}
       onLayout={onLayout}
-      pointerEvents="box-none"
     >
       {Platform.OS === 'ios' ? (
         <BlurView intensity={38} tint="dark" style={StyleSheet.absoluteFill} />
       ) : null}
-      <View style={styles.tint} pointerEvents="none" />
+      <View style={[styles.tint, { pointerEvents: 'none' }]} />
       {itemWidth > 0 && onATab ? <Animated.View style={[styles.indicator, indicator]} /> : null}
 
       {TAB_ROUTES.map((key) => (

@@ -66,7 +66,7 @@ export const VictoryProgress = memo(function VictoryProgress({
       tone={complete ? 'strong' : 'default'}
     >
       {complete ? (
-        <Animated.View pointerEvents="none" style={[styles.glow, glowStyle]} />
+        <Animated.View style={[styles.glow, { pointerEvents: 'none' }, glowStyle]} />
       ) : null}
 
       <View style={styles.top}>

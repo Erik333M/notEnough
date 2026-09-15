@@ -114,7 +114,11 @@ export function AppShell() {
   // Held back rather than flashed: the shell would otherwise render for a
   // frame behind the question.
   if (intent === undefined) return <View style={styles.root} />;
-  if (intent === null) return <IntentScreen onChoose={handleIntent} onSkip={skipIntent} />;
+  if (intent === null) {
+    return (
+      <IntentScreen name={user?.name ?? ''} onChoose={handleIntent} onSkip={skipIntent} />
+    );
+  }
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 8 }]}>
