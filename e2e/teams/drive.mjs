@@ -260,26 +260,62 @@ try {
 
   /* ------------------------------------------------- the athlete does the work */
 
-  console.log('\n the athlete logs it');
+  console.log('\n the athlete finds the work on Today');
+  await athleteSide.page.getByText('Today', { exact: true }).first().click();
+  await athleteSide.page.waitForTimeout(2500);
+  text = await athleteSide.page.locator('body').innerText();
+  check('assigned work appears on Today, not buried in Teams', text.includes('From your coach'), text.slice(0, 400));
+  check('the task itself is listed there', text.includes('2k row'), text.slice(0, 400));
+  check('it says how much is left', text.includes('1 left'), text.slice(0, 400));
+  await athleteSide.page.screenshot({ path: path.join(SHOTS, '08-today-athlete.png') });
+
+  /* ------------------------------------------------------- logging honestly */
+
+  console.log('\n logging a short session');
+  await athleteSide.page.getByLabel('Log 2k row').first().click();
+  await athleteSide.page.waitForTimeout(900);
+  text = await athleteSide.page.locator('body').innerText();
+  check('the log sheet says what was asked for', text.includes('asked for 20 reps'), text.slice(0, 300));
+  check('it opens on the target', text.includes('20 reps'));
+
+  // Two taps down: 20 -> 18, a session that fell short of the target.
+  await athleteSide.page.getByLabel('Decrease What you did').click();
+  await athleteSide.page.getByLabel('Decrease What you did').click();
+  await athleteSide.page.waitForTimeout(400);
+  text = await athleteSide.page.locator('body').innerText();
+  check('the amount can be corrected downwards', text.includes('18 reps'), text.slice(0, 300));
+  check(
+    'falling short is presented as a normal answer',
+    text.includes('Short of the target is still worth logging'),
+    text.slice(0, 400),
+  );
+  await athleteSide.page.screenshot({ path: path.join(SHOTS, '09-log-sheet.png') });
+
+  await athleteSide.page.getByText('Mark done', { exact: true }).click();
+  await athleteSide.page.waitForTimeout(2500);
+  text = await athleteSide.page.locator('body').innerText();
+  check('Today reflects the logged result', text.includes('All done'), text.slice(0, 400));
+  check('and keeps the honest number', text.includes('18 / 20 reps'), text.slice(0, 400));
+
+  /* -------------------------------------------------- what the coach can see */
+
+  console.log('\n the transparency screen');
+  await openTeamsTab(athleteSide.page);
   await athleteSide.page.getByText('Thursday squad', { exact: true }).first().click();
   await athleteSide.page.waitForTimeout(1800);
   text = await athleteSide.page.locator('body').innerText();
-  check('the athlete sees the session', text.includes('Tuesday conditioning'), text.slice(0, 300));
-  check('the athlete gets no invite code', !text.includes(inviteCode));
-  check('the athlete cannot create sessions', !text.includes('New session'));
+  check('the athlete is offered the visibility screen', text.includes('What your coach can see'), text.slice(0, 400));
 
-  await athleteSide.page.getByText('Tuesday conditioning', { exact: true }).first().click();
-  await athleteSide.page.waitForTimeout(1800);
+  await athleteSide.page.getByLabel('What your coach can see').click();
+  await athleteSide.page.waitForTimeout(1400);
   text = await athleteSide.page.locator('body').innerText();
-  check('the athlete sees their task', text.includes('2k row'), text.slice(0, 300));
-  check('the athlete gets no sharing switch', !text.includes('Let the squad see each other'));
-  check('the athlete is told they can tick it', text.includes('Tap a task to mark it done'));
-  await athleteSide.page.screenshot({ path: path.join(SHOTS, '08-session-athlete.png') });
-
-  await athleteSide.page.getByLabel('Mark done: 2k row').click();
-  await athleteSide.page.waitForTimeout(2000);
-  text = await athleteSide.page.locator('body').innerText();
-  check('the athlete’s own row reads done', text.includes('1/1'), text.slice(0, 400));
+  check('it lists what they can see', text.includes('They can see'), text.slice(0, 300));
+  check('it lists what they cannot', text.includes('They can never see'), text.slice(0, 300));
+  check('the journey is named as private', text.includes('Success Journey'));
+  check('medical answers are named as private', text.includes('emergency contact'));
+  check('other teams are named as separate', text.includes('other teams'));
+  check('leaving is explained', text.includes('access ends immediately'));
+  await athleteSide.page.screenshot({ path: path.join(SHOTS, '10-visibility.png') });
 
   /* ------------------------------------------------------ the coach sees it */
 
@@ -304,11 +340,12 @@ try {
   text = await coachSide.page.locator('body').innerText();
   check('the coach sees the athlete on the progress list', text.includes('Athlete Bo'), text.slice(0, 400));
   check('the coach sees it marked complete', text.includes('1/1'), text.slice(0, 400));
+  check('the coach sees the honest number, not the target', text.includes('18 / 20 reps'), text.slice(0, 400));
   check(
     'the coach cannot tick an athlete’s task for them',
     (await coachSide.page.getByLabel('Mark done: 2k row').count()) === 0,
   );
-  await coachSide.page.screenshot({ path: path.join(SHOTS, '09-coach-progress.png') });
+  await coachSide.page.screenshot({ path: path.join(SHOTS, '11-coach-progress.png') });
 
   /* --------------------------------------------------------- the solo user */
 

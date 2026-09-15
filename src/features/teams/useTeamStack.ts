@@ -14,7 +14,8 @@ import { useCallback, useMemo, useReducer } from 'react';
 export type TeamView =
   | { key: 'list' }
   | { key: 'team'; teamId: string }
-  | { key: 'session'; teamId: string; sessionId: string };
+  | { key: 'session'; teamId: string; sessionId: string }
+  | { key: 'visibility'; teamId: string; teamName: string };
 
 type Action = { type: 'push'; view: TeamView } | { type: 'pop' } | { type: 'reset' };
 
@@ -45,6 +46,7 @@ export type TeamNav = {
   canGoBack: boolean;
   openTeam: (teamId: string) => void;
   openSession: (teamId: string, sessionId: string) => void;
+  openVisibility: (teamId: string, teamName: string) => void;
   back: () => void;
   reset: () => void;
 };
@@ -61,6 +63,11 @@ export function useTeamStack(): TeamNav {
       dispatch({ type: 'push', view: { key: 'session', teamId, sessionId } }),
     [],
   );
+  const openVisibility = useCallback(
+    (teamId: string, teamName: string) =>
+      dispatch({ type: 'push', view: { key: 'visibility', teamId, teamName } }),
+    [],
+  );
   const back = useCallback(() => dispatch({ type: 'pop' }), []);
   const reset = useCallback(() => dispatch({ type: 'reset' }), []);
 
@@ -70,9 +77,10 @@ export function useTeamStack(): TeamNav {
       canGoBack: stack.length > 1,
       openTeam,
       openSession,
+      openVisibility,
       back,
       reset,
     }),
-    [stack, openTeam, openSession, back, reset],
+    [stack, openTeam, openSession, openVisibility, back, reset],
   );
 }

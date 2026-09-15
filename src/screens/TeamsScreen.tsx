@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { BackHandler } from 'react-native';
 
 import { useTeamStack } from '../features/teams/useTeamStack';
+import CoachVisibilityScreen from './CoachVisibilityScreen';
 import SessionScreen from './SessionScreen';
 import TeamDetailScreen from './TeamDetailScreen';
 import TeamsListScreen from './TeamsListScreen';
@@ -41,6 +42,17 @@ export default function TeamsScreen({
         bottomInset={bottomInset}
         onBack={nav.back}
         onOpenSession={(sessionId) => nav.openSession(teamId, sessionId)}
+        onOpenVisibility={(teamName) => nav.openVisibility(teamId, teamName)}
+      />
+    );
+  }
+
+  if (nav.view.key === 'visibility') {
+    return (
+      <CoachVisibilityScreen
+        teamName={nav.view.teamName}
+        bottomInset={bottomInset}
+        onBack={nav.back}
       />
     );
   }

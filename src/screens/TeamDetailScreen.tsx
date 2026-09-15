@@ -10,12 +10,13 @@ import { SessionRow } from '../features/teams/SessionRow';
 import { useTeamDetail } from '../features/teams/useTeamData';
 import { useAuth } from '../state/AuthContext';
 import { useTeams } from '../state/TeamsContext';
-import { palette, radius } from '../theme/theme';
+import { accentColor, palette, radius } from '../theme/theme';
 import { Button } from '../ui/Button';
 import { Appear, SectionHeader } from '../ui/Controls';
 import { EmptyState, SkeletonCard } from '../ui/Feedback';
 import { GlassCard } from '../ui/Glass';
 import { StackHeaderBar } from '../ui/StackHeaderBar';
+import { PressableScale } from '../ui/Touchable';
 import { useToast } from '../ui/Toast';
 
 /**
@@ -31,11 +32,13 @@ export default function TeamDetailScreen({
   bottomInset,
   onBack,
   onOpenSession,
+  onOpenVisibility,
 }: {
   teamId: string;
   bottomInset: number;
   onBack: () => void;
   onOpenSession: (sessionId: string) => void;
+  onOpenVisibility: (teamName: string) => void;
 }) {
   const { token, user } = useAuth();
   const { refresh: refreshTeams } = useTeams();
@@ -166,6 +169,33 @@ export default function TeamDetailScreen({
             </View>
           </Appear>
 
+          {/*
+            Shown to athletes only. A coach knows what they can see; the person
+            who needs this answer is the one being seen.
+          */}
+          {!isCoach ? (
+            <Appear delay={160}>
+              <PressableScale
+                haptic="light"
+                onPress={() => onOpenVisibility(data.team.name)}
+                accessibilityLabel="What your coach can see"
+              >
+                <GlassCard style={styles.visibilityRow}>
+                  <View style={styles.visibilityIcon}>
+                    <Ionicons name="eye-outline" size={16} color={accentColor.lime} />
+                  </View>
+                  <View style={styles.visibilityBody}>
+                    <Text style={styles.visibilityTitle}>What your coach can see</Text>
+                    <Text style={styles.visibilityCopy}>
+                      The work they set you, and nothing else.
+                    </Text>
+                  </View>
+                  <Ionicons name="chevron-forward" size={16} color={palette.textFaint} />
+                </GlassCard>
+              </PressableScale>
+            </Appear>
+          ) : null}
+
           <Appear delay={180}>
             <GlassCard style={styles.leaveCard}>
               <Text style={styles.leaveTitle}>Leaving this team</Text>
@@ -202,6 +232,18 @@ const styles = StyleSheet.create({
   list: { gap: 10 },
   actions: { marginTop: 10 },
   emptyCard: { paddingVertical: 8 },
+  visibilityRow: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 14 },
+  visibilityIcon: {
+    width: 34,
+    height: 34,
+    borderRadius: radius.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: palette.limeSoft,
+  },
+  visibilityBody: { flex: 1, gap: 2 },
+  visibilityTitle: { fontSize: 14, fontWeight: '800', color: palette.text },
+  visibilityCopy: { fontSize: 12, fontWeight: '600', color: palette.textMuted },
   leaveCard: { gap: 10 },
   leaveTitle: { fontSize: 14, fontWeight: '800', color: palette.text },
   leaveCopy: { fontSize: 12.5, lineHeight: 18, fontWeight: '600', color: palette.textMuted },
