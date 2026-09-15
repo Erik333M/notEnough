@@ -63,8 +63,9 @@ workRouter.post('/assignments', async (req, res, next) => {
       const created = targets.map((assigneeUserId) => ({
         id: crypto.randomUUID(),
         teamId,
-        /** Reserved for Stage 2's sessions; null means standalone work. */
+        /** Null means standalone work, typed straight into the roster. */
         sessionId: null,
+        taskId: null,
         title: input.title,
         detail: input.detail,
         kind: input.kind,

@@ -15,8 +15,6 @@ import { flushWrites, queueWrite, readJSON, storageKeys } from '../lib/storage';
 import { dayKey } from '../lib/time';
 import { cancelReminder, resyncReminders, scheduleGoalReminder } from '../notifications/notifications';
 import { createInitialState, migrate } from './defaults';
-import { createGroupActions, type GroupActions } from './group/actions';
-import { groupReducer, type GroupAction } from './group/reducer';
 import { createJourneyActions, type JourneyActions } from './journey/actions';
 import { journeyReducer, type JourneyAction } from './journey/reducer';
 import { activeGoals, currentStreak, dayCompletion, goalsClosed } from './selectors';
@@ -57,8 +55,6 @@ type Action =
   | { type: 'setVictoryTarget'; goal: VictoryGoalKey; target: string }
   /** Forwarded wholesale to the Success Journey sub-reducer. */
   | { type: 'journey'; action: JourneyAction }
-  /** Forwarded wholesale to the training-group sub-reducer. */
-  | { type: 'groups'; action: GroupAction };
 
 function writeLog(state: AppState, day: string, goalId: string, amount: number): AppState {
   const dayEntries = state.log[day];
@@ -145,10 +141,6 @@ function baseReducer(state: AppState, action: Action): AppState {
       return journey === state.journey ? state : { ...state, journey };
     }
 
-    case 'groups': {
-      const groups = groupReducer(state.groups, action.action);
-      return groups === state.groups ? state : { ...state, groups };
-    }
 
     default:
       return state;
@@ -193,8 +185,6 @@ type Actions = {
   setVictoryTarget: (goal: VictoryGoalKey, target: string) => void;
   /** Success Journey. Namespaced because the feature owns ~30 of its own. */
   journey: JourneyActions;
-  /** Training groups. Namespaced for the same reason journey is. */
-  groups: GroupActions;
 };
 
 /** Numbers several screens need. Computed once here, not once per consumer. */
@@ -518,7 +508,6 @@ export function DataProvider({
 
       journey: createJourneyActions((action) => dispatch({ type: 'journey', action })),
 
-      groups: createGroupActions((action) => dispatch({ type: 'groups', action })),
     };
   }, []);
 

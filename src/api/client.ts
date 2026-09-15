@@ -134,7 +134,6 @@ export type RemoteState = {
   plan: Record<string, unknown>;
   victories: unknown;
   journey: unknown;
-  groups: unknown;
   updatedAt: number;
 };
 

@@ -68,33 +68,7 @@ export function requireStatePayload(body) {
     plan,
     victories: normaliseVictories(body.victories),
     journey: normaliseJourney(body.journey),
-    groups: normaliseGroups(body.groups),
   };
-}
-
-/**
- * Training-group state.
- *
- * Same contract as the journey slice: the client owns the shape and
- * re-validates it on read, so the server only checks the envelope is
- * well-formed and bounded. What matters is that the key is carried through at
- * all — this object is rebuilt field by field, so a slice with no passthrough
- * would be silently dropped on the first sync.
- */
-function normaliseGroups(groups) {
-  if (!groups || typeof groups !== 'object' || Array.isArray(groups)) return null;
-
-  for (const field of ['groups', 'players', 'plans', 'tasks', 'assignments']) {
-    const value = groups[field];
-    if (value != null && !Array.isArray(value)) {
-      throw new ValidationError('groups', `groups.${field} must be an array.`);
-    }
-    if (Array.isArray(value) && value.length > 50000) {
-      throw new ValidationError('groups', `Too many entries in groups.${field}.`);
-    }
-  }
-
-  return groups;
 }
 
 /**
@@ -263,3 +237,59 @@ export function requireResultInput(body) {
     notes: optionalString(body?.notes, 'notes', 1000),
   };
 }
+
+/* ---------------------------------------------------------------- sessions */
+
+/**
+ * A training session.
+ *
+ * There is deliberately no separate "plan" entity. A reusable plan is just a
+ * session with `isTemplate` set — same fields, same tasks, same screens — so a
+ * coach learns one idea ("a session") and two verbs ("save as template",
+ * "start from template") rather than two overlapping concepts with their own
+ * menus. A template carries no date; a real session does.
+ */
+export function requireSessionInput(body) {
+  const isTemplate = Boolean(body?.isTemplate);
+  const rawDate = body?.date;
+
+  if (!isTemplate && (rawDate == null || rawDate === '')) {
+    throw new ValidationError('date', 'Pick a date for this session.');
+  }
+
+  return {
+    name: requireString(body?.name, 'name', { min: 2, max: 80 }),
+    notes: optionalString(body?.notes, 'notes', 1000),
+    isTemplate,
+    date: isTemplate ? null : requireDayKey(rawDate, 'date'),
+  };
+}
+
+export function requireTaskInput(body) {
+  const kind = typeof body?.kind === 'string' ? body.kind : 'check';
+  if (!TASK_KINDS.includes(kind)) throw new ValidationError('kind', 'Unknown task type.');
+
+  return {
+    title: requireString(body?.title, 'title', { min: 2, max: 120 }),
+    detail: optionalString(body?.detail, 'detail', 1000),
+    kind,
+    target: requireNumber(body?.target ?? 1, 'target', { min: 0, max: 100000 }),
+  };
+}
+
+/** Who a session is being handed to, and when it is due. */
+export function requireHandoutInput(body) {
+  const ids = Array.isArray(body?.assigneeUserIds) ? body.assigneeUserIds : [];
+  if (ids.length === 0) throw new ValidationError('assigneeUserIds', 'Choose at least one athlete.');
+  if (ids.length > 200) throw new ValidationError('assigneeUserIds', 'Too many athletes at once.');
+  for (const id of ids) {
+    if (typeof id !== 'string' || !id) throw new ValidationError('assigneeUserIds', 'Invalid athlete.');
+  }
+  return {
+    assigneeUserIds: [...new Set(ids)],
+    dueDate: body?.dueDate == null ? null : requireDayKey(body.dueDate),
+  };
+}
+
+/** One session cannot hold more tasks than a coach could sanely hand out. */
+export const MAX_TASKS_PER_SESSION = 40;

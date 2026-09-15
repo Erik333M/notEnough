@@ -37,6 +37,8 @@ import { config } from './config.js';
  * @property {Record<string, StateRow>} states
  * @property {Object[]} teams
  * @property {Object[]} memberships
+ * @property {Object[]} sessions
+ * @property {Object[]} sessionTasks
  * @property {Object[]} assignments
  * @property {Object[]} results
  */
@@ -51,7 +53,16 @@ import { config } from './config.js';
  */
 
 /** @type {Schema} */
-const EMPTY = { users: [], states: {}, teams: [], memberships: [], assignments: [], results: [] };
+const EMPTY = {
+  users: [],
+  states: {},
+  teams: [],
+  memberships: [],
+  sessions: [],
+  sessionTasks: [],
+  assignments: [],
+  results: [],
+};
 
 /** @type {Schema | null} */
 let cache = null;
@@ -73,6 +84,8 @@ async function load() {
       states: parsed.states && typeof parsed.states === 'object' ? parsed.states : {},
       teams: Array.isArray(parsed.teams) ? parsed.teams : [],
       memberships: Array.isArray(parsed.memberships) ? parsed.memberships : [],
+      sessions: Array.isArray(parsed.sessions) ? parsed.sessions : [],
+      sessionTasks: Array.isArray(parsed.sessionTasks) ? parsed.sessionTasks : [],
       assignments: Array.isArray(parsed.assignments) ? parsed.assignments : [],
       results: Array.isArray(parsed.results) ? parsed.results : [],
     };

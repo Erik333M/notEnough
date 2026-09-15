@@ -5,6 +5,8 @@ import os from 'node:os';
 import { config } from './config.js';
 import { authRouter } from './routes/auth.js';
 import { stateRouter } from './routes/state.js';
+import { sessionActionsRouter } from './routes/session-actions.js';
+import { sessionsRouter } from './routes/sessions.js';
 import { teamsRouter } from './routes/teams.js';
 import { workRouter } from './routes/work.js';
 import { ValidationError } from './validate.js';
@@ -31,6 +33,10 @@ app.get('/api/health', (_req, res) => {
 app.use('/api/auth', authRouter);
 app.use('/api/state', stateRouter);
 app.use('/api/teams', teamsRouter);
+// Two routers, one path: session-actions holds the verbs (hand out, start from
+// template) that would have pushed the sessions file past a readable size.
+app.use('/api/sessions', sessionsRouter);
+app.use('/api/sessions', sessionActionsRouter);
 app.use('/api/work', workRouter);
 
 app.use((_req, res) => {

@@ -21,7 +21,6 @@ function toRemote(state: AppState) {
     plan: state.plan,
     victories: state.victories,
     journey: state.journey,
-    groups: state.groups,
     updatedAt: state.updatedAt,
   };
 }

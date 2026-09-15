@@ -1,5 +1,3 @@
-import { createGroupState } from './group/factory';
-import { GROUP_SCHEMA_VERSION, migrateGroups } from './group/schema';
 import { createJourneyState } from './journey/factory';
 import { JOURNEY_SCHEMA_VERSION, migrateJourney } from './journey/schema';
 import { createVictoryState, defaultVictoryTargets, emptyVictoryDay } from './victories';
@@ -76,7 +74,6 @@ export function createInitialState(): AppState {
     },
     victories: createVictoryState(),
     journey: createJourneyState(JOURNEY_SCHEMA_VERSION),
-    groups: createGroupState(GROUP_SCHEMA_VERSION),
     updatedAt: Date.now(),
   };
 }
@@ -140,7 +137,6 @@ export function migrate(raw: unknown): AppState {
     journey: migrateJourney(value.journey),
     // Total by the same rule: an account older than the feature, or one whose
     // slice came back malformed, gets a fresh valid slice rather than an error.
-    groups: migrateGroups(value.groups),
     updatedAt: Number(value.updatedAt) || 0,
   };
 }
