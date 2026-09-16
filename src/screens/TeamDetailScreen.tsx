@@ -6,18 +6,21 @@ import { teamsApi } from '../api/teams';
 import { InviteCard } from '../features/teams/InviteCard';
 import { NewSessionSheet } from '../features/teams/NewSessionSheet';
 import { RosterRow } from '../features/teams/RosterRow';
-import { SessionRow } from '../features/teams/SessionRow';
-import { TeamFeed } from '../features/teams/TeamFeed';
+import { NewChallengeSheet } from '../features/challenges/NewChallengeSheet';
+import { TeamChallengesSection } from '../features/challenges/TeamChallengesSection';
+import { useChallenges } from '../features/challenges/useChallenges';
+import { TeamFooter } from '../features/teams/TeamFooter';
+import { TeamSessionsSection } from '../features/teams/TeamSessionsSection';
+import { TeamWallSection } from '../features/teams/TeamWallSection';
 import { useTeamDetail } from '../features/teams/useTeamData';
 import { useAuth } from '../state/AuthContext';
 import { useTeams } from '../state/TeamsContext';
-import { accentColor, palette, radius } from '../theme/theme';
+import { palette, radius } from '../theme/theme';
 import { Button } from '../ui/Button';
 import { Appear, SectionHeader } from '../ui/Controls';
-import { EmptyState, SkeletonCard } from '../ui/Feedback';
+import { SkeletonCard } from '../ui/Feedback';
 import { GlassCard } from '../ui/Glass';
 import { StackHeaderBar } from '../ui/StackHeaderBar';
-import { PressableScale } from '../ui/Touchable';
 import { useToast } from '../ui/Toast';
 
 /**
@@ -34,12 +37,14 @@ export default function TeamDetailScreen({
   onBack,
   onOpenSession,
   onOpenVisibility,
+  onOpenChallenge,
 }: {
   teamId: string;
   bottomInset: number;
   onBack: () => void;
   onOpenSession: (sessionId: string) => void;
   onOpenVisibility: (teamName: string) => void;
+  onOpenChallenge: (challengeId: string) => void;
 }) {
   const { token, user } = useAuth();
   const { refresh: refreshTeams } = useTeams();
@@ -48,6 +53,8 @@ export default function TeamDetailScreen({
 
   const [refreshing, setRefreshing] = useState(false);
   const [composing, setComposing] = useState(false);
+  const [settingChallenge, setSettingChallenge] = useState(false);
+  const challenges = useChallenges(teamId);
 
   const handleRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -139,67 +146,33 @@ export default function TeamDetailScreen({
           ) : null}
 
           <Appear delay={60}>
-            <SectionHeader
-              title="Sessions"
-              meta={isCoach ? 'What you have set' : 'What your coach has set'}
+            <TeamSessionsSection
+              sessions={data.sessions}
+              isCoach={isCoach}
+              onOpen={onOpenSession}
+              onCreate={() => setComposing(true)}
             />
-            {data.sessions.length === 0 ? (
-              <GlassCard style={styles.emptyCard}>
-                <EmptyState
-                  icon="calendar-outline"
-                  title="No sessions yet"
-                  copy={
-                    isCoach
-                      ? 'Create one, add a few tasks, then hand it to the squad.'
-                      : 'Nothing has been set for you yet. It will appear here.'
-                  }
-                />
-              </GlassCard>
-            ) : (
-              <View style={styles.list}>
-                {data.sessions.map((session) => (
-                  <SessionRow
-                    key={session.id}
-                    session={session}
-                    onPress={() => onOpenSession(session.id)}
-                  />
-                ))}
-              </View>
-            )}
+          </Appear>
 
-            {isCoach ? (
-              <View style={styles.actions}>
-                <Button label="New session" icon="add" variant="glass" onPress={() => setComposing(true)} />
-              </View>
-            ) : null}
+          <Appear delay={90}>
+            <TeamChallengesSection
+              summaries={challenges.summaries}
+              localScores={challenges.localScores}
+              today={challenges.today}
+              isCoach={isCoach}
+              onOpen={onOpenChallenge}
+              onCreate={() => setSettingChallenge(true)}
+            />
           </Appear>
 
           <Appear delay={110}>
-            <SectionHeader
-              title="Wall"
-              meta={
-                data.shares.length === 0
-                  ? 'Nothing posted yet'
-                  : `${data.shares.length} shared by the team`
-              }
+            <TeamWallSection
+              shares={data.shares}
+              currentUserId={user?.id}
+              isCoach={isCoach}
+              onRemove={(share) => void handleRemoveShare(share.id)}
             />
-            {data.shares.length === 0 ? (
-              <GlassCard style={styles.wallEmpty}>
-                <Text style={styles.wallCopy}>
-                  Achievements only appear here when somebody chooses to post one. Nothing lands
-                  on this wall because a person trained — find yours under Progress.
-                </Text>
-              </GlassCard>
-            ) : (
-              <TeamFeed
-                shares={data.shares}
-                currentUserId={user?.id}
-                isCoach={isCoach}
-                onRemove={(share) => void handleRemoveShare(share.id)}
-              />
-            )}
           </Appear>
-
           <Appear delay={120}>
             <SectionHeader title="Roster" meta={`${data.roster.length} in this team`} />
             <View style={styles.list}>
@@ -209,45 +182,29 @@ export default function TeamDetailScreen({
             </View>
           </Appear>
 
-          {/*
-            Shown to athletes only. A coach knows what they can see; the person
-            who needs this answer is the one being seen.
-          */}
-          {!isCoach ? (
-            <Appear delay={160}>
-              <PressableScale
-                haptic="light"
-                onPress={() => onOpenVisibility(data.team.name)}
-                accessibilityLabel="What your coach can see"
-              >
-                <GlassCard style={styles.visibilityRow}>
-                  <View style={styles.visibilityIcon}>
-                    <Ionicons name="eye-outline" size={16} color={accentColor.lime} />
-                  </View>
-                  <View style={styles.visibilityBody}>
-                    <Text style={styles.visibilityTitle}>What your coach can see</Text>
-                    <Text style={styles.visibilityCopy}>
-                      The work they set you, and nothing else.
-                    </Text>
-                  </View>
-                  <Ionicons name="chevron-forward" size={16} color={palette.textFaint} />
-                </GlassCard>
-              </PressableScale>
-            </Appear>
-          ) : null}
-
-          <Appear delay={180}>
-            <GlassCard style={styles.leaveCard}>
-              <Text style={styles.leaveTitle}>Leaving this team</Text>
-              <Text style={styles.leaveCopy}>
-                Your coach stops being able to see anything of yours straight away. Everything you
-                logged stays yours and stays in your account.
-              </Text>
-              <Button label="Leave team" icon="exit-outline" variant="danger" onPress={handleLeave} />
-            </GlassCard>
-          </Appear>
+          <TeamFooter
+            teamName={data.team.name}
+            isCoach={isCoach}
+            onOpenVisibility={onOpenVisibility}
+            onLeave={handleLeave}
+          />
         </>
       ) : null}
+
+      <NewChallengeSheet
+        open={settingChallenge}
+        onClose={() => setSettingChallenge(false)}
+        onCreate={async (input) => {
+          if (!token) return false;
+          const result = await teamsApi.createChallenge(token, teamId, input);
+          if (!result.ok) {
+            notify(result.error.message, 'error');
+            return false;
+          }
+          await challenges.reload();
+          return true;
+        }}
+      />
 
       <NewSessionSheet
         open={composing}
@@ -271,22 +228,4 @@ const styles = StyleSheet.create({
   noticeText: { flex: 1, fontSize: 12, fontWeight: '600', color: palette.amber },
   list: { gap: 10 },
   actions: { marginTop: 10 },
-  emptyCard: { paddingVertical: 8 },
-  wallEmpty: { paddingVertical: 14 },
-  wallCopy: { fontSize: 12.5, lineHeight: 18, fontWeight: '600', color: palette.textMuted },
-  visibilityRow: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 14 },
-  visibilityIcon: {
-    width: 34,
-    height: 34,
-    borderRadius: radius.md,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: palette.limeSoft,
-  },
-  visibilityBody: { flex: 1, gap: 2 },
-  visibilityTitle: { fontSize: 14, fontWeight: '800', color: palette.text },
-  visibilityCopy: { fontSize: 12, fontWeight: '600', color: palette.textMuted },
-  leaveCard: { gap: 10 },
-  leaveTitle: { fontSize: 14, fontWeight: '800', color: palette.text },
-  leaveCopy: { fontSize: 12.5, lineHeight: 18, fontWeight: '600', color: palette.textMuted },
 });

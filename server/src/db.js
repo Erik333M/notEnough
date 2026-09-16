@@ -42,6 +42,8 @@ import { config } from './config.js';
  * @property {Object[]} assignments
  * @property {Object[]} results
  * @property {Object[]} shares
+ * @property {Object[]} challenges
+ * @property {Object[]} entries
  */
 
 /**
@@ -64,6 +66,8 @@ const EMPTY = {
   assignments: [],
   results: [],
   shares: [],
+  challenges: [],
+  entries: [],
 };
 
 /** @type {Schema | null} */
@@ -91,6 +95,8 @@ async function load() {
       assignments: Array.isArray(parsed.assignments) ? parsed.assignments : [],
       results: Array.isArray(parsed.results) ? parsed.results : [],
       shares: Array.isArray(parsed.shares) ? parsed.shares : [],
+      challenges: Array.isArray(parsed.challenges) ? parsed.challenges : [],
+      entries: Array.isArray(parsed.entries) ? parsed.entries : [],
     };
   } catch (error) {
     if (error.code !== 'ENOENT') {
@@ -163,6 +169,9 @@ export function purgeUserData(data, userId) {
   // Their posts go too. A boast with no author behind it is a ghost on a feed
   // nobody can remove.
   data.shares = data.shares.filter((row) => row.userId !== userId);
+  // Their leaderboard entries go too, so a deleted account cannot keep
+  // occupying a place on a ranking nobody can remove them from.
+  data.entries = data.entries.filter((row) => row.userId !== userId);
 }
 
 export async function findUserByEmail(email) {

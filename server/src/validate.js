@@ -328,3 +328,42 @@ export function requireShareInput(body) {
 
 /** Enough for a season of a busy squad; old posts fall off the read, not the store. */
 export const SHARE_PAGE = 60;
+
+/* -------------------------------------------------------------- challenges */
+
+/**
+ * A challenge runs over a window and is scored by a single number.
+ *
+ * The number is computed on the athlete's own device from their own data and
+ * submitted; the server never sees what it was derived from. Joining is
+ * therefore the whole of the consent — until you join, you have no entry, no
+ * score and no place on any ranking.
+ */
+export const CHALLENGE_SCOPES = ['daily', 'weekly', 'monthly'];
+
+export function requireChallengeInput(body) {
+  const scope = typeof body?.scope === 'string' ? body.scope : '';
+  if (!CHALLENGE_SCOPES.includes(scope)) throw new ValidationError('scope', 'Unknown challenge length.');
+
+  const periodStart = requireDayKey(body?.periodStart, 'periodStart');
+  const periodEnd = requireDayKey(body?.periodEnd, 'periodEnd');
+  if (periodEnd < periodStart) {
+    throw new ValidationError('periodEnd', 'A challenge cannot end before it starts.');
+  }
+
+  return {
+    scope,
+    title: requireString(body?.title, 'title', { min: 2, max: 80 }),
+    description: optionalString(body?.description, 'description', 500),
+    /** Free text. The app awards nothing itself — a coach decides what it means. */
+    reward: optionalString(body?.reward, 'reward', 160),
+    /** What a full score looks like, so progress can be shown as a fraction. */
+    target: requireNumber(body?.target ?? 1, 'target', { min: 1, max: 100000 }),
+    periodStart,
+    periodEnd,
+  };
+}
+
+export function requireScore(value) {
+  return requireNumber(value, 'score', { min: 0, max: 100000 });
+}
