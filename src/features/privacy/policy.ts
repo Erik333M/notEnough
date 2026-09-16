@@ -25,7 +25,7 @@ export type PolicySection = {
   rows?: PolicyRow[];
 };
 
-export const POLICY_UPDATED = '15 September 2026';
+export const POLICY_UPDATED = '16 September 2026';
 
 export const POLICY_SUMMARY = [
   'Everything you write is kept on your device first. The app works fully offline.',
@@ -111,6 +111,7 @@ export const POLICY_SECTIONS: PolicySection[] = [
       'When a coach sets you work, that assignment and the result you log against it are visible to them. That is the whole of what they see. Your own training — your journal, goals, habits, measurements and your answers to the starting questions — is never visible to a coach, in any team, at any time.',
       'This is enforced by how the data is stored rather than by a setting. Your own training lives in a private area the server does not read into, and the code that decides who may see a result is given the assignment, never a person — so there is no way to ask the server for someone\'s training, and no request that could return it.',
       'A coach can open a single session so teammates see each other\'s results on it. That is off unless the coach turns it on, applies only to the one session, and can be turned off again.',
+      'Challenges work the same way round. Nobody is entered because they are on a roster: joining publishes one number — your total for that challenge — and leaving takes it away again.',
     ],
     rows: [
       {
@@ -127,6 +128,11 @@ export const POLICY_SECTIONS: PolicySection[] = [
         term: 'Coaches in your other teams',
         detail:
           'See nothing of this team. Access follows the work, not the person, so being on two rosters keeps two separate views.',
+      },
+      {
+        term: 'A challenge you join',
+        detail:
+          'Your total for that challenge, and your name, on that challenge\'s board. The number is worked out on this device and only the total is sent — never what it was made of. No entry, no board, until you choose to join.',
       },
       {
         term: 'Leaving a team',

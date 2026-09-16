@@ -1,6 +1,6 @@
 # Privacy Policy
 
-**Last updated: 15 September 2026**
+**Last updated: 16 September 2026**
 
 NOTenough is a training journal. This document describes exactly what the app
 stores, where it stores it, and what you can delete. It describes the app as it
@@ -115,10 +115,26 @@ athlete in both.
 | Your name and role | Everyone on that team's roster. |
 | Your email address | **Nobody** — not other athletes, and not your coach. Rosters carry names only. |
 | Your results | Your coach. Teammates only if the coach opens that one session's board. |
+| Your score in a challenge you joined | Everyone on that team, on that challenge's board. One number, with your name. |
 
 A coach can open a **single session** so teammates can see each other's results
 on it. It is off unless the coach turns it on, it applies only to that one
 session, and turning it off takes the view away again.
+
+### Challenges
+
+A challenge is scored from your own 3 Victories. **The score is worked out on
+your device and only the total is sent** — a score of 18 says 18, and nothing
+about which victories, or when, or what your targets were. The server never
+reads the log it came from.
+
+Nobody is entered because they are on a roster. **Joining is the whole of the
+consent**: until you join you have no entry and no place on the board, and
+leaving removes your score entirely. People who have not joined are absent from
+a board rather than shown at the bottom of it.
+
+Relevant code: [`server/src/routes/challenges.js`](server/src/routes/challenges.js),
+[`src/features/challenges/useChallenges.ts`](src/features/challenges/useChallenges.ts).
 
 ### Leaving, and deleting
 
@@ -156,6 +172,7 @@ athlete is on two rosters.
 | Delete your account and everything synced | Settings → *Delete account* | Your account row and your stored journal are both removed from the server. |
 | Stop syncing | Settings → *Sign out* | The token is cleared. The app keeps working offline. |
 | End your coach's access | Teams → open the team → *Leave* | Access ends at once; your results stay with you. |
+| Come off a leaderboard | Open the challenge → *Leave the challenge* | Your entry and score are deleted. |
 | Use the app with no account at all | Never sign in | Nothing is sent anywhere. |
 
 Account deletion is implemented in

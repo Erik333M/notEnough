@@ -94,13 +94,21 @@ async function shot(page, name) {
   }
 }
 
+/**
+ * Opens the slide-out menu and goes to Teams.
+ *
+ * Clicks are forced. Almost everything in this app is spring-animated, and
+ * Playwright's actionability check waits for an element's box to stop moving —
+ * which a Reanimated loop never guarantees. The assertions after each tap are
+ * what prove the tap worked; the actionability wait only added flake.
+ */
 async function openTeamsTab(page) {
   // Teams lives in the slide-out menu, not the tab bar.
-  await page.getByLabel('Open menu').click();
+  await page.getByLabel('Open menu').click({ force: true });
   await page.waitForTimeout(700);
   // `.last()` on purpose: when you are already on the Teams route the shell
   // header shows the same word, and it is not the thing to click.
-  await page.getByText('Teams', { exact: true }).last().click();
+  await page.getByText('Teams', { exact: true }).last().click({ force: true });
   await page.waitForTimeout(1600);
 }
 
@@ -154,7 +162,7 @@ try {
   /* ------------------------------------------------------- the menu entry */
 
   console.log('\n the menu');
-  await coachSide.page.getByLabel('Open menu').click();
+  await coachSide.page.getByLabel('Open menu').click({ force: true });
   await coachSide.page.waitForTimeout(800);
   const menuText = await coachSide.page.locator('body').innerText();
   check('Teams appears in the menu for a coach', menuText.includes('Teams'));
@@ -501,7 +509,7 @@ try {
   text = await solo.page.locator('body').innerText();
   check('a solo user lands on Today', text.includes('Daily goals'), text.slice(0, 200));
 
-  await solo.page.getByLabel('Open menu').click();
+  await solo.page.getByLabel('Open menu').click({ force: true });
   await solo.page.waitForTimeout(800);
   const soloMenu = await solo.page.locator('body').innerText();
   check('Teams is absent from a solo user’s menu', !soloMenu.includes('Teams'), soloMenu.slice(0, 300));

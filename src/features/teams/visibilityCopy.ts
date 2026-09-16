@@ -32,6 +32,10 @@ export const CANNOT_SEE: VisibilityLine[] = [
 
 export const VISIBILITY_NOTES: { title: string; body: string }[] = [
   {
+    title: 'Challenges',
+    body: 'If you join a challenge, your total for it — a single number — appears on that challenge\'s board for the team, with your name. Nothing else goes with it: not which victories you won, not when, not what your targets were. Until you join you have no entry and no place on the board, and leaving takes your score away with you.',
+  },
+  {
     title: 'Teammates',
     body: 'By default nobody else on the team sees your results. A coach can open a single session so the squad can compare on that one — you will see it marked as shared when they have.',
   },
