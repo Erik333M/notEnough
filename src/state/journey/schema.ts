@@ -27,10 +27,12 @@ import {
   readMeasurement,
   readMovement,
 } from './readers';
-import type { JourneyState, UnitSystem } from './types';
+import type {
+  BodyForm, JourneyState, UnitSystem } from './types';
 
 export const JOURNEY_SCHEMA_VERSION = 1;
 
+const BODY_FORMS: readonly BodyForm[] = ['male', 'female'];
 const UNIT_SYSTEMS: readonly UnitSystem[] = ['metric', 'imperial'];
 
 /**
@@ -111,6 +113,7 @@ export function migrateJourney(raw: unknown): JourneyState {
     habits: mapRows(raw.habits, readHabit, LIMITS.habits),
     checks: capDays(readChecks(raw.checks), LIMITS.entries),
     units: asEnum(raw.units, UNIT_SYSTEMS, 'metric'),
+    bodyForm: asEnum(raw.bodyForm, BODY_FORMS, 'male'),
   };
 
   // A payload from a *newer* build is read with this build's readers, which

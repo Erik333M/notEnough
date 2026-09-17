@@ -45,6 +45,7 @@
     "test:journey": "bash scripts/journey-domain.sh",
     "e2e:catalogue": "node e2e/catalogue.mjs",
     "e2e:friends": "node e2e/friends.mjs",
+    "e2e:muscles": "node e2e/muscles.mjs",
     "test:level": "node e2e/level.test.mjs",
     "test:reminders": "node e2e/teams/reminders.test.mjs",
     "test:achievements": "node e2e/teams/achievements.test.mjs",

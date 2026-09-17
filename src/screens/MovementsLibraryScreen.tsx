@@ -12,7 +12,9 @@ import {
   searchMovements,
 } from '../state/journey/movements';
 import type { Movement, MovementCategory } from '../state/journey/types';
-import { palette } from '../theme/theme';
+import { muscleSummary } from '../state/journey/muscles';
+import { MuscleSheet } from '../features/muscles/MuscleSheet';
+import { accentColor, palette } from '../theme/theme';
 import { Appear, RoundIconButton } from '../ui/Controls';
 import { EmptyState } from '../ui/Feedback';
 import { PressableScale } from '../ui/Touchable';
@@ -32,11 +34,14 @@ import { useToast } from '../ui/Toast';
 const Row = memo(function Row({
   movement,
   onDelete,
+  onShowMuscles,
 }: {
   movement: Movement;
   onDelete: (movement: Movement) => void;
+  onShowMuscles: (movement: Movement) => void;
 }) {
   const handleDelete = useCallback(() => onDelete(movement), [movement, onDelete]);
+  const tagged = movement.muscles.primary.length > 0;
 
   return (
     <View style={styles.row}>
@@ -46,9 +51,23 @@ const Row = memo(function Row({
         </Text>
         <Text style={styles.rowMeta} numberOfLines={1}>
           {MOVEMENT_CATEGORY_LABEL[movement.category]}
-          {movement.aliases.length > 0 ? ` • ${movement.aliases.join(', ')}` : ''}
+          {tagged ? ` • ${muscleSummary(movement.muscles)}` : ''}
         </Text>
       </View>
+
+      {/* The figure is the point of the tagging, so it is one tap from a row. */}
+      {tagged ? (
+        <PressableScale
+          onPress={() => onShowMuscles(movement)}
+          haptic="light"
+          scaleTo={0.86}
+          hitSlop={10}
+          accessibilityLabel={`Which muscles ${movement.name} works`}
+          style={styles.delete}
+        >
+          <Ionicons name="body-outline" size={16} color={accentColor.rose} />
+        </PressableScale>
+      ) : null}
 
       {movement.isCustom ? (
         <PressableScale
@@ -80,6 +99,7 @@ export default function MovementsLibraryScreen({
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState<MovementCategory | null>(null);
   const [creating, setCreating] = useState(false);
+  const [showing, setShowing] = useState<Movement | null>(null);
 
   const journeyState = state?.journey;
 
@@ -106,6 +126,7 @@ export default function MovementsLibraryScreen({
   );
 
   const customCount = journeyState?.movements.length ?? 0;
+  const bodyForm = journeyState?.bodyForm ?? 'male';
 
   return (
     <View style={styles.flex}>
@@ -137,7 +158,9 @@ export default function MovementsLibraryScreen({
       <FlatList
         data={results}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <Row movement={item} onDelete={handleDelete} />}
+        renderItem={({ item }) => (
+          <Row movement={item} onDelete={handleDelete} onShowMuscles={setShowing} />
+        )}
         contentContainerStyle={[styles.list, { paddingBottom: bottomInset }]}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
@@ -164,6 +187,14 @@ export default function MovementsLibraryScreen({
         initialName={query}
         onClose={() => setCreating(false)}
         onCreate={handleCreate}
+      />
+
+      <MuscleSheet
+        name={showing?.name ?? null}
+        work={showing?.muscles ?? { primary: [], secondary: [] }}
+        form={bodyForm}
+        onChangeForm={journey.setBodyForm}
+        onClose={() => setShowing(null)}
       />
     </View>
   );

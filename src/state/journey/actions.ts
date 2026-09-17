@@ -19,6 +19,7 @@ import {
 } from './factory';
 import type { JourneyAction, EntryTextField, IntentionSlot, WodTextField } from './reducer';
 import type {
+  BodyForm,
   BenchmarkDefinition,
   BenchmarkGroup,
   BenchmarkMetric,
@@ -80,6 +81,7 @@ export type JourneyActions = {
   updateMeasurement: (id: string, patch: Partial<MeasurementEntry>) => void;
   deleteMeasurement: (id: string) => void;
   setUnits: (units: UnitSystem) => void;
+  setBodyForm: (form: BodyForm) => void;
 
   /* habits */
   adoptTemplate: (template: HabitTemplate) => Habit;
@@ -219,6 +221,9 @@ export function createJourneyActions(dispatch: JourneyDispatch): JourneyActions 
       dispatch({ type: 'measurement/delete', id });
     },
 
+    setBodyForm(form) {
+      dispatch({ type: 'measurement/setBodyForm', form });
+    },
     setUnits(units) {
       dispatch({ type: 'measurement/setUnits', units });
     },

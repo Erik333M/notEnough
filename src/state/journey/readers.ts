@@ -23,6 +23,7 @@ import {
 import { BOUNDS } from './bounds';
 import { HABIT_GROUPS, MOVEMENT_CATEGORIES, emptyBaseline } from './factory';
 import { LINE_MAX, NOTE_MAX } from './limits';
+import { MUSCLE_GROUPS, type MuscleGroup, type MuscleWork } from './muscles';
 import type {
   BenchmarkDefinition,
   BenchmarkGroup,
@@ -50,7 +51,32 @@ export function readMovement(value: unknown): Movement | null {
     // Anything persisted in state is by definition custom; seeds are merged
     // from JSON at read time and never written here.
     isCustom: true,
+    muscles: readMuscleWork(value.muscles),
   };
+}
+
+/**
+ * Muscle tags, coerced the same way everything else is.
+ *
+ * An unknown group is dropped rather than rejected: the seed file gains
+ * regions faster than a saved state does, and a stale install should show the
+ * groups it understands rather than no figure at all.
+ */
+export function readMuscleWork(value: unknown): MuscleWork {
+  if (!isRecord(value)) return { primary: [], secondary: [] };
+  const read = (raw: unknown) =>
+    asArray(
+      raw,
+      (item) =>
+        typeof item === 'string' && (MUSCLE_GROUPS as readonly string[]).includes(item)
+          ? (item as MuscleGroup)
+          : null,
+      MUSCLE_GROUPS.length,
+    );
+  const primary = read(value.primary);
+  // A muscle is never both; primary wins, so the figure cannot shade one
+  // region twice with different intensities.
+  return { primary, secondary: read(value.secondary).filter((g) => !primary.includes(g)) };
 }
 
 /* --------------------------------------------------------------- benchmarks */
