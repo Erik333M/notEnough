@@ -132,6 +132,23 @@ export function canRemoveShare(data, userId, share) {
   return isCoach(data, userId, share.teamId);
 }
 
+/**
+ * Take part in a challenge, and appear on its ranking.
+ *
+ * Any active member of the team it belongs to. Joining is an act, never a
+ * default: a member who has not joined has no entry and no place on the board,
+ * which is what keeps a leaderboard something you opted into rather than
+ * something that happened to you.
+ */
+export function canEnterChallenge(data, userId, challenge) {
+  return Boolean(challenge) && !challenge.archived && isMember(data, userId, challenge.teamId);
+}
+
+/** Create, edit or close a challenge. Coaches of that team. */
+export function canManageChallenge(data, userId, challenge) {
+  return Boolean(challenge) && isCoach(data, userId, challenge.teamId);
+}
+
 /* ------------------------------------------------------------- projections */
 
 /**

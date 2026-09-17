@@ -78,13 +78,37 @@ async function signUp(person, label) {
   return { context, page };
 }
 
+/**
+ * Screenshots are diagnostics, not assertions.
+ *
+ * Reanimated drives its loops from requestAnimationFrame, which Playwright
+ * cannot freeze, so a page with a breathing glow on it can keep the capture
+ * waiting until it times out. That is worth a warning and nothing more — it
+ * should never abort a run that is otherwise passing.
+ */
+async function shot(page, name) {
+  try {
+    await page.screenshot({ path: path.join(SHOTS, `${name}.png`), timeout: 8000 });
+  } catch {
+    console.log(`  [warn] screenshot ${name} timed out`);
+  }
+}
+
+/**
+ * Opens the slide-out menu and goes to Teams.
+ *
+ * Clicks are forced. Almost everything in this app is spring-animated, and
+ * Playwright's actionability check waits for an element's box to stop moving —
+ * which a Reanimated loop never guarantees. The assertions after each tap are
+ * what prove the tap worked; the actionability wait only added flake.
+ */
 async function openTeamsTab(page) {
   // Teams lives in the slide-out menu, not the tab bar.
-  await page.getByLabel('Open menu').click();
+  await page.getByLabel('Open menu').click({ force: true });
   await page.waitForTimeout(700);
   // `.last()` on purpose: when you are already on the Teams route the shell
   // header shows the same word, and it is not the thing to click.
-  await page.getByText('Teams', { exact: true }).last().click();
+  await page.getByText('Teams', { exact: true }).last().click({ force: true });
   await page.waitForTimeout(1600);
 }
 
@@ -100,7 +124,7 @@ try {
   check('all three answers are offered', text.includes('Train on my own') && text.includes('Train with a coach') && text.includes('Coach others'));
   check('the question can be skipped', text.includes('Skip for now'));
   check('it does not present itself as an identity', text.includes('change your mind'));
-  await coachSide.page.screenshot({ path: path.join(SHOTS, '01-intent.png') });
+  await shot(coachSide.page, '01-intent');
 
   /* ------------------------------------------------------ creating a team */
 
@@ -123,7 +147,7 @@ try {
     'the row is badged Coach',
     (await coachSide.page.getByText('Coach', { exact: true }).count()) > 0,
   );
-  await coachSide.page.screenshot({ path: path.join(SHOTS, '02-team-created.png') });
+  await shot(coachSide.page, '02-team-created');
 
   const coachLogin = await apiCall('POST', '/api/auth/login', {
     body: { email: coach.email, password: coach.password },
@@ -138,11 +162,11 @@ try {
   /* ------------------------------------------------------- the menu entry */
 
   console.log('\n the menu');
-  await coachSide.page.getByLabel('Open menu').click();
+  await coachSide.page.getByLabel('Open menu').click({ force: true });
   await coachSide.page.waitForTimeout(800);
   const menuText = await coachSide.page.locator('body').innerText();
   check('Teams appears in the menu for a coach', menuText.includes('Teams'));
-  await coachSide.page.screenshot({ path: path.join(SHOTS, '03-menu-coach.png') });
+  await shot(coachSide.page, '03-menu-coach');
 
   /* ----------------------------------------------- the answer is remembered */
 
@@ -178,7 +202,7 @@ try {
     'the athlete is not badged Coach',
     (await athleteSide.page.getByText('Coach', { exact: true }).count()) === 0,
   );
-  await athleteSide.page.screenshot({ path: path.join(SHOTS, '04-athlete-joined.png') });
+  await shot(athleteSide.page, '04-athlete-joined');
 
   const athleteLogin = await apiCall('POST', '/api/auth/login', {
     body: { email: athlete.email, password: athlete.password },
@@ -204,7 +228,7 @@ try {
     !text.includes(athlete.email),
     text.slice(0, 400),
   );
-  await coachSide.page.screenshot({ path: path.join(SHOTS, '06-team-coach.png') });
+  await shot(coachSide.page, '06-team-coach');
 
   await coachSide.page.getByText('New session', { exact: true }).click();
   await coachSide.page.waitForTimeout(700);
@@ -229,7 +253,7 @@ try {
   check('the task is listed', text.includes('2k row'), text.slice(0, 300));
   check('its target is shown in its own unit', text.includes('20 reps'), text.slice(0, 300));
   check('sharing is off by default', text.includes('Private to each athlete'));
-  await coachSide.page.screenshot({ path: path.join(SHOTS, '07-session-built.png') });
+  await shot(coachSide.page, '07-session-built');
 
   /* ------------------------------------------------------------ handing out */
 
@@ -269,7 +293,7 @@ try {
   check('assigned work appears on Today, not buried in Teams', text.includes('From your coach'), text.slice(0, 400));
   check('the task itself is listed there', text.includes('2k row'), text.slice(0, 400));
   check('it says how much is left', text.includes('1 left'), text.slice(0, 400));
-  await athleteSide.page.screenshot({ path: path.join(SHOTS, '08-today-athlete.png') });
+  await shot(athleteSide.page, '08-today-athlete');
 
   /* ------------------------------------------------------- logging honestly */
 
@@ -291,7 +315,7 @@ try {
     text.includes('Short of the target is still worth logging'),
     text.slice(0, 400),
   );
-  await athleteSide.page.screenshot({ path: path.join(SHOTS, '09-log-sheet.png') });
+  await shot(athleteSide.page, '09-log-sheet');
 
   await athleteSide.page.getByText('Mark done', { exact: true }).click();
   await athleteSide.page.waitForTimeout(2500);
@@ -317,7 +341,7 @@ try {
   check('medical answers are named as private', text.includes('emergency contact'));
   check('other teams are named as separate', text.includes('other teams'));
   check('leaving is explained', text.includes('access ends immediately'));
-  await athleteSide.page.screenshot({ path: path.join(SHOTS, '10-visibility.png') });
+  await shot(athleteSide.page, '10-visibility');
 
   /* ------------------------------------------------------ the coach sees it */
 
@@ -347,7 +371,7 @@ try {
     'the coach cannot tick an athlete’s task for them',
     (await coachSide.page.getByLabel('Mark done: 2k row').count()) === 0,
   );
-  await coachSide.page.screenshot({ path: path.join(SHOTS, '11-coach-progress.png') });
+  await shot(coachSide.page, '11-coach-progress');
 
   /* ------------------------------------------------------ sharing a win */
 
@@ -372,7 +396,7 @@ try {
     text.slice(0, 600),
   );
   check('it names the team it will go to', text.includes('Thursday squad'));
-  await athleteSide.page.screenshot({ path: path.join(SHOTS, '12-share-sheet.png') });
+  await shot(athleteSide.page, '12-share-sheet');
 
   await athleteSide.page.getByText('Share with Thursday squad', { exact: true }).click();
   await athleteSide.page.waitForTimeout(2500);
@@ -396,12 +420,82 @@ try {
   text = await coachSide.page.locator('body').innerText();
   check('the coach sees it on the wall', text.includes('Wall') && text.includes('First session done'), text.slice(0, 600));
   check('and who posted it', text.includes('Athlete Bo'));
-  await coachSide.page.screenshot({ path: path.join(SHOTS, '13-team-wall.png') });
+  await shot(coachSide.page, '13-team-wall');
 
   const soloFeedCheck = await apiCall('GET', `/api/teams/${teamIdForWork}/shares`, {
     token: athleteLogin.body.token,
   });
   check('the athlete can read their own team wall', soloFeedCheck.status === 200);
+
+  /* -------------------------------------------------------- a challenge */
+
+  console.log('\n the coach sets a challenge');
+  await coachSide.page.getByText('New challenge', { exact: true }).click();
+  await coachSide.page.waitForTimeout(900);
+  text = await coachSide.page.locator('body').innerText();
+  check('the sheet says where the score comes from', text.includes('Scored from 3 Victories'), text.slice(0, 400));
+  check('it says nobody is entered automatically', text.includes('Nobody is entered automatically'));
+
+  await coachSide.page.getByText('Week', { exact: true }).click();
+  await coachSide.page.waitForTimeout(500);
+  text = await coachSide.page.locator('body').innerText();
+  check('a week is seven days', text.includes('7 days'), text.slice(0, 500));
+  check('and a perfect week is twenty-one', text.includes('21 victories'), text.slice(0, 500));
+
+  await coachSide.page.getByPlaceholder('A full week').fill('Squad week');
+  await coachSide.page.getByPlaceholder('Whatever you have promised them').fill('Coffee on me');
+  await coachSide.page.getByText('Set the challenge', { exact: true }).click();
+  await coachSide.page.waitForTimeout(2200);
+
+  text = await coachSide.page.locator('body').innerText();
+  check('the challenge is listed', text.includes('Squad week'), text.slice(0, 500));
+  check('with its reward', text.includes('Coffee on me'));
+  check('and nobody in it yet', text.includes('Nobody yet'), text.slice(0, 500));
+  await shot(coachSide.page, '14-challenge-set');
+
+  /* --------------------------------------------- the score is 3 Victories */
+
+  console.log('\n the athlete wins a victory');
+  await athleteSide.page.getByText('Victories', { exact: true }).first().click();
+  await athleteSide.page.waitForTimeout(2200);
+  for (const goal of ['Hygiene & Care', 'Strength & Mobility', 'Fuel & Recovery']) {
+    await athleteSide.page.getByText(goal, { exact: true }).first().click();
+    await athleteSide.page.waitForTimeout(350);
+  }
+  await athleteSide.page.waitForTimeout(900);
+  text = await athleteSide.page.locator('body').innerText();
+  check('the athlete won the physical victory', text.includes('PHYSICAL VICTORY WON'), text.slice(0, 300));
+
+  console.log('\n joining, and the score that follows');
+  await openTeamsTab(athleteSide.page);
+  await athleteSide.page.getByText('Thursday squad', { exact: true }).first().click();
+  await athleteSide.page.waitForTimeout(2000);
+  text = await athleteSide.page.locator('body').innerText();
+  check('the athlete sees the challenge', text.includes('Squad week'), text.slice(0, 500));
+  check('it invites rather than enrols', text.includes('Tap to see it and join in'), text.slice(0, 500));
+
+  await athleteSide.page.getByText('Squad week', { exact: true }).first().click();
+  await athleteSide.page.waitForTimeout(1800);
+  text = await athleteSide.page.locator('body').innerText();
+  check('the standings are empty before anyone joins', text.includes('Nobody has joined yet'), text.slice(0, 400));
+  check('and say why', text.includes('Nobody is entered automatically'));
+
+  await athleteSide.page.getByText('Join in', { exact: true }).click();
+  await athleteSide.page.waitForTimeout(2500);
+  text = await athleteSide.page.locator('body').innerText();
+  check('joining puts them on the board', text.includes('Athlete Bo'), text.slice(0, 500));
+  check('and they are the only one taking part', text.includes('1 taking part'), text.slice(0, 500));
+  await shot(athleteSide.page, '15-challenge-board');
+
+  const listing = await apiCall('GET', `/api/teams/${teamIdForWork}/challenges`, { token: coachToken });
+  const weekId = listing.body.challenges[0]?.challenge.id;
+  const board = await apiCall('GET', `/api/teams/detail/${weekId}`, { token: coachToken });
+  check('the server holds a score of exactly one', board.body.entries[0]?.score === 1, `got ${board.body.entries[0]?.score}`);
+  check('it came from the victory, not the coach-set work', board.body.entries[0]?.name === 'Athlete Bo');
+  check(
+    'the entry reveals nothing but a name and a number',
+    !JSON.stringify(board.body.entries).includes('Hygiene'),
+  );
 
   /* --------------------------------------------------------- the solo user */
 
@@ -415,11 +509,11 @@ try {
   text = await solo.page.locator('body').innerText();
   check('a solo user lands on Today', text.includes('Daily goals'), text.slice(0, 200));
 
-  await solo.page.getByLabel('Open menu').click();
+  await solo.page.getByLabel('Open menu').click({ force: true });
   await solo.page.waitForTimeout(800);
   const soloMenu = await solo.page.locator('body').innerText();
   check('Teams is absent from a solo user’s menu', !soloMenu.includes('Teams'), soloMenu.slice(0, 300));
-  await solo.page.screenshot({ path: path.join(SHOTS, '05-menu-solo.png') });
+  await shot(solo.page, '05-menu-solo');
 
   check('no console errors during the run', consoleErrors.length === 0, consoleErrors.slice(0, 3).join(' | '));
 } catch (error) {

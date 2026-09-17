@@ -132,6 +132,54 @@ export type Share = {
   createdAt: string;
 };
 
+export type ChallengeScope = 'daily' | 'weekly' | 'monthly';
+
+export type Challenge = {
+  id: string;
+  teamId: string;
+  scope: ChallengeScope;
+  title: string;
+  description: string;
+  /** Free text a coach wrote. The app awards nothing itself. */
+  reward: string;
+  target: number;
+  periodStart: DayKey;
+  periodEnd: DayKey;
+  createdBy: string;
+  createdAt: string;
+  archived: boolean;
+};
+
+/**
+ * One person's place on a board.
+ *
+ * A name and a number. There is deliberately nothing here that points back at
+ * the training the number came from.
+ */
+export type ChallengeEntry = {
+  id: string;
+  challengeId: string;
+  userId: string;
+  name: string;
+  score: number;
+  /** Shared by everyone on the same score — no invented tie-breaks. */
+  rank?: number;
+  updatedAt: string;
+};
+
+export type ChallengeSummary = {
+  challenge: Challenge;
+  joined: boolean;
+  myScore: number;
+  entrants: number;
+};
+
+export type ChallengeDetail = {
+  challenge: Challenge;
+  entries: ChallengeEntry[];
+  role: TeamRole;
+};
+
 type TeamsList = { teams: { team: Team; role: TeamRole }[] };
 type TeamDetail = { team: Team; role: TeamRole; roster: RosterEntry[] };
 type SessionDetail = {
@@ -274,6 +322,50 @@ export const teamsApi = {
   /** The author, or a coach keeping their feed clean. */
   removeShare: (token: string, teamId: string, shareId: string): Promise<ApiResult<null>> =>
     request(`/api/teams/${teamId}/shares/${shareId}`, { method: 'DELETE', token }),
+
+  /* -------------------------------------------------------- challenges */
+
+  challenges: (
+    token: string,
+    teamId: string,
+  ): Promise<ApiResult<{ challenges: ChallengeSummary[] }>> =>
+    request(`/api/teams/${teamId}/challenges`, { token }),
+
+  createChallenge: (
+    token: string,
+    teamId: string,
+    body: {
+      scope: ChallengeScope;
+      title: string;
+      description?: string;
+      reward?: string;
+      target: number;
+      periodStart: DayKey;
+      periodEnd: DayKey;
+    },
+  ): Promise<ApiResult<{ challenge: Challenge }>> =>
+    request(`/api/teams/${teamId}/challenges`, { method: 'POST', token, body }),
+
+  challenge: (token: string, challengeId: string): Promise<ApiResult<ChallengeDetail>> =>
+    request(`/api/teams/detail/${challengeId}`, { token }),
+
+  /** Joining is the consent: until you do, you have no entry and no rank. */
+  joinChallenge: (token: string, challengeId: string): Promise<ApiResult<{ entry: ChallengeEntry }>> =>
+    request(`/api/teams/detail/${challengeId}/join`, { method: 'POST', token }),
+
+  leaveChallenge: (token: string, challengeId: string): Promise<ApiResult<null>> =>
+    request(`/api/teams/detail/${challengeId}/leave`, { method: 'DELETE', token }),
+
+  /** The number only. What it was computed from never leaves the device. */
+  reportScore: (
+    token: string,
+    challengeId: string,
+    score: number,
+  ): Promise<ApiResult<{ entry: ChallengeEntry }>> =>
+    request(`/api/teams/detail/${challengeId}/score`, { method: 'PUT', token, body: { score } }),
+
+  closeChallenge: (token: string, challengeId: string): Promise<ApiResult<{ challenge: Challenge }>> =>
+    request(`/api/teams/detail/${challengeId}`, { method: 'PATCH', token, body: { archived: true } }),
 
   /* ------------------------------------------------------------- work */
 

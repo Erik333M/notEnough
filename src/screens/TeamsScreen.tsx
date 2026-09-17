@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { BackHandler } from 'react-native';
 
 import { useTeamStack } from '../features/teams/useTeamStack';
+import ChallengeScreen from './ChallengeScreen';
 import CoachVisibilityScreen from './CoachVisibilityScreen';
 import SessionScreen from './SessionScreen';
 import TeamDetailScreen from './TeamDetailScreen';
@@ -43,6 +44,17 @@ export default function TeamsScreen({
         onBack={nav.back}
         onOpenSession={(sessionId) => nav.openSession(teamId, sessionId)}
         onOpenVisibility={(teamName) => nav.openVisibility(teamId, teamName)}
+        onOpenChallenge={(challengeId) => nav.openChallenge(teamId, challengeId)}
+      />
+    );
+  }
+
+  if (nav.view.key === 'challenge') {
+    return (
+      <ChallengeScreen
+        challengeId={nav.view.challengeId}
+        bottomInset={bottomInset}
+        onBack={nav.back}
       />
     );
   }

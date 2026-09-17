@@ -11,11 +11,18 @@ page.on('pageerror', (e) => errors.push('pageerror: ' + e.message));
 const shot = (n) => page.screenshot({ path: path.join(SHOTS, `${n}.png`) });
 const body = () => page.locator('body').innerText();
 
-/** Opens one of the home screen's link rows by its accessibility label. */
+/**
+ * Opens one of the home screen's link rows by its accessibility label.
+ *
+ * Forced, and without an explicit scroll. Playwright's actionability checks
+ * wait for an element's box to stop moving, and Reanimated drives its loops
+ * from requestAnimationFrame — so a card near a breathing empty-state can
+ * never satisfy that and the wait times out on a page that is perfectly fine.
+ * The click itself still scrolls the row into view.
+ */
 async function openLink(name) {
   const row = page.getByLabel(new RegExp(`^${name}\\.`)).first();
-  await row.scrollIntoViewIfNeeded();
-  await row.click();
+  await row.click({ force: true });
   await page.waitForTimeout(1000);
 }
 

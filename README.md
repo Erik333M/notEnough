@@ -10,15 +10,25 @@ The premise is in the name: when a target becomes comfortable, the app raises it
 ![React Native 0.86](https://img.shields.io/badge/React%20Native-0.86-61DAFB?logo=react&logoColor=black)
 ![TypeScript strict](https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white)
 ![Express 5](https://img.shields.io/badge/Express-5-000000?logo=express&logoColor=white)
-![checks 49](https://img.shields.io/badge/automated%20checks-49%20passing-2ea44f)
+![checks 502](https://img.shields.io/badge/automated%20checks-502%20passing-2ea44f)
 
-| Today | Daily goals | Stopwatch |
-|---|---|---|
-| ![Today](docs/screenshots/02-today.png) | ![Goals](docs/screenshots/03-goals.png) | ![Stopwatch](docs/screenshots/05-stopwatch.png) |
+**Coaching a squad** — the coach sets the work and sees only what came back from it.
 
-| Intervals | Progress | Menu |
+| The team | A monthly challenge | How the squad did |
 |---|---|---|
-| ![Intervals](docs/screenshots/06-intervals.png) | ![Progress](docs/screenshots/07-progress.png) | ![Menu](docs/screenshots/08-menu.png) |
+| ![Coach's team](docs/screenshots/11-team-coach.jpg) | ![Challenge board](docs/screenshots/12-challenge-board.jpg) | ![Session progress](docs/screenshots/19-session-progress.jpg) |
+
+**Being coached** — your work sits beside your own, and you can see exactly what is shared.
+
+| Today | 3 Victories | What your coach sees |
+|---|---|---|
+| ![Athlete's today](docs/screenshots/14-athlete-today.jpg) | ![Victories](docs/screenshots/15-victories.jpg) | ![Visibility](docs/screenshots/17-visibility.jpg) |
+
+**Training alone** — unchanged, and with no sign that any of the above exists.
+
+| Daily goals | Stopwatch | Progress |
+|---|---|---|
+| ![Goals](docs/screenshots/03-goals.jpg) | ![Stopwatch](docs/screenshots/05-stopwatch.jpg) | ![Progress](docs/screenshots/07-progress.jpg) |
 
 ---
 
@@ -125,6 +135,25 @@ what keeps the whole feature invisible to them rather than present and disabled.
   stored, never inferred from whether the number reached the target.
 - **Achievements** are derived from data the app already holds — streaks, personal bests, habit
   runs, finished work — and shared only by an explicit tap, to one named team at a time.
+- **Challenges** run over a day, a week or a month and are scored from *3 Victories*, the feature
+  the app already had. There is no second daily-three system: a day is worth 3, a week 21,
+  September 90. Joining is opt-in, equal scores share a place, and leaving takes your score with
+  you.
+
+| Joining a team | Your teams | The team wall |
+|---|---|---|
+| ![Opening question](docs/screenshots/09-intent.jpg) | ![Teams](docs/screenshots/10-teams.jpg) | ![Wall](docs/screenshots/18-team-wall.jpg) |
+
+### Why challenges do not leak
+
+A leaderboard is the only place in the app where people are ranked against each other, so the score
+is computed **on the athlete's own device** and only the total is sent. A score of 18 says 18 —
+never which victories, when, or what the targets were — and the server never reads the log it came
+from. A test asserts that an entry holds exactly seven fields and that none of them lead anywhere.
+
+Nobody is entered because they are on a roster. People who have not joined are **absent from a
+board rather than last**: listing them at the bottom would make joining the only way to stop
+looking bad, which is not a choice.
 
 ### The visibility rule
 
@@ -178,6 +207,7 @@ src/
     timer/                 stopwatch engine, worklet clock formatters, 60fps digits
     teams/                 roster, sessions, handout, assigned work, visibility copy
     achievements/          derived milestones, the share sheet
+    challenges/            windows, local scoring, the board
   state/
     AuthContext.tsx        session, token storage, the offline rule
     DataContext.tsx        reducer + persistence + sync + shared derived stats
@@ -295,18 +325,21 @@ rejection, field-tagged validation errors, login, wrong-password handling, accou
 resistance, `401` on unauthenticated access, state push/pull, the stale-write `409` rule, and that a
 token dies with its account.
 
-**`cd server && npm test`** — 102 checks covering team authorization, sessions and sharing. Mostly
+**`cd server && npm test`** — 135 checks covering team authorization, sessions, sharing and
+challenges. Mostly
 negative: an athlete cannot assign work, a coach cannot log a result for someone, a coach of another
 team sees nothing of this one, a roster never carries an email address, and saving private training
 publishes nothing at all.
 
-**`npm run e2e:teams`** — 71 checks driving **two browser contexts at once**, a coach and an athlete,
+**`npm run e2e:teams`** — 89 checks driving **two browser contexts at once**, a coach and an athlete,
 because the whole point of the feature is that two people see different things. It runs the full
 loop: create a team, join with the code, build a session, hand it out, log a short result, read it
-back as the coach, share an achievement, see it on the wall.
+back as the coach, share an achievement, see it on the wall, set a challenge, win a victory and
+watch the score follow it onto the board.
 
-**`npm run test:achievements`** and **`npm run test:reminders`** — 44 checks over the pure logic
-behind achievements and notification scheduling, compiled on the fly so nothing native is involved.
+**`npm run test:achievements`**, **`npm run test:reminders`** and **`npm run test:period`** — 75
+checks over the pure logic behind achievements, notification scheduling and challenge windows
+(month ends, leap days, inclusive boundaries), compiled on the fly so nothing native is involved.
 
 **`npm run e2e`** — 27 checks driving the real UI in Chrome via Playwright
 ([`e2e/drive.mjs`](e2e/drive.mjs)):
@@ -322,7 +355,11 @@ reload → still signed in, state intact, zero console errors
 
 Data assertions are made **against the API, not the screen**, so a UI that renders the right thing
 for the wrong reason still fails. Plus `npm run typecheck` (strict, clean) and a production Metro
-bundle for Android and web.
+bundle for Android and web. **502 checks pass in total.**
+
+The screenshots above are generated, not posed: [`e2e/shots.mjs`](e2e/shots.mjs) seeds a squad
+through the same endpoints the app uses and photographs the result, so a picture cannot show a
+state the app could not actually reach.
 
 Every suite has earned its keep. The browser drives caught a toast covering the header title, a sync
 request silently dropped when one was already in flight, nested `<button>` elements in the goal card,

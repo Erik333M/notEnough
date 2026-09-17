@@ -5,6 +5,7 @@ import os from 'node:os';
 import { config } from './config.js';
 import { authRouter } from './routes/auth.js';
 import { stateRouter } from './routes/state.js';
+import { challengesRouter } from './routes/challenges.js';
 import { sessionActionsRouter } from './routes/session-actions.js';
 import { sharesRouter } from './routes/shares.js';
 import { sessionsRouter } from './routes/sessions.js';
@@ -35,6 +36,9 @@ app.use('/api/auth', authRouter);
 app.use('/api/state', stateRouter);
 app.use('/api/teams', teamsRouter);
 app.use('/api/teams', sharesRouter);
+// Team-scoped creation and listing share the /api/teams path; acting on one
+// challenge is addressed by its own id under /detail.
+app.use('/api/teams', challengesRouter);
 // Two routers, one path: session-actions holds the verbs (hand out, start from
 // template) that would have pushed the sessions file past a readable size.
 app.use('/api/sessions', sessionsRouter);
