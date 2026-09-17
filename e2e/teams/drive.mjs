@@ -95,19 +95,17 @@ async function shot(page, name) {
 }
 
 /**
- * Opens the slide-out menu and goes to Teams.
+ * Goes to the Teams tab.
  *
  * Clicks are forced. Almost everything in this app is spring-animated, and
  * Playwright's actionability check waits for an element's box to stop moving —
  * which a Reanimated loop never guarantees. The assertions after each tap are
- * what prove the tap worked; the actionability wait only added flake.
+ * what prove the tap worked.
+ *
+ * `.last()` on purpose: when you are already on Teams the shell header shows
+ * the same word, and it is not the thing to click.
  */
 async function openTeamsTab(page) {
-  // Teams lives in the slide-out menu, not the tab bar.
-  await page.getByLabel('Open menu').click({ force: true });
-  await page.waitForTimeout(700);
-  // `.last()` on purpose: when you are already on the Teams route the shell
-  // header shows the same word, and it is not the thing to click.
   await page.getByText('Teams', { exact: true }).last().click({ force: true });
   await page.waitForTimeout(1600);
 }
@@ -159,14 +157,15 @@ try {
   const inviteCode = teams.body.teams[0].team.inviteCode;
   check('an invite code was generated', /^[A-HJ-NP-Z2-9]{6}$/.test(inviteCode), inviteCode);
 
-  /* ------------------------------------------------------- the menu entry */
+  /* ------------------------------------------------------------- the tabs */
 
-  console.log('\n the menu');
-  await coachSide.page.getByLabel('Open menu').click({ force: true });
-  await coachSide.page.waitForTimeout(800);
-  const menuText = await coachSide.page.locator('body').innerText();
-  check('Teams appears in the menu for a coach', menuText.includes('Teams'));
-  await shot(coachSide.page, '03-menu-coach');
+  console.log('\n the tab bar');
+  const tabs = await coachSide.page.locator('body').innerText();
+  for (const tab of ['Home', 'Journey', 'Train', 'Teams', 'Profile']) {
+    check(`${tab} is a tab`, tabs.includes(tab), tabs.slice(0, 200));
+  }
+  check('there is no slide-out menu', (await coachSide.page.getByLabel('Open menu').count()) === 0);
+  await shot(coachSide.page, '03-tabs-coach');
 
   /* ----------------------------------------------- the answer is remembered */
 
@@ -287,7 +286,7 @@ try {
   /* ------------------------------------------------- the athlete does the work */
 
   console.log('\n the athlete finds the work on Today');
-  await athleteSide.page.getByText('Today', { exact: true }).first().click();
+  await athleteSide.page.getByText('Home', { exact: true }).last().click({ force: true });
   await athleteSide.page.waitForTimeout(2500);
   text = await athleteSide.page.locator('body').innerText();
   check('assigned work appears on Today, not buried in Teams', text.includes('From your coach'), text.slice(0, 400));
@@ -376,7 +375,10 @@ try {
   /* ------------------------------------------------------ sharing a win */
 
   console.log('\n sharing an achievement');
-  await athleteSide.page.getByText('Progress', { exact: true }).first().click();
+  // Progress lives under Profile now.
+  await athleteSide.page.getByText('Profile', { exact: true }).last().click({ force: true });
+  await athleteSide.page.waitForTimeout(1800);
+  await athleteSide.page.getByText('Progress and achievements', { exact: true }).first().click({ force: true });
   await athleteSide.page.waitForTimeout(2500);
   text = await athleteSide.page.locator('body').innerText();
   check('achievements appear on Progress', text.includes('Achievements'), text.slice(0, 500));
@@ -456,8 +458,11 @@ try {
   /* --------------------------------------------- the score is 3 Victories */
 
   console.log('\n the athlete wins a victory');
-  await athleteSide.page.getByText('Victories', { exact: true }).first().click();
-  await athleteSide.page.waitForTimeout(2200);
+  // Victories is a card on Home now, not a tab.
+  await athleteSide.page.getByText('Home', { exact: true }).last().click({ force: true });
+  await athleteSide.page.waitForTimeout(1800);
+  await athleteSide.page.getByText('3 Victories', { exact: true }).first().click({ force: true });
+  await athleteSide.page.waitForTimeout(2000);
   for (const goal of ['Hygiene & Care', 'Strength & Mobility', 'Fuel & Recovery']) {
     await athleteSide.page.getByText(goal, { exact: true }).first().click();
     await athleteSide.page.waitForTimeout(350);
@@ -507,13 +512,14 @@ try {
   await solo.page.getByText('Train on my own', { exact: true }).click();
   await solo.page.waitForTimeout(1800);
   text = await solo.page.locator('body').innerText();
-  check('a solo user lands on Today', text.includes('Daily goals'), text.slice(0, 200));
+  check('a solo user lands on Home', text.includes('Daily goals'), text.slice(0, 200));
 
-  await solo.page.getByLabel('Open menu').click({ force: true });
-  await solo.page.waitForTimeout(800);
-  const soloMenu = await solo.page.locator('body').innerText();
-  check('Teams is absent from a solo user’s menu', !soloMenu.includes('Teams'), soloMenu.slice(0, 300));
-  await shot(solo.page, '05-menu-solo');
+  await solo.page.getByText('Teams', { exact: true }).last().click({ force: true });
+  await solo.page.waitForTimeout(2000);
+  const soloTeams = await solo.page.locator('body').innerText();
+  check('a solo user sees no teams', soloTeams.includes('No teams yet'), soloTeams.slice(0, 300));
+  check('and none of anyone else’s', !soloTeams.includes('Thursday squad'), soloTeams.slice(0, 300));
+  await shot(solo.page, '05-solo-teams');
 
   check('no console errors during the run', consoleErrors.length === 0, consoleErrors.slice(0, 3).join(' | '));
 } catch (error) {

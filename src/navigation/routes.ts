@@ -1,16 +1,19 @@
 import type { IconName } from '../state/types';
 
-export type RouteKey =
-  | 'home'
-  | 'journey'
-  | 'victories'
-  | 'goals'
-  | 'timer'
-  | 'progress'
-  | 'plan'
-  | 'settings'
-  | 'privacy'
-  | 'teams';
+/**
+ * Five destinations, and nothing else at this level.
+ *
+ * The shell used to carry ten routes and a slide-out menu to reach the six
+ * that would not fit. That is a map of the codebase rather than of anyone's
+ * day: Timer, Plan and Progress are things you visit occasionally, and they
+ * were competing for space with the screen you open every morning.
+ *
+ * So each tab owns its own depth now. Victories and Goals open from Home,
+ * Timer and Plan from Train, and everything about you — progress, achievements,
+ * friends, settings, privacy — lives under Profile. The side menu is gone
+ * with them: a second navigation system existed only to hold the overflow.
+ */
+export type RouteKey = 'home' | 'journey' | 'train' | 'teams' | 'profile';
 
 export type RouteMeta = {
   key: RouteKey;
@@ -24,11 +27,11 @@ export type RouteMeta = {
 export const ROUTES: Record<RouteKey, RouteMeta> = {
   home: {
     key: 'home',
-    label: 'Today',
-    title: 'Today',
-    subtitle: 'Your daily goals',
-    icon: 'today-outline',
-    iconActive: 'today',
+    label: 'Home',
+    title: 'Home',
+    subtitle: 'Your day, and your people',
+    icon: 'home-outline',
+    iconActive: 'home',
   },
   journey: {
     key: 'journey',
@@ -38,53 +41,13 @@ export const ROUTES: Record<RouteKey, RouteMeta> = {
     icon: 'book-outline',
     iconActive: 'book',
   },
-  victories: {
-    key: 'victories',
-    label: 'Victories',
-    title: '3 Victories',
-    subtitle: 'Body, mind and spirit',
-    icon: 'shield-outline',
-    iconActive: 'shield',
-  },
-  goals: {
-    key: 'goals',
-    label: 'Goals',
-    title: 'Daily goals',
-    subtitle: 'Targets and reminders',
-    icon: 'flag-outline',
-    iconActive: 'flag',
-  },
-  timer: {
-    key: 'timer',
-    label: 'Timer',
-    title: 'Run timer',
-    subtitle: 'Stopwatch and intervals',
+  train: {
+    key: 'train',
+    label: 'Train',
+    title: 'Train',
+    subtitle: 'Timer and training plan',
     icon: 'stopwatch-outline',
     iconActive: 'stopwatch',
-  },
-  progress: {
-    key: 'progress',
-    label: 'Progress',
-    title: 'Progress',
-    subtitle: 'Streaks and history',
-    icon: 'stats-chart-outline',
-    iconActive: 'stats-chart',
-  },
-  plan: {
-    key: 'plan',
-    label: 'Plan',
-    title: 'Training plan',
-    subtitle: 'Projected path to your goal',
-    icon: 'sparkles-outline',
-    iconActive: 'sparkles',
-  },
-  privacy: {
-    key: 'privacy',
-    label: 'Privacy',
-    title: 'Privacy',
-    subtitle: 'What this app knows about you',
-    icon: 'lock-closed-outline',
-    iconActive: 'lock-closed',
   },
   teams: {
     key: 'teams',
@@ -94,52 +57,18 @@ export const ROUTES: Record<RouteKey, RouteMeta> = {
     icon: 'people-outline',
     iconActive: 'people',
   },
-  settings: {
-    key: 'settings',
-    label: 'Settings',
-    title: 'Settings',
-    subtitle: 'Account and notifications',
-    icon: 'settings-outline',
-    iconActive: 'settings',
+  profile: {
+    key: 'profile',
+    label: 'Profile',
+    title: 'Profile',
+    subtitle: 'You, and what you have done',
+    icon: 'person-circle-outline',
+    iconActive: 'person-circle',
   },
 };
 
-/** Routes shown in the bottom bar; the rest live in the slide-out menu. */
-export const TAB_ROUTES: RouteKey[] = [
-  'home',
-  'journey',
-  'victories',
-  'goals',
-  'timer',
-  'progress',
-];
-const BASE_MENU_ROUTES: RouteKey[] = [
-  'home',
-  'journey',
-  'victories',
-  'goals',
-  'timer',
-  'progress',
-  'plan',
-  'settings',
-  'privacy',
-];
-
 /**
- * The menu, given what this account can do.
- *
- * Teams appears for anyone in a squad — coach or athlete — and for nobody
- * else, so a solo user's app is exactly the app they had before. It sits in
- * the slide-out rather than the tab bar because six tabs is already the most
- * that fits, and a coach manages a squad occasionally rather than living in it.
- *
- * Derived here, in one place, from one boolean. No component decides for
- * itself whether to show a team affordance.
+ * Every route is a tab. That is the point of there being five of them — there
+ * is no overflow, so there is nowhere for a destination to hide.
  */
-export function menuRoutes({ hasTeams }: { hasTeams: boolean }): RouteKey[] {
-  if (!hasTeams) return BASE_MENU_ROUTES;
-  const next = [...BASE_MENU_ROUTES];
-  // Directly under Plan, with the training features, not beside Settings.
-  next.splice(next.indexOf('plan') + 1, 0, 'teams');
-  return next;
-}
+export const TAB_ROUTES: RouteKey[] = ['home', 'journey', 'train', 'teams', 'profile'];

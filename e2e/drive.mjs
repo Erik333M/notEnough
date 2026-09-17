@@ -150,8 +150,8 @@ if (synced) {
 
 /* ----------------------------------------------------------------- goals */
 
-await page.getByText('Goals', { exact: true }).first().click();
-await page.waitForTimeout(1000);
+await page.getByText('New goal', { exact: true }).first().click({ force: true });
+await page.waitForTimeout(1200);
 
 const goalsText = await page.locator('body').innerText();
 check('quick-add templates render', goalsText.includes('Quick add') && goalsText.includes('Push-ups'));
@@ -174,8 +174,10 @@ check('editor dismisses via backdrop', !(await page.locator('body').innerText())
 
 /* ------------------------------------------------------------- victories */
 
-await page.getByText('Victories', { exact: true }).first().click();
-await page.waitForTimeout(1000);
+await page.getByLabel('Back to today').click({ force: true });
+await page.waitForTimeout(900);
+await page.getByText('3 Victories', { exact: true }).first().click({ force: true });
+await page.waitForTimeout(1200);
 
 const victoriesText = await page.locator('body').innerText();
 check(
@@ -254,8 +256,8 @@ check(
 
 /* ----------------------------------------------------------------- timer */
 
-await page.getByText('Timer', { exact: true }).first().click();
-await page.waitForTimeout(1000);
+await page.getByText('Train', { exact: true }).last().click({ force: true });
+await page.waitForTimeout(1400);
 
 const timerText = await page.locator('body').innerText();
 check('timer screen renders', timerText.includes('Stopwatch') && timerText.includes('Laps'));
@@ -278,26 +280,27 @@ await shot('07-intervals');
 
 /* -------------------------------------------------------------- progress */
 
-await page.getByText('Progress', { exact: true }).first().click();
-await page.waitForTimeout(1200);
+await page.getByText('Profile', { exact: true }).last().click({ force: true });
+await page.waitForTimeout(1400);
+await page.getByText('Progress and achievements', { exact: true }).first().click({ force: true });
+await page.waitForTimeout(1600);
 const progressText = await page.locator('body').innerText();
 check('progress screen renders', progressText.includes('day streak') && progressText.includes('Last 7 days'));
 check('run history shows its empty state', progressText.includes('No sessions yet'));
 await shot('08-progress');
 
-/* ------------------------------------------------------------------ menu */
+/* --------------------------------------------------------------- profile */
 
-await page.getByLabel('Open menu').click();
-await page.waitForTimeout(900);
+// The slide-out menu is gone: Profile is where the account lives now.
+await page.getByLabel('Back to your profile').click({ force: true });
+await page.waitForTimeout(1200);
+const profileText = await page.locator('body').innerText();
+check('profile shows the signed-in account', profileText.includes(email), profileText.slice(0, 200));
+check('profile shows the figures', profileText.includes('day streak'));
+check('no slide-out menu remains', (await page.getByLabel('Open menu').count()) === 0);
+await shot('09-profile');
 
-// The drawer is always mounted and translated off-screen, so DOM text proves
-// nothing — assert the panel is actually within the viewport.
-const signOutBox = await page.getByText('Sign out', { exact: true }).first().boundingBox();
-check('slide-out menu is on screen', Boolean(signOutBox) && signOutBox.x >= 0);
-check('menu shows the signed-in account', (await page.locator('body').innerText()).includes(email));
-await shot('09-menu');
-
-await page.getByText('Settings', { exact: true }).first().click();
+await page.getByText('Settings', { exact: true }).first().click({ force: true });
 await page.waitForTimeout(2500);
 const settingsText = await page.locator('body').innerText();
 check('settings screen renders', settingsText.includes('Endpoint') && settingsText.includes('Notifications'));

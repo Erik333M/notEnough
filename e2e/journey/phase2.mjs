@@ -67,9 +67,10 @@ const decision = page.getByPlaceholder('Leave blank if today has no one thing').
 await decision.fill('Call my brother');
 await page.waitForTimeout(900); // debounce
 // leave the tab and come back: the screen unmounts, state must persist
-await page.getByText('Victories', { exact: true }).first().click({ force: true });
+// (Home rather than Victories — Victories is a card on Home now, not a tab)
+await page.getByText('Home', { exact: true }).last().click({ force: true });
 await page.waitForTimeout(600);
-await page.getByText('Journey', { exact: true }).first().click({ force: true });
+await page.getByText('Journey', { exact: true }).last().click({ force: true });
 await page.waitForTimeout(900);
 // innerText excludes form-field values, so read the control itself
 const v1 = await page.getByPlaceholder('Leave blank if today has no one thing').first().inputValue();
@@ -80,7 +81,7 @@ check('plus one ticks survived leaving the tab', body.includes('Physical'));
 /* --- autosave survives a full reload (disk persistence) --- */
 await page.reload({ waitUntil: 'networkidle' });
 await page.waitForTimeout(2200);
-await page.getByText('Journey', { exact: true }).first().click({ force: true });
+await page.getByText('Journey', { exact: true }).last().click({ force: true });
 await page.waitForTimeout(1400);
 // Phase 7 added a one-time onboarding gate in front of the feature. These
 // drives are about what comes after it, so dismiss it the way most users will.

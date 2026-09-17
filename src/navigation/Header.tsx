@@ -20,28 +20,16 @@ export const Header = memo(function Header({
   subtitle,
   streak,
   syncStatus,
-  onMenu,
   onSync,
 }: {
   title: string;
   subtitle: string;
   streak: number;
   syncStatus: SyncStatus;
-  onMenu: () => void;
   onSync: () => void;
 }) {
   return (
     <View style={styles.wrap}>
-      <PressableScale
-        onPress={onMenu}
-        haptic="light"
-        scaleTo={0.9}
-        style={styles.menuButton}
-        accessibilityLabel="Open menu"
-      >
-        <Ionicons name="menu" size={20} color={palette.text} />
-      </PressableScale>
-
       <Animated.View key={title} entering={FadeIn.duration(200)} style={styles.titles}>
         <Text style={styles.title} numberOfLines={1}>
           {title}

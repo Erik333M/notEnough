@@ -1,41 +1,41 @@
 import * as Notifications from 'expo-notifications';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import GoalsScreen from '../screens/GoalsScreen';
+import { readJSON, storageKeys, writeJSON } from '../lib/storage';
+import { notificationsSupported } from '../notifications/notifications';
 import HomeScreen from '../screens/HomeScreen';
-import PlanScreen from '../screens/PlanScreen';
-import PrivacyScreen from '../screens/PrivacyScreen';
-import ProgressScreen from '../screens/ProgressScreen';
-import SettingsScreen from '../screens/SettingsScreen';
+import IntentScreen, { type Intent } from '../screens/IntentScreen';
+import ProfileScreen from '../screens/ProfileScreen';
 import SuccessJourneyScreen from '../screens/SuccessJourneyScreen';
 import TeamsScreen from '../screens/TeamsScreen';
-import TimerScreen from '../screens/TimerScreen';
-import VictoriesScreen from '../screens/VictoriesScreen';
-import { notificationsSupported } from '../notifications/notifications';
-import IntentScreen, { type Intent } from '../screens/IntentScreen';
-import { readJSON, storageKeys, writeJSON } from '../lib/storage';
+import TrainScreen from '../screens/TrainScreen';
 import { useAuth } from '../state/AuthContext';
 import { useStats, useSync } from '../state/DataContext';
-import { useCapabilities } from '../state/TeamsContext';
 import { Header } from './Header';
-import { SideMenu } from './SideMenu';
 import { TAB_BAR_HEIGHT, TabBar } from './TabBar';
-import { ROUTES, menuRoutes, type RouteKey } from './routes';
+import { ROUTES, type RouteKey } from './routes';
 
+/**
+ * Five tabs, each owning whatever depth it needs.
+ *
+ * The shell used to switch between ten screens and carry a slide-out menu for
+ * the ones that would not fit in the bar. Both are gone: the menu existed only
+ * to hold overflow, and with five destinations there is no overflow. Anything
+ * deeper than a tab is that tab's own business, which is why this file no
+ * longer grows when a feature gains a screen.
+ */
 export function AppShell() {
   const [route, setRoute] = useState<RouteKey>('home');
-  const [menuOpen, setMenuOpen] = useState(false);
   /** `undefined` while the stored answer is being read; `null` means unasked. */
   const [intent, setIntent] = useState<Intent | null | undefined>(undefined);
   const [teamsAction, setTeamsAction] = useState<'join' | 'create' | undefined>(undefined);
   /** Bumped when the current route is re-selected; see `navigate`. */
   const [resetNonce, setResetNonce] = useState(0);
 
-  const { user, logout } = useAuth();
-  const capabilities = useCapabilities();
+  const { user } = useAuth();
   const stats = useStats();
   const sync = useSync();
   const insets = useSafeAreaInsets();
@@ -47,12 +47,11 @@ export function AppShell() {
   const bottomInset = TAB_BAR_HEIGHT + Math.max(insets.bottom, 10) + 24;
 
   /**
-   * Re-selecting the route you are already on returns it to its root.
+   * Re-selecting the tab you are already on returns it to its root.
    *
-   * Features that own a stack (Journey, Teams) stay where they were otherwise,
-   * so tapping Teams while three screens deep inside a team appeared to do
-   * nothing at all. Bumping the key remounts the screen, which resets its
-   * stack — the behaviour a tab bar is expected to have.
+   * Tabs own their stacks, so tapping Teams while three screens inside a team
+   * otherwise appeared to do nothing at all. Bumping the key remounts the
+   * screen, which resets its stack — what a tab bar is expected to do.
    */
   const navigate = useCallback(
     (next: RouteKey) => {
@@ -100,28 +99,19 @@ export function AppShell() {
     setIntent('solo');
     if (user) void writeJSON(storageKeys.intent(user.id), 'solo');
   }, [user]);
-  const openMenu = useCallback(() => setMenuOpen(true), []);
-  const closeMenu = useCallback(() => setMenuOpen(false), []);
 
-  // Tapping a goal reminder drops the user straight on Today. Guarded because
+  // Tapping a goal reminder drops the user straight on Home. Guarded because
   // Expo Go no longer supports this module and the failure is a hard client
   // exit rather than a catchable error.
   useEffect(() => {
     if (!notificationsSupported()) return;
     try {
-      const sub = Notifications.addNotificationResponseReceivedListener(() => {
-        setRoute('home');
-        setMenuOpen(false);
-      });
+      const sub = Notifications.addNotificationResponseReceivedListener(() => setRoute('home'));
       return () => sub.remove();
     } catch {
       return;
     }
   }, []);
-
-  // One derivation, from one boolean. Teams simply is not in the menu for a
-  // solo user, rather than being present and refusing to open.
-  const menu = useMemo(() => menuRoutes({ hasTeams: capabilities.hasTeams }), [capabilities.hasTeams]);
 
   const meta = ROUTES[route];
 
@@ -129,9 +119,7 @@ export function AppShell() {
   // frame behind the question.
   if (intent === undefined) return <View style={styles.root} />;
   if (intent === null) {
-    return (
-      <IntentScreen name={user?.name ?? ''} onChoose={handleIntent} onSkip={skipIntent} />
-    );
+    return <IntentScreen name={user?.name ?? ''} onChoose={handleIntent} onSkip={skipIntent} />;
   }
 
   return (
@@ -141,7 +129,6 @@ export function AppShell() {
         subtitle={meta.subtitle}
         streak={streak}
         syncStatus={sync.status}
-        onMenu={openMenu}
         onSync={sync.syncNow}
       />
 
@@ -152,44 +139,19 @@ export function AppShell() {
         style={styles.screen}
       >
         {route === 'home' ? (
-          <HomeScreen bottomInset={bottomInset} navigate={navigate} />
+          <HomeScreen bottomInset={bottomInset} onOpenTimer={() => navigate('train')} />
         ) : route === 'journey' ? (
           <SuccessJourneyScreen bottomInset={bottomInset} />
-        ) : route === 'victories' ? (
-          <VictoriesScreen bottomInset={bottomInset} />
-        ) : route === 'goals' ? (
-          <GoalsScreen bottomInset={bottomInset} />
-        ) : route === 'timer' ? (
-          <TimerScreen bottomInset={bottomInset} />
-        ) : route === 'progress' ? (
-          <ProgressScreen bottomInset={bottomInset} />
-        ) : route === 'plan' ? (
-          <PlanScreen bottomInset={bottomInset} />
+        ) : route === 'train' ? (
+          <TrainScreen bottomInset={bottomInset} />
         ) : route === 'teams' ? (
           <TeamsScreen bottomInset={bottomInset} initialAction={teamsAction} />
-        ) : route === 'privacy' ? (
-          <PrivacyScreen bottomInset={bottomInset} />
         ) : (
-          <SettingsScreen bottomInset={bottomInset} navigate={navigate} />
+          <ProfileScreen bottomInset={bottomInset} />
         )}
       </Animated.View>
 
       <TabBar active={route} onSelect={navigate} bottomInset={insets.bottom} />
-
-      <SideMenu
-        open={menuOpen}
-        active={route}
-        userName={user?.name ?? 'Athlete'}
-        userEmail={user?.email ?? ''}
-        streak={streak}
-        routes={menu}
-        onSelect={navigate}
-        onClose={closeMenu}
-        onLogout={() => {
-          closeMenu();
-          void logout();
-        }}
-      />
     </View>
   );
 }
