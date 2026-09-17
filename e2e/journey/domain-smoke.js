@@ -236,7 +236,16 @@ ok('days before a habit existed are not counted as misses', () => {
   let s8 = createJourneyState(1);
   const a8 = createJourneyActions((a) => { s8 = journeyReducer(s8, a); });
   const h = a8.addHabit('Walk', 'health');
-  const today = new Date('2026-09-08T12:00:00');
+  // The real clock, not a fixed date: addHabit stamps createdAt from now, so
+  // pinning "today" to a literal made this pass only until that day arrived.
+  // It had been failing since 8 September 2026 and nobody saw it, because
+  // this file is not wired into any npm script.
+  const today = new Date();
+  const todayKey = [
+    today.getFullYear(),
+    String(today.getMonth() + 1).padStart(2, '0'),
+    String(today.getDate()).padStart(2, '0'),
+  ].join('-');
   const history = Hb.habitHistory(s8.checks, s8.habits[0], 14, today);
   assert.equal(history.length, 14);
   const tracked = history.filter((d) => d.tracked);
@@ -245,7 +254,7 @@ ok('days before a habit existed are not counted as misses', () => {
   assert.equal(tracked[0].key, history[13].key, 'the tracked day is today');
   // and the headline stat agrees with the dots
   assert.equal(Hb.habitConsistency(s8, 30, today), 0, 'nothing ticked yet');
-  a8.toggleHabitCheck('2026-09-08', h.id);
+  a8.toggleHabitCheck(todayKey, h.id);
   assert.equal(Hb.habitConsistency(s8, 30, today), 1, 'one of one possible day');
 });
 ok('archiving keeps the ticks and frees the template', () => {
