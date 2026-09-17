@@ -56,6 +56,20 @@ async function signUp(name) {
   return { token: created.body.token, id: created.body.user.id, name, email: created.body.user.email };
 }
 
+/**
+ * Refuse to run against somebody else's server.
+ *
+ * A leftover process from an earlier run answers /api/health perfectly well,
+ * so the wait below would succeed and every new route would 404 against a
+ * build that predates it. That has cost several debugging cycles; a loud
+ * failure here is worth more than a silent wrong answer.
+ */
+const squatter = await fetch(`${base}/api/health`).catch(() => null);
+if (squatter?.ok) {
+  console.error(`\nPort ${PORT} is already serving something. Kill it first:\n  lsof -ti:${PORT} | xargs kill\n`);
+  process.exit(1);
+}
+
 const server = spawn('node', ['src/index.js'], {
   cwd: path.join(import.meta.dirname, '..'),
   env: { ...process.env, PORT: String(PORT), DB_FILE: dbFile, JWT_SECRET: 'test-secret' },
@@ -261,6 +275,64 @@ try {
 
   const afterRemoval = await call('GET', `/api/friends/${ada.id}/profile`, { token: bo.token });
   check('and the profile closes immediately', afterRemoval.status === 403, `got ${afterRemoval.status}`);
+
+  /* --------------------------------------------------- from a team roster */
+
+  console.log('\n adding from a roster');
+  const coach = await signUp('Coach');
+  const team = (await call('POST', '/api/teams', { token: coach.token, body: { name: 'Squad' } })).body.team;
+  for (const person of [ada, stranger]) {
+    await call('POST', '/api/teams/join', { token: person.token, body: { code: team.inviteCode } });
+  }
+
+  const notTeammates = await call('POST', '/api/friends/request-teammate', {
+    token: ada.token,
+    body: { userId: bo.id },
+  });
+  check(
+    'you cannot add someone you share no team with',
+    notTeammates.status === 403,
+    `got ${notTeammates.status}`,
+  );
+
+  const guessedId = await call('POST', '/api/friends/request-teammate', {
+    token: ada.token,
+    body: { userId: 'not-a-real-user' },
+  });
+  check('nor an id you invented', guessedId.status === 403, `got ${guessedId.status}`);
+
+  const self = await call('POST', '/api/friends/request-teammate', {
+    token: ada.token,
+    body: { userId: ada.id },
+  });
+  check('nor yourself', self.status === 400, `got ${self.status}`);
+
+  const teammate = await call('POST', '/api/friends/request-teammate', {
+    token: ada.token,
+    body: { userId: stranger.id },
+  });
+  check('but you can add a teammate', teammate.status === 201, `got ${teammate.status}`);
+  check('and it still starts pending', teammate.body.friendship.status === 'pending');
+
+  const stillPrivate = await call('GET', `/api/friends/${ada.id}/profile`, { token: stranger.token });
+  check(
+    'adding from a roster grants nothing until accepted',
+    stillPrivate.status === 403,
+    `got ${stillPrivate.status}`,
+  );
+
+  const afterLeaving = await call('DELETE', `/api/teams/${team.id}/members/${stranger.id}`, {
+    token: stranger.token,
+  });
+  const retry = await call('POST', '/api/friends/request-teammate', {
+    token: coach.token,
+    body: { userId: stranger.id },
+  });
+  check(
+    'leaving the team closes that route again',
+    afterLeaving.status === 204 && retry.status === 403,
+    `got ${retry.status}`,
+  );
 
   /* ------------------------------------------------------ account delete */
 

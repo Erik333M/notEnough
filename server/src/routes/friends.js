@@ -115,6 +115,74 @@ friendsRouter.post('/request', async (req, res, next) => {
   }
 });
 
+/**
+ * Ask someone you already share a team with.
+ *
+ * By user id rather than by code, which is only safe because of the check
+ * below: you must both be active members of the same team. You can already
+ * see these people on a roster, so this exposes nothing new — and it covers
+ * the common case, which is wanting to add the people you actually train
+ * with rather than reciting six characters at them.
+ *
+ * Without the shared-team check this would be a way to friend anybody whose
+ * id you could guess, which is exactly what the code exists to prevent.
+ */
+friendsRouter.post('/request-teammate', async (req, res, next) => {
+  try {
+    const targetId = requireString(req.body?.userId, 'userId', { min: 1, max: 80 });
+    const userId = req.user.id;
+
+    const outcome = await write((data) => {
+      if (targetId === userId) return { error: 'self' };
+      if (!data.users.some((row) => row.id === targetId)) return { error: 'forbidden' };
+
+      const mine = new Set(
+        data.memberships
+          .filter((row) => row.userId === userId && row.status === 'active')
+          .map((row) => row.teamId),
+      );
+      const shared = data.memberships.some(
+        (row) => row.userId === targetId && row.status === 'active' && mine.has(row.teamId),
+      );
+      if (!shared) return { error: 'forbidden' };
+
+      const existing = data.friendships.find(
+        (row) =>
+          (row.requesterId === userId && row.addresseeId === targetId) ||
+          (row.requesterId === targetId && row.addresseeId === userId),
+      );
+      if (existing) {
+        if (existing.status === 'pending' && existing.addresseeId === userId) {
+          existing.status = 'accepted';
+          existing.updatedAt = new Date().toISOString();
+        }
+        return { friendship: existing };
+      }
+
+      const friendship = {
+        id: crypto.randomUUID(),
+        requesterId: userId,
+        addresseeId: targetId,
+        status: 'pending',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      data.friendships.push(friendship);
+      return { friendship };
+    });
+
+    if (outcome.error === 'self') throw new ValidationError('userId', 'That is you.');
+    if (outcome.error) {
+      return res
+        .status(403)
+        .json({ error: 'forbidden', message: 'You can only add people from a team you share.' });
+    }
+    return res.status(201).json({ friendship: outcome.friendship });
+  } catch (error) {
+    return next(error);
+  }
+});
+
 /** Your friends, and the requests waiting in both directions. */
 friendsRouter.get('/', async (req, res, next) => {
   try {
