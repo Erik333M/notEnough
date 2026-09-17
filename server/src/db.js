@@ -44,6 +44,8 @@ import { config } from './config.js';
  * @property {Object[]} shares
  * @property {Object[]} challenges
  * @property {Object[]} entries
+ * @property {Object[]} friendships
+ * @property {Object[]} profiles
  */
 
 /**
@@ -68,6 +70,8 @@ const EMPTY = {
   shares: [],
   challenges: [],
   entries: [],
+  friendships: [],
+  profiles: [],
 };
 
 /** @type {Schema | null} */
@@ -97,6 +101,8 @@ async function load() {
       shares: Array.isArray(parsed.shares) ? parsed.shares : [],
       challenges: Array.isArray(parsed.challenges) ? parsed.challenges : [],
       entries: Array.isArray(parsed.entries) ? parsed.entries : [],
+      friendships: Array.isArray(parsed.friendships) ? parsed.friendships : [],
+      profiles: Array.isArray(parsed.profiles) ? parsed.profiles : [],
     };
   } catch (error) {
     if (error.code !== 'ENOENT') {
@@ -172,6 +178,12 @@ export function purgeUserData(data, userId) {
   // Their leaderboard entries go too, so a deleted account cannot keep
   // occupying a place on a ranking nobody can remove them from.
   data.entries = data.entries.filter((row) => row.userId !== userId);
+  // Friendships are two-sided, so both directions go — otherwise the other
+  // person keeps a row pointing at nobody.
+  data.friendships = data.friendships.filter(
+    (row) => row.requesterId !== userId && row.addresseeId !== userId,
+  );
+  data.profiles = data.profiles.filter((row) => row.userId !== userId);
 }
 
 export async function findUserByEmail(email) {

@@ -1,25 +1,230 @@
 {
   "$comment": "Seed habit templates — a deliberately small, generic starter set. Replace wholesale with your own copy. Each entry: id (stable, kebab-case), title, group (health | mind | finance | relationships | environment).",
   "templates": [
-    { "id": "ht-water", "title": "Drink water through the day", "group": "health" },
-    { "id": "ht-sleep", "title": "Same bedtime every night", "group": "health" },
-    { "id": "ht-move", "title": "Move for twenty minutes", "group": "health" },
-    { "id": "ht-stretch", "title": "Stretch before bed", "group": "health" },
-
-    { "id": "ht-read", "title": "Read a few pages", "group": "mind" },
-    { "id": "ht-plan", "title": "Plan tomorrow before you stop", "group": "mind" },
-    { "id": "ht-focus", "title": "One block of focused work", "group": "mind" },
-    { "id": "ht-no-phone", "title": "First hour without the phone", "group": "mind" },
-
-    { "id": "ht-track-spend", "title": "Note what you spent", "group": "finance" },
-    { "id": "ht-no-impulse", "title": "Sleep on any unplanned purchase", "group": "finance" },
-
-    { "id": "ht-reach-out", "title": "Message someone you care about", "group": "relationships" },
-    { "id": "ht-thanks", "title": "Thank someone specifically", "group": "relationships" },
-    { "id": "ht-listen", "title": "One conversation without your phone out", "group": "relationships" },
-
-    { "id": "ht-tidy", "title": "Reset one surface before bed", "group": "environment" },
-    { "id": "ht-prep", "title": "Lay out tomorrow's kit", "group": "environment" },
-    { "id": "ht-outside", "title": "Get outside once", "group": "environment" }
+    {
+      "id": "ht-water",
+      "title": "Drink water through the day",
+      "group": "health"
+    },
+    {
+      "id": "ht-sleep",
+      "title": "Same bedtime every night",
+      "group": "health"
+    },
+    {
+      "id": "ht-move",
+      "title": "Move for twenty minutes",
+      "group": "health"
+    },
+    {
+      "id": "ht-stretch",
+      "title": "Stretch before bed",
+      "group": "health"
+    },
+    {
+      "id": "ht-read",
+      "title": "Read a few pages",
+      "group": "mind"
+    },
+    {
+      "id": "ht-plan",
+      "title": "Plan tomorrow before you stop",
+      "group": "mind"
+    },
+    {
+      "id": "ht-focus",
+      "title": "One block of focused work",
+      "group": "mind"
+    },
+    {
+      "id": "ht-no-phone",
+      "title": "First hour without the phone",
+      "group": "mind"
+    },
+    {
+      "id": "ht-track-spend",
+      "title": "Note what you spent",
+      "group": "finance"
+    },
+    {
+      "id": "ht-no-impulse",
+      "title": "Sleep on any unplanned purchase",
+      "group": "finance"
+    },
+    {
+      "id": "ht-reach-out",
+      "title": "Message someone you care about",
+      "group": "relationships"
+    },
+    {
+      "id": "ht-thanks",
+      "title": "Thank someone specifically",
+      "group": "relationships"
+    },
+    {
+      "id": "ht-listen",
+      "title": "One conversation without your phone out",
+      "group": "relationships"
+    },
+    {
+      "id": "ht-tidy",
+      "title": "Reset one surface before bed",
+      "group": "environment"
+    },
+    {
+      "id": "ht-prep",
+      "title": "Lay out tomorrow's kit",
+      "group": "environment"
+    },
+    {
+      "id": "ht-outside",
+      "title": "Get outside once",
+      "group": "environment"
+    },
+    {
+      "id": "ht-drink-water",
+      "title": "Drink water",
+      "group": "health"
+    },
+    {
+      "id": "ht-write-down-how-much",
+      "title": "Write down how much water you drank today",
+      "group": "health"
+    },
+    {
+      "id": "ht-add-one-extra-glass",
+      "title": "Add one extra glass of water (250ml) to your daily norm",
+      "group": "health"
+    },
+    {
+      "id": "ht-keep-a-water-bottle",
+      "title": "Keep a water bottle full and to hand",
+      "group": "health"
+    },
+    {
+      "id": "ht-drink-water-30-minutes",
+      "title": "Drink water 30 minutes before and after meals, not during",
+      "group": "health"
+    },
+    {
+      "id": "ht-eat-healthy-food",
+      "title": "Eat healthy food",
+      "group": "health"
+    },
+    {
+      "id": "ht-weigh-yourself-every-morning",
+      "title": "Weigh yourself every morning after brushing your teeth",
+      "group": "health"
+    },
+    {
+      "id": "ht-plan-a-week-s",
+      "title": "Plan a week's menu of healthy food and follow it",
+      "group": "health"
+    },
+    {
+      "id": "ht-prepare-2-3-healthy",
+      "title": "Prepare 2–3 healthy snacks in the evening for tomorrow",
+      "group": "health"
+    },
+    {
+      "id": "ht-no-sugar",
+      "title": "No sugar",
+      "group": "health"
+    },
+    {
+      "id": "ht-add-more-green-vegetables",
+      "title": "Add more green vegetables to your diet",
+      "group": "health"
+    },
+    {
+      "id": "ht-track-how-many-hours",
+      "title": "Track how many hours you sleep",
+      "group": "health"
+    },
+    {
+      "id": "ht-sleep-at-least-8",
+      "title": "Sleep at least 8 hours",
+      "group": "health"
+    },
+    {
+      "id": "ht-no-gadgets-for-30",
+      "title": "No gadgets for 30 minutes before sleep",
+      "group": "health"
+    },
+    {
+      "id": "ht-no-coffee-or-alcohol",
+      "title": "No coffee or alcohol 4 hours before sleep",
+      "group": "health"
+    },
+    {
+      "id": "ht-air-the-room-and",
+      "title": "Air the room and lower the temperature before bed",
+      "group": "environment"
+    },
+    {
+      "id": "ht-stretch-while-watching-a",
+      "title": "Stretch while watching a film",
+      "group": "health"
+    },
+    {
+      "id": "ht-warm-up-your-neck",
+      "title": "Warm up your neck while brushing your teeth",
+      "group": "health"
+    },
+    {
+      "id": "ht-park-at-the-far",
+      "title": "Park at the far end of the car park and walk",
+      "group": "health"
+    },
+    {
+      "id": "ht-two-minutes-upside-down",
+      "title": "Two minutes upside down — it sends blood to the brain",
+      "group": "health"
+    },
+    {
+      "id": "ht-stop-2-4-times",
+      "title": "Stop 2–4 times a day for two minutes of deep breathing",
+      "group": "health"
+    },
+    {
+      "id": "ht-work-standing-at-your",
+      "title": "Work standing at your desk for 5 minutes every hour",
+      "group": "environment"
+    },
+    {
+      "id": "ht-surround-yourself-with-2",
+      "title": "Surround yourself with 2–3 people who lift you",
+      "group": "relationships"
+    },
+    {
+      "id": "ht-once-a-week-coffee",
+      "title": "Once a week, coffee with someone you can learn from",
+      "group": "relationships"
+    },
+    {
+      "id": "ht-thank-two-relatives-and",
+      "title": "Thank two relatives and two colleagues every day",
+      "group": "relationships"
+    },
+    {
+      "id": "ht-keep-a-list-of",
+      "title": "Keep a list of 8–12 books to read this year",
+      "group": "mind"
+    },
+    {
+      "id": "ht-practise-one-skill-you",
+      "title": "Practise one skill you want to develop, an hour a week",
+      "group": "mind"
+    },
+    {
+      "id": "ht-watch-a-biography-or",
+      "title": "Watch a biography or historical film for inspiration",
+      "group": "mind"
+    },
+    {
+      "id": "ht-listen-to-podcasts-worth",
+      "title": "Listen to podcasts worth thinking about while travelling",
+      "group": "mind"
+    }
   ]
 }

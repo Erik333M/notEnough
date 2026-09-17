@@ -1,47 +1,1216 @@
 {
   "$comment": "Seed movement catalogue. Replace this list wholesale — nothing outside this file knows any movement name. Each entry: id (stable, kebab-case), name, category (strength | weightlifting | gymnastics | monostructural), aliases (optional, folded into search).",
   "movements": [
-    { "id": "back-squat", "name": "Back squat", "category": "strength" },
-    { "id": "front-squat", "name": "Front squat", "category": "strength" },
-    { "id": "overhead-squat", "name": "Overhead squat", "category": "strength" },
-    { "id": "deadlift", "name": "Deadlift", "category": "strength" },
-    { "id": "bench-press", "name": "Bench press", "category": "strength" },
-    { "id": "strict-press", "name": "Strict press", "category": "strength", "aliases": ["shoulder press"] },
-    { "id": "push-press", "name": "Push press", "category": "strength" },
-    { "id": "lunge", "name": "Walking lunge", "category": "strength" },
-
-    { "id": "clean", "name": "Clean", "category": "weightlifting" },
-    { "id": "clean-and-jerk", "name": "Clean and jerk", "category": "weightlifting", "aliases": ["c&j"] },
-    { "id": "snatch", "name": "Snatch", "category": "weightlifting" },
-    { "id": "thruster", "name": "Thruster", "category": "weightlifting" },
-    { "id": "kettlebell-swing", "name": "Kettlebell swing", "category": "weightlifting", "aliases": ["kb swing"] },
-    { "id": "kettlebell-clean", "name": "Kettlebell clean", "category": "weightlifting" },
-    { "id": "kettlebell-snatch", "name": "Kettlebell snatch", "category": "weightlifting" },
-    { "id": "dumbbell-snatch", "name": "Dumbbell snatch", "category": "weightlifting", "aliases": ["db snatch"] },
-    { "id": "wall-ball", "name": "Wall ball", "category": "weightlifting" },
-
-    { "id": "pull-up", "name": "Pull-up", "category": "gymnastics" },
-    { "id": "chest-to-bar", "name": "Chest to bar", "category": "gymnastics", "aliases": ["c2b"] },
-    { "id": "toes-to-bar", "name": "Toes to bar", "category": "gymnastics", "aliases": ["t2b"] },
-    { "id": "push-up", "name": "Push-up", "category": "gymnastics" },
-    { "id": "burpee", "name": "Burpee", "category": "gymnastics" },
-    { "id": "air-squat", "name": "Air squat", "category": "gymnastics" },
-    { "id": "sit-up", "name": "Sit-up", "category": "gymnastics" },
-    { "id": "box-jump", "name": "Box jump", "category": "gymnastics" },
-    { "id": "pistol", "name": "Pistol squat", "category": "gymnastics" },
-    { "id": "handstand-push-up", "name": "Handstand push-up", "category": "gymnastics", "aliases": ["hspu"] },
-    { "id": "muscle-up", "name": "Muscle-up", "category": "gymnastics" },
-    { "id": "plank", "name": "Plank hold", "category": "gymnastics" },
-
-    { "id": "run-400m", "name": "400 m run", "category": "monostructural" },
-    { "id": "run-800m", "name": "800 m run", "category": "monostructural" },
-    { "id": "run-1600m", "name": "1600 m run", "category": "monostructural" },
-    { "id": "row-500m", "name": "500 m row", "category": "monostructural" },
-    { "id": "row-1000m", "name": "1000 m row", "category": "monostructural" },
-    { "id": "double-under", "name": "Double under", "category": "monostructural", "aliases": ["du"] },
-    { "id": "single-under", "name": "Single under", "category": "monostructural" },
-    { "id": "air-bike", "name": "Air bike", "category": "monostructural", "aliases": ["assault bike"] },
-    { "id": "ski-erg", "name": "Ski erg", "category": "monostructural" },
-    { "id": "shuttle-run", "name": "Shuttle run", "category": "monostructural" }
+    {
+      "id": "back-squat",
+      "name": "Back squat",
+      "category": "strength"
+    },
+    {
+      "id": "front-squat",
+      "name": "Front squat",
+      "category": "strength"
+    },
+    {
+      "id": "overhead-squat",
+      "name": "Overhead squat",
+      "category": "strength"
+    },
+    {
+      "id": "deadlift",
+      "name": "Deadlift",
+      "category": "strength"
+    },
+    {
+      "id": "bench-press",
+      "name": "Bench press",
+      "category": "strength"
+    },
+    {
+      "id": "strict-press",
+      "name": "Strict press",
+      "category": "strength",
+      "aliases": [
+        "shoulder press"
+      ]
+    },
+    {
+      "id": "push-press",
+      "name": "Push press",
+      "category": "strength"
+    },
+    {
+      "id": "lunge",
+      "name": "Walking lunge",
+      "category": "strength",
+      "aliases": [
+        "lunge"
+      ]
+    },
+    {
+      "id": "clean",
+      "name": "Clean",
+      "category": "weightlifting"
+    },
+    {
+      "id": "clean-and-jerk",
+      "name": "Clean and jerk",
+      "category": "weightlifting",
+      "aliases": [
+        "c&j"
+      ]
+    },
+    {
+      "id": "snatch",
+      "name": "Snatch",
+      "category": "weightlifting"
+    },
+    {
+      "id": "thruster",
+      "name": "Thruster",
+      "category": "weightlifting"
+    },
+    {
+      "id": "kettlebell-swing",
+      "name": "Kettlebell swing",
+      "category": "weightlifting",
+      "aliases": [
+        "kb swing"
+      ]
+    },
+    {
+      "id": "kettlebell-clean",
+      "name": "Kettlebell clean",
+      "category": "weightlifting"
+    },
+    {
+      "id": "kettlebell-snatch",
+      "name": "Kettlebell snatch",
+      "category": "weightlifting"
+    },
+    {
+      "id": "dumbbell-snatch",
+      "name": "Dumbbell snatch",
+      "category": "weightlifting",
+      "aliases": [
+        "db snatch"
+      ]
+    },
+    {
+      "id": "wall-ball",
+      "name": "Wall ball",
+      "category": "weightlifting"
+    },
+    {
+      "id": "pull-up",
+      "name": "Pull-up",
+      "category": "gymnastics"
+    },
+    {
+      "id": "chest-to-bar",
+      "name": "Chest to bar",
+      "category": "gymnastics",
+      "aliases": [
+        "c2b"
+      ]
+    },
+    {
+      "id": "toes-to-bar",
+      "name": "Toes to bar",
+      "category": "gymnastics",
+      "aliases": [
+        "t2b"
+      ]
+    },
+    {
+      "id": "push-up",
+      "name": "Push-up",
+      "category": "gymnastics"
+    },
+    {
+      "id": "burpee",
+      "name": "Burpee",
+      "category": "gymnastics"
+    },
+    {
+      "id": "air-squat",
+      "name": "Air squat",
+      "category": "gymnastics"
+    },
+    {
+      "id": "sit-up",
+      "name": "Sit-up",
+      "category": "gymnastics"
+    },
+    {
+      "id": "box-jump",
+      "name": "Box jump",
+      "category": "gymnastics"
+    },
+    {
+      "id": "pistol",
+      "name": "Pistol squat",
+      "category": "gymnastics",
+      "aliases": [
+        "pistol"
+      ]
+    },
+    {
+      "id": "handstand-push-up",
+      "name": "Handstand push-up",
+      "category": "gymnastics",
+      "aliases": [
+        "hspu"
+      ]
+    },
+    {
+      "id": "muscle-up",
+      "name": "Muscle-up",
+      "category": "gymnastics"
+    },
+    {
+      "id": "plank",
+      "name": "Plank hold",
+      "category": "gymnastics",
+      "aliases": [
+        "plank"
+      ]
+    },
+    {
+      "id": "run-400m",
+      "name": "400 m run",
+      "category": "monostructural"
+    },
+    {
+      "id": "run-800m",
+      "name": "800 m run",
+      "category": "monostructural"
+    },
+    {
+      "id": "run-1600m",
+      "name": "1600 m run",
+      "category": "monostructural"
+    },
+    {
+      "id": "row-500m",
+      "name": "500 m row",
+      "category": "monostructural"
+    },
+    {
+      "id": "row-1000m",
+      "name": "1000 m row",
+      "category": "monostructural"
+    },
+    {
+      "id": "double-under",
+      "name": "Double under",
+      "category": "monostructural",
+      "aliases": [
+        "du"
+      ]
+    },
+    {
+      "id": "single-under",
+      "name": "Single under",
+      "category": "monostructural"
+    },
+    {
+      "id": "air-bike",
+      "name": "Air bike",
+      "category": "monostructural",
+      "aliases": [
+        "assault bike"
+      ]
+    },
+    {
+      "id": "ski-erg",
+      "name": "Ski erg",
+      "category": "monostructural"
+    },
+    {
+      "id": "shuttle-run",
+      "name": "Shuttle run",
+      "category": "monostructural"
+    },
+    {
+      "id": "1-deadlift-plus-1-clean-plus-1-front-squat",
+      "name": "1 Deadlift + 1 Clean + 1 Front Squat",
+      "category": "strength"
+    },
+    {
+      "id": "2-position-snatch-top-down-hang-plus-floor",
+      "name": "2 Position Snatch (Top Down Hang + Floor)",
+      "category": "strength"
+    },
+    {
+      "id": "2-position-clean-plus-jerk-top-down-hang-plus-floor",
+      "name": "2 Position Clean + Jerk (Top Down Hang + Floor)",
+      "category": "strength"
+    },
+    {
+      "id": "2-position-clean-plus-1-jerk-bottom-up-floor-plus-hang",
+      "name": "2 Position Clean + 1 Jerk (Bottom Up Floor + Hang)",
+      "category": "strength"
+    },
+    {
+      "id": "2-position-power-snatch-bottom-up-floor-plus-hang",
+      "name": "2 Position Power Snatch (Bottom Up Floor + Hang)",
+      "category": "strength"
+    },
+    {
+      "id": "2-position-snatch-bottoms-up-floor-plus-hang",
+      "name": "2 Position Snatch (Bottoms Up Floor + Hang)",
+      "category": "strength"
+    },
+    {
+      "id": "2-power-snatch-plus-1-overhead-squat",
+      "name": "2 Power Snatch + 1 Overhead Squat",
+      "category": "strength"
+    },
+    {
+      "id": "3-position-clean-top-down-hang-plus-just-below-knee-plus-floor",
+      "name": "3 Position Clean (Top Down Hang + Just Below Knee + Floor)",
+      "category": "strength"
+    },
+    {
+      "id": "3-position-clean-bottom-up",
+      "name": "3 Position Clean (Bottom Up)",
+      "category": "strength"
+    },
+    {
+      "id": "3-position-clean-plus-jerk-bottom-up",
+      "name": "3 Position Clean + Jerk (Bottom Up)",
+      "category": "strength"
+    },
+    {
+      "id": "3-position-snatch-bottom-up",
+      "name": "3 Position Snatch (Bottom Up)",
+      "category": "strength"
+    },
+    {
+      "id": "3-position-power-clean-top-down",
+      "name": "3 Position Power Clean (Top Down)",
+      "category": "strength"
+    },
+    {
+      "id": "3-position-clean-plus-jerk-top-down",
+      "name": "3 Position Clean + Jerk (Top Down)",
+      "category": "strength"
+    },
+    {
+      "id": "3-position-snatch-top-down",
+      "name": "3 Position Snatch (Top Down)",
+      "category": "strength"
+    },
+    {
+      "id": "3-position-power-clean-bottom-up",
+      "name": "3 Position Power Clean (Bottom Up)",
+      "category": "strength"
+    },
+    {
+      "id": "3-touch-and-go-clean-plus-1-jerk",
+      "name": "3 Touch and Go Clean + 1 Jerk",
+      "category": "strength"
+    },
+    {
+      "id": "halting-clean-deadlift-plus-halting-clean-deadlift-plus-power-clean",
+      "name": "Halting Clean Deadlift + Halting Clean Deadlift + Power Clean",
+      "category": "strength"
+    },
+    {
+      "id": "halting-clean-deadlift-plus-finish-plus-floating-clean-deadlift",
+      "name": "Halting Clean Deadlift + Finish + Floating Clean Deadlift",
+      "category": "strength"
+    },
+    {
+      "id": "halting-clean-deadlift-plus-hang-clean",
+      "name": "Halting Clean Deadlift + Hang Clean",
+      "category": "strength"
+    },
+    {
+      "id": "halting-clean-deadlift-plus-hang-power-clean-plus-front-squat",
+      "name": "Halting Clean Deadlift + Hang Power Clean + Front Squat",
+      "category": "strength"
+    },
+    {
+      "id": "halting-clean-deadlift-plus-clean-pull",
+      "name": "Halting Clean Deadlift + Clean Pull",
+      "category": "strength"
+    },
+    {
+      "id": "behind-the-neck-jerk",
+      "name": "Behind the Neck Jerk",
+      "category": "strength"
+    },
+    {
+      "id": "barbell-row",
+      "name": "Barbell Row",
+      "category": "strength"
+    },
+    {
+      "id": "barbell-tricep-extension",
+      "name": "Barbell Tricep Extension",
+      "category": "strength",
+      "aliases": [
+        "skull crusher"
+      ]
+    },
+    {
+      "id": "bent-over-row",
+      "name": "Bent Over Row",
+      "category": "strength"
+    },
+    {
+      "id": "bear-complex",
+      "name": "Bear Complex",
+      "category": "strength",
+      "aliases": [
+        "bear"
+      ]
+    },
+    {
+      "id": "clean-plus-front-squat-plus-jerk",
+      "name": "Clean + Front Squat + Jerk",
+      "category": "strength"
+    },
+    {
+      "id": "clean-and-jerk-from-blocks",
+      "name": "Clean and Jerk from Blocks",
+      "category": "strength"
+    },
+    {
+      "id": "clean-deadlift-plus-high-hang-clean-plus-clean-and-jerk",
+      "name": "Clean Deadlift + High Hang Clean + Clean and Jerk",
+      "category": "strength"
+    },
+    {
+      "id": "clean-from-blocks",
+      "name": "Clean from Blocks",
+      "category": "strength"
+    },
+    {
+      "id": "clean-high-pull-plus-clean",
+      "name": "Clean High Pull + Clean",
+      "category": "strength"
+    },
+    {
+      "id": "clean-high-pull-plus-power-clean-plus-front-squat",
+      "name": "Clean High Pull + Power Clean + Front Squat",
+      "category": "strength"
+    },
+    {
+      "id": "clean-high-pull-plus-power-clean-and-jerk-plus-hang-squat",
+      "name": "Clean High Pull + Power Clean and Jerk + Hang Squat",
+      "category": "strength"
+    },
+    {
+      "id": "clean-high-pull-plus-power-clean-plus-hang-power-clean-plus-jerk",
+      "name": "Clean High Pull + Power Clean + Hang Power Clean + Jerk",
+      "category": "strength"
+    },
+    {
+      "id": "clean-high-pull-plus-power-clean-plus-hang-clean",
+      "name": "Clean High Pull + Power Clean + Hang Clean",
+      "category": "strength"
+    },
+    {
+      "id": "clean-pull",
+      "name": "Clean Pull",
+      "category": "strength"
+    },
+    {
+      "id": "close-grip-bench-press",
+      "name": "Close Grip Bench Press",
+      "category": "strength"
+    },
+    {
+      "id": "catch-up",
+      "name": "Catch Up",
+      "category": "strength"
+    },
+    {
+      "id": "deficit-deadlift",
+      "name": "Deficit Deadlift",
+      "category": "strength"
+    },
+    {
+      "id": "drop-snatch",
+      "name": "Drop Snatch",
+      "category": "strength"
+    },
+    {
+      "id": "floor-press",
+      "name": "Floor Press",
+      "category": "strength"
+    },
+    {
+      "id": "glute-ham-raise",
+      "name": "Glute-Ham Raise",
+      "category": "strength",
+      "aliases": [
+        "ghd raise",
+        "ghr"
+      ]
+    },
+    {
+      "id": "box-squat",
+      "name": "Box Squat",
+      "category": "gymnastics"
+    },
+    {
+      "id": "bulgarian-split-squat",
+      "name": "Bulgarian Split Squat",
+      "category": "gymnastics"
+    },
+    {
+      "id": "lateral-lunge",
+      "name": "Lateral Lunge",
+      "category": "gymnastics"
+    },
+    {
+      "id": "non-alternating-forward-walking-lunge",
+      "name": "Non-Alternating Forward Walking Lunge",
+      "category": "gymnastics"
+    },
+    {
+      "id": "plyometric-push-up",
+      "name": "Plyometric Push-Up",
+      "category": "gymnastics"
+    },
+    {
+      "id": "reaction-based-plank",
+      "name": "Reaction Based Plank",
+      "category": "gymnastics"
+    },
+    {
+      "id": "reverse-hyper",
+      "name": "Reverse Hyper",
+      "category": "gymnastics"
+    },
+    {
+      "id": "strict-pull-up",
+      "name": "Strict Pull-Up",
+      "category": "gymnastics"
+    },
+    {
+      "id": "ring-row",
+      "name": "Ring Row",
+      "category": "gymnastics"
+    },
+    {
+      "id": "single-leg-hip-thrust-off-bench",
+      "name": "Single Leg Hip Thrust off Bench",
+      "category": "gymnastics"
+    },
+    {
+      "id": "v-up",
+      "name": "V-Up",
+      "category": "gymnastics"
+    },
+    {
+      "id": "max-effort-bar-hang",
+      "name": "Max Effort Bar Hang",
+      "category": "gymnastics"
+    },
+    {
+      "id": "tricep-push-up-with-hold",
+      "name": "Tricep Push-Up with Hold",
+      "category": "gymnastics"
+    },
+    {
+      "id": "max-effort-pull-up-hang",
+      "name": "Max Effort Pull-Up Hang",
+      "category": "gymnastics"
+    },
+    {
+      "id": "crunch-with-ankle-touch",
+      "name": "Crunch with Ankle Touch",
+      "category": "gymnastics"
+    },
+    {
+      "id": "dynamic-plank-to-a-box",
+      "name": "Dynamic Plank to a Box",
+      "category": "gymnastics"
+    },
+    {
+      "id": "max-height-box-jump",
+      "name": "Max Height Box Jump",
+      "category": "gymnastics"
+    },
+    {
+      "id": "dynamic-superman-to-hollow-rock-on-the-pull-up-bar",
+      "name": "Dynamic Superman to Hollow Rock on the Pull-Up Bar",
+      "category": "gymnastics"
+    },
+    {
+      "id": "dip",
+      "name": "Dip",
+      "category": "gymnastics"
+    },
+    {
+      "id": "tricep-push-up",
+      "name": "Tricep Push-Up",
+      "category": "gymnastics"
+    },
+    {
+      "id": "mountain-climber",
+      "name": "Mountain Climber",
+      "category": "gymnastics"
+    },
+    {
+      "id": "mountain-climbers-on-rings",
+      "name": "Mountain Climbers on Rings",
+      "category": "gymnastics"
+    },
+    {
+      "id": "muscle-up-on-rings",
+      "name": "Muscle-Up on Rings",
+      "category": "gymnastics",
+      "aliases": [
+        "ring mu"
+      ]
+    },
+    {
+      "id": "plank-walk",
+      "name": "Plank Walk",
+      "category": "gymnastics"
+    },
+    {
+      "id": "nose-and-toes",
+      "name": "Nose and Toes",
+      "category": "gymnastics"
+    },
+    {
+      "id": "muscle-up-on-bar",
+      "name": "Muscle-Up on Bar",
+      "category": "gymnastics",
+      "aliases": [
+        "bar mu"
+      ]
+    },
+    {
+      "id": "plank-with-single-leg-lift",
+      "name": "Plank with Single Leg Lift",
+      "category": "gymnastics"
+    },
+    {
+      "id": "ring-dip",
+      "name": "Ring Dip",
+      "category": "gymnastics"
+    },
+    {
+      "id": "ring-push-up",
+      "name": "Ring Push-Up",
+      "category": "gymnastics"
+    },
+    {
+      "id": "roll-up-with-one-legged-reach",
+      "name": "Roll Up with One-Legged Reach",
+      "category": "gymnastics"
+    },
+    {
+      "id": "rope-climb",
+      "name": "Rope Climb",
+      "category": "gymnastics"
+    },
+    {
+      "id": "rope-lower",
+      "name": "Rope Lower",
+      "category": "gymnastics"
+    },
+    {
+      "id": "shoot-through",
+      "name": "Shoot Through",
+      "category": "gymnastics"
+    },
+    {
+      "id": "side-plank-with-hip-touches",
+      "name": "Side Plank with Hip Touches",
+      "category": "gymnastics"
+    },
+    {
+      "id": "side-plank",
+      "name": "Side Plank",
+      "category": "gymnastics"
+    },
+    {
+      "id": "skin-the-cat",
+      "name": "Skin the Cat",
+      "category": "gymnastics"
+    },
+    {
+      "id": "pull-up-negative",
+      "name": "Pull-Up Negative",
+      "category": "gymnastics"
+    },
+    {
+      "id": "spiderman",
+      "name": "Spiderman",
+      "category": "gymnastics"
+    },
+    {
+      "id": "strict-push-up-with-negative-hold",
+      "name": "Strict Push-Up with Negative Hold",
+      "category": "gymnastics"
+    },
+    {
+      "id": "strict-push-up",
+      "name": "Strict Push-Up",
+      "category": "gymnastics",
+      "aliases": [
+        "strict pushup"
+      ]
+    },
+    {
+      "id": "broad-jump-max-distance",
+      "name": "Broad Jump Max Distance",
+      "category": "gymnastics"
+    },
+    {
+      "id": "strict-toes-to-bar",
+      "name": "Strict Toes to Bar",
+      "category": "gymnastics",
+      "aliases": [
+        "strict t2b"
+      ]
+    },
+    {
+      "id": "strict-weighted-pull-up",
+      "name": "Strict Weighted Pull-Up",
+      "category": "gymnastics"
+    },
+    {
+      "id": "chest-to-bar-pull-up",
+      "name": "Chest-to-Bar Pull-Up",
+      "category": "gymnastics",
+      "aliases": [
+        "c2b",
+        "chest to bar"
+      ]
+    },
+    {
+      "id": "superman-and-hollow-rock-hold",
+      "name": "Superman and Hollow Rock Hold",
+      "category": "gymnastics"
+    },
+    {
+      "id": "ring-roll-out",
+      "name": "Ring Roll Out",
+      "category": "gymnastics"
+    },
+    {
+      "id": "chin-up-negative",
+      "name": "Chin-Up Negative",
+      "category": "gymnastics"
+    },
+    {
+      "id": "barbell-body-row",
+      "name": "Barbell Body Row",
+      "category": "gymnastics"
+    },
+    {
+      "id": "chin-up",
+      "name": "Chin-Up",
+      "category": "gymnastics"
+    },
+    {
+      "id": "sfk-pull-up",
+      "name": "SFK Pull-Up",
+      "category": "gymnastics"
+    },
+    {
+      "id": "deficit-handstand-push-up",
+      "name": "Deficit Handstand Push-Up",
+      "category": "gymnastics",
+      "aliases": [
+        "hspu",
+        "deficit hspu"
+      ]
+    },
+    {
+      "id": "flutter-kick",
+      "name": "Flutter Kick",
+      "category": "gymnastics"
+    },
+    {
+      "id": "free-handstand-kick-up",
+      "name": "Free Handstand Kick-Up",
+      "category": "gymnastics"
+    },
+    {
+      "id": "handstand-walk",
+      "name": "Handstand Walk",
+      "category": "gymnastics",
+      "aliases": [
+        "hs walk"
+      ]
+    },
+    {
+      "id": "handstand",
+      "name": "Handstand",
+      "category": "gymnastics",
+      "aliases": [
+        "hs"
+      ]
+    },
+    {
+      "id": "hanging-leg-raise",
+      "name": "Hanging Leg Raise",
+      "category": "gymnastics"
+    },
+    {
+      "id": "high-plank-with-scissor-kick",
+      "name": "High Plank with Scissor Kick",
+      "category": "gymnastics"
+    },
+    {
+      "id": "high-plank-with-stability-ball",
+      "name": "High Plank with Stability Ball",
+      "category": "gymnastics"
+    },
+    {
+      "id": "incline-push-up",
+      "name": "Incline Push-Up",
+      "category": "gymnastics"
+    },
+    {
+      "id": "inverted-ring-row",
+      "name": "Inverted Ring Row",
+      "category": "gymnastics"
+    },
+    {
+      "id": "knees-to-elbow",
+      "name": "Knees to Elbow",
+      "category": "gymnastics",
+      "aliases": [
+        "k2e"
+      ]
+    },
+    {
+      "id": "log-roll",
+      "name": "Log Roll",
+      "category": "gymnastics"
+    },
+    {
+      "id": "l-sit",
+      "name": "L-Sit",
+      "category": "gymnastics"
+    },
+    {
+      "id": "l-sit-pull-up",
+      "name": "L-Sit Pull-Up",
+      "category": "gymnastics",
+      "aliases": [
+        "l sit pullup"
+      ]
+    },
+    {
+      "id": "jumping-jack",
+      "name": "Jumping Jack",
+      "category": "gymnastics"
+    },
+    {
+      "id": "speed-skating",
+      "name": "Speed Skating",
+      "category": "gymnastics"
+    },
+    {
+      "id": "two-legs-side-to-side-jump",
+      "name": "Two Legs Side to Side Jump",
+      "category": "gymnastics"
+    },
+    {
+      "id": "crunch-sit-up",
+      "name": "Crunch Sit-Up",
+      "category": "gymnastics"
+    },
+    {
+      "id": "v-sit-up",
+      "name": "V Sit-Up",
+      "category": "gymnastics"
+    },
+    {
+      "id": "t-push-up",
+      "name": "T Push-Up",
+      "category": "gymnastics"
+    },
+    {
+      "id": "candle-get-up",
+      "name": "Candle Get-Up",
+      "category": "gymnastics"
+    },
+    {
+      "id": "jumping-lunge",
+      "name": "Jumping Lunge",
+      "category": "gymnastics"
+    },
+    {
+      "id": "jumping-pull-up",
+      "name": "Jumping Pull-Up",
+      "category": "gymnastics"
+    },
+    {
+      "id": "hollow-rock",
+      "name": "Hollow Rock",
+      "category": "gymnastics"
+    },
+    {
+      "id": "hand-release-push-up",
+      "name": "Hand Release Push-Up",
+      "category": "gymnastics"
+    },
+    {
+      "id": "box-jump-over",
+      "name": "Box Jump Over",
+      "category": "gymnastics"
+    },
+    {
+      "id": "one-leg-elevated-hip-thrust",
+      "name": "One Leg Elevated Hip Thrust",
+      "category": "gymnastics"
+    },
+    {
+      "id": "1-arm-dumbbell-row",
+      "name": "1 Arm Dumbbell Row",
+      "category": "weightlifting",
+      "aliases": [
+        "db row"
+      ]
+    },
+    {
+      "id": "1-arm-kettlebell-waiters-walk",
+      "name": "1 Arm Kettlebell Waiter's Walk",
+      "category": "weightlifting"
+    },
+    {
+      "id": "alternating-dumbbell-bicep-curl",
+      "name": "Alternating Dumbbell Bicep Curl",
+      "category": "weightlifting"
+    },
+    {
+      "id": "arnold-press",
+      "name": "Arnold Press",
+      "category": "weightlifting"
+    },
+    {
+      "id": "back-extension",
+      "name": "Back Extension",
+      "category": "weightlifting"
+    },
+    {
+      "id": "back-rack-lunge",
+      "name": "Back Rack Lunge",
+      "category": "weightlifting"
+    },
+    {
+      "id": "banded-goblet-squat",
+      "name": "Banded Goblet Squat",
+      "category": "weightlifting"
+    },
+    {
+      "id": "banded-sprint",
+      "name": "Banded Sprint",
+      "category": "weightlifting"
+    },
+    {
+      "id": "banded-squat-walk",
+      "name": "Banded Squat Walk",
+      "category": "weightlifting"
+    },
+    {
+      "id": "banded-squat",
+      "name": "Banded Squat",
+      "category": "weightlifting"
+    },
+    {
+      "id": "banded-tricep-pull-down",
+      "name": "Banded Tricep Pull Down",
+      "category": "weightlifting"
+    },
+    {
+      "id": "bench-press-dumbbells-kettlebell",
+      "name": "Bench Press Dumbbells / Kettlebell",
+      "category": "weightlifting"
+    },
+    {
+      "id": "cleans-dumbbells",
+      "name": "Cleans Dumbbells",
+      "category": "weightlifting"
+    },
+    {
+      "id": "dumbbell-or-kettlebell-non-alternating-forward-walking-lunge",
+      "name": "Dumbbell or Kettlebell Non-Alternating Forward Walking Lunge",
+      "category": "weightlifting"
+    },
+    {
+      "id": "dumbbell-or-kettlebell-reverse-lunge",
+      "name": "Dumbbell or Kettlebell Reverse Lunge",
+      "category": "weightlifting"
+    },
+    {
+      "id": "dumbbell-forward-to-reverse-lunge",
+      "name": "Dumbbell Forward to Reverse Lunge",
+      "category": "weightlifting"
+    },
+    {
+      "id": "dumbbell-or-kettlebell-single-arm-bent-row",
+      "name": "Dumbbell or Kettlebell Single Arm Bent Row",
+      "category": "weightlifting"
+    },
+    {
+      "id": "dumbbell-or-kettlebell-squat-snatch-single-arm",
+      "name": "Dumbbell or Kettlebell Squat Snatch Single Arm",
+      "category": "weightlifting"
+    },
+    {
+      "id": "dumbbell-overhead-lunge",
+      "name": "Dumbbell Overhead Lunge",
+      "category": "weightlifting"
+    },
+    {
+      "id": "dumbbell-push-press",
+      "name": "Dumbbell Push Press",
+      "category": "weightlifting"
+    },
+    {
+      "id": "dumbbell-sit-up",
+      "name": "Dumbbell Sit-Up",
+      "category": "weightlifting"
+    },
+    {
+      "id": "dumbbell-jumping-squat",
+      "name": "Dumbbell Jumping Squat",
+      "category": "weightlifting"
+    },
+    {
+      "id": "eagle-squat-with-kettlebell",
+      "name": "Eagle Squat with Kettlebell",
+      "category": "weightlifting"
+    },
+    {
+      "id": "farmers-carry",
+      "name": "Farmer's Carry",
+      "category": "weightlifting",
+      "aliases": [
+        "farmer carry"
+      ]
+    },
+    {
+      "id": "front-squat-dumbbells",
+      "name": "Front Squat Dumbbells",
+      "category": "weightlifting"
+    },
+    {
+      "id": "goblet-squat",
+      "name": "Goblet Squat",
+      "category": "weightlifting",
+      "aliases": [
+        "kb goblet"
+      ]
+    },
+    {
+      "id": "kettlebell-deadlift",
+      "name": "Kettlebell Deadlift",
+      "category": "weightlifting"
+    },
+    {
+      "id": "kettlebell-halo",
+      "name": "Kettlebell Halo",
+      "category": "weightlifting"
+    },
+    {
+      "id": "kettlebell-push-press",
+      "name": "Kettlebell Push Press",
+      "category": "weightlifting"
+    },
+    {
+      "id": "kettlebell-thruster",
+      "name": "Kettlebell Thruster",
+      "category": "weightlifting"
+    },
+    {
+      "id": "lateral-ball-slam",
+      "name": "Lateral Ball Slam",
+      "category": "weightlifting"
+    },
+    {
+      "id": "man-maker",
+      "name": "Man Maker",
+      "category": "weightlifting"
+    },
+    {
+      "id": "pause-goblet-squat",
+      "name": "Pause Goblet Squat",
+      "category": "weightlifting"
+    },
+    {
+      "id": "plate-push-up",
+      "name": "Plate Push-Up",
+      "category": "weightlifting"
+    },
+    {
+      "id": "plate-sit-up",
+      "name": "Plate Sit-Up",
+      "category": "weightlifting"
+    },
+    {
+      "id": "rear-delt-fly",
+      "name": "Rear Delt Fly",
+      "category": "weightlifting"
+    },
+    {
+      "id": "renegade-row",
+      "name": "Renegade Row",
+      "category": "weightlifting"
+    },
+    {
+      "id": "russian-twist-with-kettlebell",
+      "name": "Russian Twist with Kettlebell",
+      "category": "weightlifting"
+    },
+    {
+      "id": "seated-kettlebell-press",
+      "name": "Seated Kettlebell Press",
+      "category": "weightlifting"
+    },
+    {
+      "id": "single-arm-dumbbell-press",
+      "name": "Single Arm Dumbbell Press",
+      "category": "weightlifting"
+    },
+    {
+      "id": "single-arm-kettlebell-press",
+      "name": "Single Arm Kettlebell Press",
+      "category": "weightlifting"
+    },
+    {
+      "id": "single-arm-kettlebell-bench-press",
+      "name": "Single Arm Kettlebell Bench Press",
+      "category": "weightlifting"
+    },
+    {
+      "id": "single-kettlebell-bottoms-up-press",
+      "name": "Single Kettlebell Bottoms Up Press",
+      "category": "weightlifting"
+    },
+    {
+      "id": "single-kettlebell-suitcase-deadlift",
+      "name": "Single Kettlebell Suitcase Deadlift",
+      "category": "weightlifting"
+    },
+    {
+      "id": "snatch-dumbbells-kettlebell",
+      "name": "Snatch Dumbbells / Kettlebell",
+      "category": "weightlifting"
+    },
+    {
+      "id": "straight-leg-weighted-crunch",
+      "name": "Straight-Leg Weighted Crunch",
+      "category": "weightlifting"
+    },
+    {
+      "id": "strict-one-arm-kettlebell-press",
+      "name": "Strict One-Arm Kettlebell Press",
+      "category": "weightlifting"
+    },
+    {
+      "id": "tire-flip",
+      "name": "Tire Flip",
+      "category": "weightlifting"
+    },
+    {
+      "id": "tricep-dumbbell-extension",
+      "name": "Tricep Dumbbell Extension",
+      "category": "weightlifting"
+    },
+    {
+      "id": "tricep-rollback",
+      "name": "Tricep Rollback",
+      "category": "weightlifting"
+    },
+    {
+      "id": "turkish-get-up",
+      "name": "Turkish Get-Up",
+      "category": "weightlifting",
+      "aliases": [
+        "tgu"
+      ]
+    },
+    {
+      "id": "turkish-sit-up",
+      "name": "Turkish Sit-Up",
+      "category": "weightlifting"
+    },
+    {
+      "id": "wall-ball-sit-up",
+      "name": "Wall Ball Sit-Up",
+      "category": "weightlifting"
+    },
+    {
+      "id": "wall-balls-slam-balls-sit-up",
+      "name": "Wall Balls / Slam Balls Sit-Up",
+      "category": "weightlifting"
+    },
+    {
+      "id": "wall-walk",
+      "name": "Wall Walk",
+      "category": "weightlifting",
+      "aliases": [
+        "wall walks"
+      ]
+    },
+    {
+      "id": "weighted-pull-up",
+      "name": "Weighted Pull-Up",
+      "category": "weightlifting"
+    },
+    {
+      "id": "weighted-push-up",
+      "name": "Weighted Push-Up",
+      "category": "weightlifting"
+    },
+    {
+      "id": "weighted-sit-up",
+      "name": "Weighted Sit-Up",
+      "category": "weightlifting"
+    },
+    {
+      "id": "weighted-step-up",
+      "name": "Weighted Step-Up",
+      "category": "weightlifting"
+    },
+    {
+      "id": "single-skip",
+      "name": "Single Skip",
+      "category": "monostructural"
+    },
+    {
+      "id": "triple-under",
+      "name": "Triple Under",
+      "category": "monostructural",
+      "aliases": [
+        "tu"
+      ]
+    },
+    {
+      "id": "running",
+      "name": "Running",
+      "category": "monostructural"
+    },
+    {
+      "id": "biking",
+      "name": "Biking",
+      "category": "monostructural"
+    },
+    {
+      "id": "swimming",
+      "name": "Swimming",
+      "category": "monostructural"
+    },
+    {
+      "id": "rowing",
+      "name": "Rowing",
+      "category": "monostructural"
+    }
   ]
 }

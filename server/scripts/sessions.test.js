@@ -56,6 +56,20 @@ async function signUp(name) {
   return { token: created.body.token, id: created.body.user.id, name };
 }
 
+/**
+ * Refuse to run against somebody else's server.
+ *
+ * A leftover process from an earlier run answers /api/health perfectly well,
+ * so the wait below would succeed and every new route would 404 against a
+ * build that predates it. That has cost several debugging cycles; a loud
+ * failure here is worth more than a silent wrong answer.
+ */
+const squatter = await fetch(`${base}/api/health`).catch(() => null);
+if (squatter?.ok) {
+  console.error(`\nPort ${PORT} is already serving something. Kill it first:\n  lsof -ti:${PORT} | xargs kill\n`);
+  process.exit(1);
+}
+
 const server = spawn('node', ['src/index.js'], {
   cwd: path.join(import.meta.dirname, '..'),
   env: { ...process.env, PORT: String(PORT), DB_FILE: dbFile, JWT_SECRET: 'test-secret' },

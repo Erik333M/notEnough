@@ -254,9 +254,8 @@ async function scroll(page, distance) {
   await page.waitForTimeout(900);
 }
 
-async function menu(page, label) {
-  await page.getByLabel('Open menu').click({ force: true });
-  await page.waitForTimeout(700);
+/** Switches tab. Forced, because everything here is spring-animated. */
+async function tab(page, label) {
   await page.getByText(label, { exact: true }).last().click({ force: true });
   await page.waitForTimeout(1800);
 }
@@ -296,15 +295,16 @@ await athletePage.getByText('Train with a coach', { exact: true }).click({ force
 await athletePage.waitForTimeout(1500);
 await athletePage.getByText('Cancel', { exact: true }).last().click({ force: true });
 await athletePage.waitForTimeout(1000);
-await athletePage.getByText('Today', { exact: true }).first().click({ force: true });
-await athletePage.waitForTimeout(2500);
+await tab(athletePage, 'Home');
+await athletePage.waitForTimeout(700);
 await shot(athletePage, '14-athlete-today');
 
-await athletePage.getByText('Victories', { exact: true }).first().click({ force: true });
+await tab(athletePage, 'Home');
+await athletePage.getByText('3 Victories', { exact: true }).first().click({ force: true });
 await athletePage.waitForTimeout(2200);
 await shot(athletePage, '15-victories');
 
-await menu(athletePage, 'Teams');
+await tab(athletePage, 'Teams');
 await athletePage.getByText('Thursday Squad', { exact: true }).first().click({ force: true });
 await athletePage.waitForTimeout(2500);
 await shot(athletePage, '16-team-athlete');

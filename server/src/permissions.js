@@ -149,6 +149,37 @@ export function canManageChallenge(data, userId, challenge) {
   return Boolean(challenge) && isCoach(data, userId, challenge.teamId);
 }
 
+/* ----------------------------------------------------------------- friends */
+
+/**
+ * Whether two people are actually friends.
+ *
+ * Accepted only. A request that has been sent and not answered grants nothing
+ * — otherwise sending one would be enough to start reading somebody, and
+ * "request" would be a formality rather than a question.
+ */
+export function areFriends(data, a, b) {
+  if (!a || !b || a === b) return false;
+  return data.friendships.some(
+    (row) =>
+      row.status === 'accepted' &&
+      ((row.requesterId === a && row.addresseeId === b) ||
+        (row.requesterId === b && row.addresseeId === a)),
+  );
+}
+
+/**
+ * Read someone's public profile — their name, streak and level.
+ *
+ * Yourself, or an accepted friend. Note what this still does not permit: the
+ * profile holds figures the owner's device chose to publish, never a way into
+ * their training. A friend sees that you are on a 30 day streak, not what any
+ * of those days contained.
+ */
+export function canViewProfile(data, viewerId, ownerId) {
+  return viewerId === ownerId || areFriends(data, viewerId, ownerId);
+}
+
 /* ------------------------------------------------------------- projections */
 
 /**

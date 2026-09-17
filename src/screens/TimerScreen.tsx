@@ -29,7 +29,13 @@ const MODES = [
   { value: 'interval' as RunMode, label: 'Intervals' },
 ];
 
-export default function TimerScreen({ bottomInset }: { bottomInset: number }) {
+export default function TimerScreen({
+  bottomInset,
+  onOpenPlan,
+}: {
+  bottomInset: number;
+  onOpenPlan: () => void;
+}) {
   const [mode, setMode] = useState<RunMode>('stopwatch');
 
   return (

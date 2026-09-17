@@ -4,7 +4,7 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import type { RosterEntry } from '../../api/teams';
 import { accentColor, palette, radius } from '../../theme/theme';
-import { Pill } from '../../ui/Controls';
+import { Pill, RoundIconButton } from '../../ui/Controls';
 
 /**
  * One person on the roster.
@@ -16,9 +16,14 @@ import { Pill } from '../../ui/Controls';
 export const RosterRow = memo(function RosterRow({
   entry,
   isYou = false,
+  friendState,
+  onAddFriend,
 }: {
   entry: RosterEntry;
   isYou?: boolean;
+  /** Undefined while unknown; drives which affordance the row offers. */
+  friendState?: 'none' | 'pending' | 'friends';
+  onAddFriend?: () => void;
 }) {
   const coach = entry.role === 'coach';
 
@@ -35,6 +40,31 @@ export const RosterRow = memo(function RosterRow({
         </Text>
         {entry.status === 'pending' ? <Text style={styles.pending}>Invite not accepted yet</Text> : null}
       </View>
+
+      {/*
+        Adding someone you already share a roster with exposes nothing new —
+        their name is on this screen already — and it saves reciting six
+        characters at a person standing next to you.
+      */}
+      {!isYou && onAddFriend && friendState === 'none' ? (
+        <RoundIconButton
+          icon="person-add-outline"
+          size={34}
+          onPress={onAddFriend}
+          accessibilityLabel={`Add ${entry.name} as a friend`}
+        />
+      ) : null}
+      {!isYou && friendState === 'pending' ? (
+        <Ionicons name="hourglass-outline" size={15} color={palette.textFaint} />
+      ) : null}
+      {!isYou && friendState === 'friends' ? (
+        <Ionicons
+          name="people"
+          size={15}
+          color={accentColor.lime}
+          accessibilityLabel="Already a friend"
+        />
+      ) : null}
 
       {coach ? (
         <Pill label="Coach" icon="clipboard-outline" accent="violet" />
