@@ -158,6 +158,21 @@ try {
   check('the asked sees it as incoming', adaList.incoming.length === 1);
   check('and can see who is asking', adaList.incoming[0].profile.name === 'Bo');
 
+  await call('PUT', '/api/friends/profile', {
+    token: ada.token,
+    body: { streak: 12, level: 3, daysWon: 20 },
+  });
+  const pendingList = (await call('GET', '/api/friends', { token: bo.token })).body;
+  check(
+    'a pending row names the person but carries no figures',
+    pendingList.outgoing[0].profile.name === 'Ada' && pendingList.outgoing[0].profile.streak === 0,
+    JSON.stringify(pendingList.outgoing[0]?.profile),
+  );
+  check(
+    'and no date that would prove they published',
+    pendingList.outgoing[0].profile.updatedAt === null,
+  );
+
   const beforeAccept = await call('GET', `/api/friends/${ada.id}/profile`, { token: bo.token });
   check(
     'a pending request grants no profile',

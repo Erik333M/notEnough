@@ -1,9 +1,10 @@
 import * as Notifications from 'expo-notifications';
 import { useCallback, useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Linking, StyleSheet, View } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { parseDeepLink } from '../lib/deepLink';
 import { readJSON, storageKeys, writeJSON } from '../lib/storage';
 import { notificationsSupported } from '../notifications/notifications';
 import HomeScreen from '../screens/HomeScreen';
@@ -34,6 +35,8 @@ export function AppShell() {
   const [teamsAction, setTeamsAction] = useState<'join' | 'create' | undefined>(undefined);
   /** Bumped when the current route is re-selected; see `navigate`. */
   const [resetNonce, setResetNonce] = useState(0);
+  /** A friend code from a shared link, until the Friends screen takes it. */
+  const [friendCode, setFriendCode] = useState<string | undefined>(undefined);
 
   const { user } = useAuth();
   const stats = useStats();
@@ -100,6 +103,27 @@ export function AppShell() {
     if (user) void writeJSON(storageKeys.intent(user.id), 'solo');
   }, [user]);
 
+  /**
+   * Links that open the app — today, only `notenough://friend/CODE`.
+   *
+   * Both entry points are handled: the URL the app was cold-started from, and
+   * any that arrive while it is already running. The code is put in front of
+   * the person rather than acted on, because a tap on somebody else's link is
+   * not the same as deciding to add them.
+   */
+  useEffect(() => {
+    const handle = (url: string | null) => {
+      const link = parseDeepLink(url);
+      if (link?.kind !== 'friend') return;
+      setFriendCode(link.code);
+      setRoute('profile');
+    };
+
+    void Linking.getInitialURL().then(handle);
+    const sub = Linking.addEventListener('url', (event) => handle(event.url));
+    return () => sub.remove();
+  }, []);
+
   // Tapping a goal reminder drops the user straight on Home. Guarded because
   // Expo Go no longer supports this module and the failure is a hard client
   // exit rather than a catchable error.
@@ -147,7 +171,11 @@ export function AppShell() {
         ) : route === 'teams' ? (
           <TeamsScreen bottomInset={bottomInset} initialAction={teamsAction} />
         ) : (
-          <ProfileScreen bottomInset={bottomInset} />
+          <ProfileScreen
+            bottomInset={bottomInset}
+            pendingFriendCode={friendCode}
+            onFriendCodeUsed={() => setFriendCode(undefined)}
+          />
         )}
       </Animated.View>
 

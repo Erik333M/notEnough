@@ -44,6 +44,8 @@
     "e2e:shell": "node e2e/shell.mjs",
     "test:journey": "bash scripts/journey-domain.sh",
     "e2e:catalogue": "node e2e/catalogue.mjs",
+    "e2e:friends": "node e2e/friends.mjs",
+    "test:level": "node e2e/level.test.mjs",
     "test:reminders": "node e2e/teams/reminders.test.mjs",
     "test:achievements": "node e2e/teams/achievements.test.mjs",
     "test:period": "node e2e/teams/period.test.mjs"

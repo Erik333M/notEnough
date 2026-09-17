@@ -3,9 +3,10 @@ import { useCallback, useState } from 'react';
 import { RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { teamsApi } from '../api/teams';
+import { useTeammateFriends } from '../features/friends/useTeammateFriends';
 import { InviteCard } from '../features/teams/InviteCard';
 import { NewSessionSheet } from '../features/teams/NewSessionSheet';
-import { RosterRow } from '../features/teams/RosterRow';
+import { TeamRosterSection } from '../features/teams/TeamRosterSection';
 import { NewChallengeSheet } from '../features/challenges/NewChallengeSheet';
 import { TeamChallengesSection } from '../features/challenges/TeamChallengesSection';
 import { useChallenges } from '../features/challenges/useChallenges';
@@ -17,7 +18,7 @@ import { useAuth } from '../state/AuthContext';
 import { useTeams } from '../state/TeamsContext';
 import { palette, radius } from '../theme/theme';
 import { Button } from '../ui/Button';
-import { Appear, SectionHeader } from '../ui/Controls';
+import { Appear } from '../ui/Controls';
 import { SkeletonCard } from '../ui/Feedback';
 import { GlassCard } from '../ui/Glass';
 import { StackHeaderBar } from '../ui/StackHeaderBar';
@@ -55,6 +56,7 @@ export default function TeamDetailScreen({
   const [composing, setComposing] = useState(false);
   const [settingChallenge, setSettingChallenge] = useState(false);
   const challenges = useChallenges(teamId);
+  const { friendStateFor, addTeammate } = useTeammateFriends();
 
   const handleRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -174,12 +176,12 @@ export default function TeamDetailScreen({
             />
           </Appear>
           <Appear delay={120}>
-            <SectionHeader title="Roster" meta={`${data.roster.length} in this team`} />
-            <View style={styles.list}>
-              {data.roster.map((entry) => (
-                <RosterRow key={entry.userId} entry={entry} />
-              ))}
-            </View>
+            <TeamRosterSection
+              roster={data.roster}
+              currentUserId={user?.id}
+              friendStateFor={friendStateFor}
+              onAddFriend={(id, name) => void addTeammate(id, name)}
+            />
           </Appear>
 
           <TeamFooter
