@@ -17,6 +17,7 @@
 
 import { entryReducer, type EntryAction } from './entryReducer';
 import type {
+  BodyForm,
   BenchmarkDefinition,
   BenchmarkResult,
   DayKey,
@@ -48,6 +49,7 @@ export type LibraryAction =
   | { type: 'measurement/update'; id: string; patch: Partial<MeasurementEntry> }
   | { type: 'measurement/delete'; id: string }
   | { type: 'measurement/setUnits'; units: UnitSystem }
+  | { type: 'measurement/setBodyForm'; form: BodyForm }
   /* habits */
   | { type: 'habit/add'; habit: Habit }
   | { type: 'habit/update'; id: string; patch: Partial<Habit> }
@@ -139,6 +141,9 @@ export function journeyReducer(state: JourneyState, action: JourneyAction): Jour
       const measurements = removeById(state.measurements, action.id);
       return measurements === state.measurements ? state : { ...state, measurements };
     }
+
+    case 'measurement/setBodyForm':
+      return state.bodyForm === action.form ? state : { ...state, bodyForm: action.form };
 
     case 'measurement/setUnits':
       // Display-only: stored values stay canonical, so flipping this back and

@@ -1,3 +1,8 @@
+import type { MuscleWork } from './muscles';
+
+/** Drawn by the body map; see features/muscles. */
+export type BodyForm = 'male' | 'female';
+
 /**
  * Success Journey — every domain type for the feature, in one place.
  *
@@ -116,6 +121,10 @@ export type DailyEntry = {
 
 /* ------------------------------------------------------------------ movements */
 
+// Muscle groups live in their own module: the list is long, it is shared with
+// the body map, and it has its own labels and view rules.
+
+
 export type MovementCategory =
   | 'strength'
   | 'weightlifting'
@@ -130,6 +139,14 @@ export type Movement = {
   aliases: string[];
   /** True only for movements the user added; seeded ones are read-only. */
   isCustom: boolean;
+  /**
+   * What the movement works, for the body map.
+   *
+   * A coach's judgement rather than a citation, and empty for anything the
+   * user added themselves — a movement nobody has tagged shows an unshaded
+   * figure, which is honest, rather than a guess.
+   */
+  muscles: MuscleWork;
 };
 
 /* ----------------------------------------------------------------- benchmarks */
@@ -288,4 +305,12 @@ export type JourneyState = {
   habits: Habit[];
   checks: HabitChecks;
   units: UnitSystem;
+  /**
+   * Which figure the body map draws.
+   *
+   * A drawing preference and nothing else — it is never sent anywhere, never
+   * used to change a target, and has no bearing on what the app expects of
+   * anyone. It exists so people recognise themselves in the diagram.
+   */
+  bodyForm: BodyForm;
 };

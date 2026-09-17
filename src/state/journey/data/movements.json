@@ -1,30 +1,85 @@
 {
-  "$comment": "Seed movement catalogue. Replace this list wholesale — nothing outside this file knows any movement name. Each entry: id (stable, kebab-case), name, category (strength | weightlifting | gymnastics | monostructural), aliases (optional, folded into search).",
+  "$comment": "Seed movement catalogue. Replace this list wholesale — nothing outside this file knows any movement name. Each entry: id (stable, kebab-case), name, category (strength | weightlifting | gymnastics | monostructural), aliases (optional, folded into search). Each entry also carries muscles: primary (what the movement is largely about) and secondary (worked, but not the point). These drive the body map and are a coach's judgement, not a citation — edit freely.",
   "movements": [
     {
       "id": "back-squat",
       "name": "Back squat",
-      "category": "strength"
+      "category": "strength",
+      "muscles": {
+        "primary": [
+          "quads",
+          "glutes"
+        ],
+        "secondary": [
+          "hamstrings",
+          "abs",
+          "lowerBack"
+        ]
+      }
     },
     {
       "id": "front-squat",
       "name": "Front squat",
-      "category": "strength"
+      "category": "strength",
+      "muscles": {
+        "primary": [
+          "quads",
+          "glutes"
+        ],
+        "secondary": [
+          "hamstrings",
+          "abs",
+          "lowerBack"
+        ]
+      }
     },
     {
       "id": "overhead-squat",
       "name": "Overhead squat",
-      "category": "strength"
+      "category": "strength",
+      "muscles": {
+        "primary": [
+          "quads",
+          "glutes"
+        ],
+        "secondary": [
+          "hamstrings",
+          "abs",
+          "lowerBack"
+        ]
+      }
     },
     {
       "id": "deadlift",
       "name": "Deadlift",
-      "category": "strength"
+      "category": "strength",
+      "muscles": {
+        "primary": [
+          "hamstrings",
+          "glutes",
+          "lowerBack"
+        ],
+        "secondary": [
+          "traps",
+          "forearms",
+          "quads"
+        ]
+      }
     },
     {
       "id": "bench-press",
       "name": "Bench press",
-      "category": "strength"
+      "category": "strength",
+      "muscles": {
+        "primary": [
+          "chest",
+          "triceps"
+        ],
+        "secondary": [
+          "shoulders",
+          "abs"
+        ]
+      }
     },
     {
       "id": "strict-press",
@@ -32,12 +87,32 @@
       "category": "strength",
       "aliases": [
         "shoulder press"
-      ]
+      ],
+      "muscles": {
+        "primary": [
+          "shoulders",
+          "triceps"
+        ],
+        "secondary": [
+          "traps",
+          "abs"
+        ]
+      }
     },
     {
       "id": "push-press",
       "name": "Push press",
-      "category": "strength"
+      "category": "strength",
+      "muscles": {
+        "primary": [
+          "shoulders",
+          "triceps"
+        ],
+        "secondary": [
+          "traps",
+          "abs"
+        ]
+      }
     },
     {
       "id": "lunge",
@@ -45,12 +120,34 @@
       "category": "strength",
       "aliases": [
         "lunge"
-      ]
+      ],
+      "muscles": {
+        "primary": [
+          "quads",
+          "glutes"
+        ],
+        "secondary": [
+          "hamstrings",
+          "adductors"
+        ]
+      }
     },
     {
       "id": "clean",
       "name": "Clean",
-      "category": "weightlifting"
+      "category": "weightlifting",
+      "muscles": {
+        "primary": [
+          "quads",
+          "glutes",
+          "traps"
+        ],
+        "secondary": [
+          "hamstrings",
+          "lowerBack",
+          "shoulders"
+        ]
+      }
     },
     {
       "id": "clean-and-jerk",
@@ -58,17 +155,51 @@
       "category": "weightlifting",
       "aliases": [
         "c&j"
-      ]
+      ],
+      "muscles": {
+        "primary": [
+          "quads",
+          "glutes",
+          "traps"
+        ],
+        "secondary": [
+          "hamstrings",
+          "lowerBack",
+          "shoulders"
+        ]
+      }
     },
     {
       "id": "snatch",
       "name": "Snatch",
-      "category": "weightlifting"
+      "category": "weightlifting",
+      "muscles": {
+        "primary": [
+          "shoulders",
+          "traps",
+          "quads"
+        ],
+        "secondary": [
+          "glutes",
+          "lowerBack",
+          "abs"
+        ]
+      }
     },
     {
       "id": "thruster",
       "name": "Thruster",
-      "category": "weightlifting"
+      "category": "weightlifting",
+      "muscles": {
+        "primary": [
+          "quads",
+          "shoulders"
+        ],
+        "secondary": [
+          "glutes",
+          "triceps"
+        ]
+      }
     },
     {
       "id": "kettlebell-swing",
@@ -76,17 +207,52 @@
       "category": "weightlifting",
       "aliases": [
         "kb swing"
-      ]
+      ],
+      "muscles": {
+        "primary": [
+          "glutes",
+          "hamstrings"
+        ],
+        "secondary": [
+          "lowerBack",
+          "shoulders",
+          "abs"
+        ]
+      }
     },
     {
       "id": "kettlebell-clean",
       "name": "Kettlebell clean",
-      "category": "weightlifting"
+      "category": "weightlifting",
+      "muscles": {
+        "primary": [
+          "quads",
+          "glutes",
+          "traps"
+        ],
+        "secondary": [
+          "hamstrings",
+          "lowerBack",
+          "shoulders"
+        ]
+      }
     },
     {
       "id": "kettlebell-snatch",
       "name": "Kettlebell snatch",
-      "category": "weightlifting"
+      "category": "weightlifting",
+      "muscles": {
+        "primary": [
+          "shoulders",
+          "traps",
+          "quads"
+        ],
+        "secondary": [
+          "glutes",
+          "lowerBack",
+          "abs"
+        ]
+      }
     },
     {
       "id": "dumbbell-snatch",
@@ -94,17 +260,50 @@
       "category": "weightlifting",
       "aliases": [
         "db snatch"
-      ]
+      ],
+      "muscles": {
+        "primary": [
+          "shoulders",
+          "traps",
+          "quads"
+        ],
+        "secondary": [
+          "glutes",
+          "lowerBack",
+          "abs"
+        ]
+      }
     },
     {
       "id": "wall-ball",
       "name": "Wall ball",
-      "category": "weightlifting"
+      "category": "weightlifting",
+      "muscles": {
+        "primary": [
+          "quads",
+          "shoulders"
+        ],
+        "secondary": [
+          "glutes",
+          "triceps",
+          "abs"
+        ]
+      }
     },
     {
       "id": "pull-up",
       "name": "Pull-up",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "lats",
+          "biceps"
+        ],
+        "secondary": [
+          "forearms",
+          "abs"
+        ]
+      }
     },
     {
       "id": "chest-to-bar",
@@ -112,7 +311,17 @@
       "category": "gymnastics",
       "aliases": [
         "c2b"
-      ]
+      ],
+      "muscles": {
+        "primary": [
+          "lats",
+          "biceps"
+        ],
+        "secondary": [
+          "forearms",
+          "abs"
+        ]
+      }
     },
     {
       "id": "toes-to-bar",
@@ -120,32 +329,91 @@
       "category": "gymnastics",
       "aliases": [
         "t2b"
-      ]
+      ],
+      "muscles": {
+        "primary": [
+          "abs"
+        ],
+        "secondary": [
+          "lats",
+          "forearms",
+          "obliques"
+        ]
+      }
     },
     {
       "id": "push-up",
       "name": "Push-up",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "chest",
+          "triceps"
+        ],
+        "secondary": [
+          "shoulders",
+          "abs"
+        ]
+      }
     },
     {
       "id": "burpee",
       "name": "Burpee",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "chest",
+          "quads"
+        ],
+        "secondary": [
+          "triceps",
+          "abs",
+          "shoulders"
+        ]
+      }
     },
     {
       "id": "air-squat",
       "name": "Air squat",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "quads",
+          "glutes"
+        ],
+        "secondary": [
+          "hamstrings",
+          "abs",
+          "lowerBack"
+        ]
+      }
     },
     {
       "id": "sit-up",
       "name": "Sit-up",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "abs"
+        ],
+        "secondary": [
+          "obliques"
+        ]
+      }
     },
     {
       "id": "box-jump",
       "name": "Box jump",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "quads",
+          "calves"
+        ],
+        "secondary": [
+          "glutes"
+        ]
+      }
     },
     {
       "id": "pistol",
@@ -153,7 +421,17 @@
       "category": "gymnastics",
       "aliases": [
         "pistol"
-      ]
+      ],
+      "muscles": {
+        "primary": [
+          "quads",
+          "glutes"
+        ],
+        "secondary": [
+          "adductors",
+          "calves"
+        ]
+      }
     },
     {
       "id": "handstand-push-up",
@@ -161,12 +439,34 @@
       "category": "gymnastics",
       "aliases": [
         "hspu"
-      ]
+      ],
+      "muscles": {
+        "primary": [
+          "shoulders",
+          "triceps"
+        ],
+        "secondary": [
+          "abs",
+          "traps"
+        ]
+      }
     },
     {
       "id": "muscle-up",
       "name": "Muscle-up",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "lats",
+          "chest",
+          "triceps"
+        ],
+        "secondary": [
+          "biceps",
+          "abs",
+          "shoulders"
+        ]
+      }
     },
     {
       "id": "plank",
@@ -174,32 +474,94 @@
       "category": "gymnastics",
       "aliases": [
         "plank"
-      ]
+      ],
+      "muscles": {
+        "primary": [
+          "abs"
+        ],
+        "secondary": [
+          "shoulders",
+          "obliques"
+        ]
+      }
     },
     {
       "id": "run-400m",
       "name": "400 m run",
-      "category": "monostructural"
+      "category": "monostructural",
+      "muscles": {
+        "primary": [
+          "quads",
+          "calves"
+        ],
+        "secondary": [
+          "hamstrings",
+          "glutes",
+          "lats"
+        ]
+      }
     },
     {
       "id": "run-800m",
       "name": "800 m run",
-      "category": "monostructural"
+      "category": "monostructural",
+      "muscles": {
+        "primary": [
+          "quads",
+          "calves"
+        ],
+        "secondary": [
+          "hamstrings",
+          "glutes",
+          "lats"
+        ]
+      }
     },
     {
       "id": "run-1600m",
       "name": "1600 m run",
-      "category": "monostructural"
+      "category": "monostructural",
+      "muscles": {
+        "primary": [
+          "quads",
+          "calves"
+        ],
+        "secondary": [
+          "hamstrings",
+          "glutes",
+          "lats"
+        ]
+      }
     },
     {
       "id": "row-500m",
       "name": "500 m row",
-      "category": "monostructural"
+      "category": "monostructural",
+      "muscles": {
+        "primary": [
+          "lats",
+          "traps"
+        ],
+        "secondary": [
+          "biceps",
+          "forearms"
+        ]
+      }
     },
     {
       "id": "row-1000m",
       "name": "1000 m row",
-      "category": "monostructural"
+      "category": "monostructural",
+      "muscles": {
+        "primary": [
+          "lats",
+          "traps"
+        ],
+        "secondary": [
+          "biceps",
+          "forearms"
+        ]
+      }
     },
     {
       "id": "double-under",
@@ -207,12 +569,28 @@
       "category": "monostructural",
       "aliases": [
         "du"
-      ]
+      ],
+      "muscles": {
+        "primary": [
+          "calves"
+        ],
+        "secondary": [
+          "quads"
+        ]
+      }
     },
     {
       "id": "single-under",
       "name": "Single under",
-      "category": "monostructural"
+      "category": "monostructural",
+      "muscles": {
+        "primary": [
+          "calves"
+        ],
+        "secondary": [
+          "quads"
+        ]
+      }
     },
     {
       "id": "air-bike",
@@ -220,132 +598,437 @@
       "category": "monostructural",
       "aliases": [
         "assault bike"
-      ]
+      ],
+      "muscles": {
+        "primary": [
+          "quads",
+          "calves"
+        ],
+        "secondary": [
+          "hamstrings",
+          "glutes",
+          "lats"
+        ]
+      }
     },
     {
       "id": "ski-erg",
       "name": "Ski erg",
-      "category": "monostructural"
+      "category": "monostructural",
+      "muscles": {
+        "primary": [
+          "quads",
+          "calves"
+        ],
+        "secondary": [
+          "hamstrings",
+          "glutes",
+          "lats"
+        ]
+      }
     },
     {
       "id": "shuttle-run",
       "name": "Shuttle run",
-      "category": "monostructural"
+      "category": "monostructural",
+      "muscles": {
+        "primary": [
+          "quads",
+          "calves"
+        ],
+        "secondary": [
+          "hamstrings",
+          "glutes",
+          "lats"
+        ]
+      }
     },
     {
       "id": "1-deadlift-plus-1-clean-plus-1-front-squat",
       "name": "1 Deadlift + 1 Clean + 1 Front Squat",
-      "category": "strength"
+      "category": "strength",
+      "muscles": {
+        "primary": [
+          "hamstrings",
+          "glutes",
+          "lowerBack"
+        ],
+        "secondary": [
+          "traps",
+          "forearms",
+          "quads"
+        ]
+      }
     },
     {
       "id": "2-position-snatch-top-down-hang-plus-floor",
       "name": "2 Position Snatch (Top Down Hang + Floor)",
-      "category": "strength"
+      "category": "strength",
+      "muscles": {
+        "primary": [
+          "shoulders",
+          "traps",
+          "quads"
+        ],
+        "secondary": [
+          "glutes",
+          "lowerBack",
+          "abs"
+        ]
+      }
     },
     {
       "id": "2-position-clean-plus-jerk-top-down-hang-plus-floor",
       "name": "2 Position Clean + Jerk (Top Down Hang + Floor)",
-      "category": "strength"
+      "category": "strength",
+      "muscles": {
+        "primary": [
+          "quads",
+          "glutes",
+          "traps"
+        ],
+        "secondary": [
+          "hamstrings",
+          "lowerBack",
+          "shoulders"
+        ]
+      }
     },
     {
       "id": "2-position-clean-plus-1-jerk-bottom-up-floor-plus-hang",
       "name": "2 Position Clean + 1 Jerk (Bottom Up Floor + Hang)",
-      "category": "strength"
+      "category": "strength",
+      "muscles": {
+        "primary": [
+          "quads",
+          "glutes",
+          "traps"
+        ],
+        "secondary": [
+          "hamstrings",
+          "lowerBack",
+          "shoulders"
+        ]
+      }
     },
     {
       "id": "2-position-power-snatch-bottom-up-floor-plus-hang",
       "name": "2 Position Power Snatch (Bottom Up Floor + Hang)",
-      "category": "strength"
+      "category": "strength",
+      "muscles": {
+        "primary": [
+          "shoulders",
+          "traps",
+          "quads"
+        ],
+        "secondary": [
+          "glutes",
+          "lowerBack",
+          "abs"
+        ]
+      }
     },
     {
       "id": "2-position-snatch-bottoms-up-floor-plus-hang",
       "name": "2 Position Snatch (Bottoms Up Floor + Hang)",
-      "category": "strength"
+      "category": "strength",
+      "muscles": {
+        "primary": [
+          "shoulders",
+          "traps",
+          "quads"
+        ],
+        "secondary": [
+          "glutes",
+          "lowerBack",
+          "abs"
+        ]
+      }
     },
     {
       "id": "2-power-snatch-plus-1-overhead-squat",
       "name": "2 Power Snatch + 1 Overhead Squat",
-      "category": "strength"
+      "category": "strength",
+      "muscles": {
+        "primary": [
+          "shoulders",
+          "traps",
+          "quads"
+        ],
+        "secondary": [
+          "glutes",
+          "lowerBack",
+          "abs"
+        ]
+      }
     },
     {
       "id": "3-position-clean-top-down-hang-plus-just-below-knee-plus-floor",
       "name": "3 Position Clean (Top Down Hang + Just Below Knee + Floor)",
-      "category": "strength"
+      "category": "strength",
+      "muscles": {
+        "primary": [
+          "quads",
+          "glutes",
+          "traps"
+        ],
+        "secondary": [
+          "hamstrings",
+          "lowerBack",
+          "shoulders"
+        ]
+      }
     },
     {
       "id": "3-position-clean-bottom-up",
       "name": "3 Position Clean (Bottom Up)",
-      "category": "strength"
+      "category": "strength",
+      "muscles": {
+        "primary": [
+          "quads",
+          "glutes",
+          "traps"
+        ],
+        "secondary": [
+          "hamstrings",
+          "lowerBack",
+          "shoulders"
+        ]
+      }
     },
     {
       "id": "3-position-clean-plus-jerk-bottom-up",
       "name": "3 Position Clean + Jerk (Bottom Up)",
-      "category": "strength"
+      "category": "strength",
+      "muscles": {
+        "primary": [
+          "quads",
+          "glutes",
+          "traps"
+        ],
+        "secondary": [
+          "hamstrings",
+          "lowerBack",
+          "shoulders"
+        ]
+      }
     },
     {
       "id": "3-position-snatch-bottom-up",
       "name": "3 Position Snatch (Bottom Up)",
-      "category": "strength"
+      "category": "strength",
+      "muscles": {
+        "primary": [
+          "shoulders",
+          "traps",
+          "quads"
+        ],
+        "secondary": [
+          "glutes",
+          "lowerBack",
+          "abs"
+        ]
+      }
     },
     {
       "id": "3-position-power-clean-top-down",
       "name": "3 Position Power Clean (Top Down)",
-      "category": "strength"
+      "category": "strength",
+      "muscles": {
+        "primary": [
+          "quads",
+          "glutes",
+          "traps"
+        ],
+        "secondary": [
+          "hamstrings",
+          "lowerBack",
+          "shoulders"
+        ]
+      }
     },
     {
       "id": "3-position-clean-plus-jerk-top-down",
       "name": "3 Position Clean + Jerk (Top Down)",
-      "category": "strength"
+      "category": "strength",
+      "muscles": {
+        "primary": [
+          "quads",
+          "glutes",
+          "traps"
+        ],
+        "secondary": [
+          "hamstrings",
+          "lowerBack",
+          "shoulders"
+        ]
+      }
     },
     {
       "id": "3-position-snatch-top-down",
       "name": "3 Position Snatch (Top Down)",
-      "category": "strength"
+      "category": "strength",
+      "muscles": {
+        "primary": [
+          "shoulders",
+          "traps",
+          "quads"
+        ],
+        "secondary": [
+          "glutes",
+          "lowerBack",
+          "abs"
+        ]
+      }
     },
     {
       "id": "3-position-power-clean-bottom-up",
       "name": "3 Position Power Clean (Bottom Up)",
-      "category": "strength"
+      "category": "strength",
+      "muscles": {
+        "primary": [
+          "quads",
+          "glutes",
+          "traps"
+        ],
+        "secondary": [
+          "hamstrings",
+          "lowerBack",
+          "shoulders"
+        ]
+      }
     },
     {
       "id": "3-touch-and-go-clean-plus-1-jerk",
       "name": "3 Touch and Go Clean + 1 Jerk",
-      "category": "strength"
+      "category": "strength",
+      "muscles": {
+        "primary": [
+          "quads",
+          "glutes",
+          "traps"
+        ],
+        "secondary": [
+          "hamstrings",
+          "lowerBack",
+          "shoulders"
+        ]
+      }
     },
     {
       "id": "halting-clean-deadlift-plus-halting-clean-deadlift-plus-power-clean",
       "name": "Halting Clean Deadlift + Halting Clean Deadlift + Power Clean",
-      "category": "strength"
+      "category": "strength",
+      "muscles": {
+        "primary": [
+          "hamstrings",
+          "glutes",
+          "lowerBack"
+        ],
+        "secondary": [
+          "traps",
+          "forearms",
+          "quads"
+        ]
+      }
     },
     {
       "id": "halting-clean-deadlift-plus-finish-plus-floating-clean-deadlift",
       "name": "Halting Clean Deadlift + Finish + Floating Clean Deadlift",
-      "category": "strength"
+      "category": "strength",
+      "muscles": {
+        "primary": [
+          "hamstrings",
+          "glutes",
+          "lowerBack"
+        ],
+        "secondary": [
+          "traps",
+          "forearms",
+          "quads"
+        ]
+      }
     },
     {
       "id": "halting-clean-deadlift-plus-hang-clean",
       "name": "Halting Clean Deadlift + Hang Clean",
-      "category": "strength"
+      "category": "strength",
+      "muscles": {
+        "primary": [
+          "hamstrings",
+          "glutes",
+          "lowerBack"
+        ],
+        "secondary": [
+          "traps",
+          "forearms",
+          "quads"
+        ]
+      }
     },
     {
       "id": "halting-clean-deadlift-plus-hang-power-clean-plus-front-squat",
       "name": "Halting Clean Deadlift + Hang Power Clean + Front Squat",
-      "category": "strength"
+      "category": "strength",
+      "muscles": {
+        "primary": [
+          "hamstrings",
+          "glutes",
+          "lowerBack"
+        ],
+        "secondary": [
+          "traps",
+          "forearms",
+          "quads"
+        ]
+      }
     },
     {
       "id": "halting-clean-deadlift-plus-clean-pull",
       "name": "Halting Clean Deadlift + Clean Pull",
-      "category": "strength"
+      "category": "strength",
+      "muscles": {
+        "primary": [
+          "hamstrings",
+          "glutes",
+          "lowerBack"
+        ],
+        "secondary": [
+          "traps",
+          "forearms",
+          "quads"
+        ]
+      }
     },
     {
       "id": "behind-the-neck-jerk",
       "name": "Behind the Neck Jerk",
-      "category": "strength"
+      "category": "strength",
+      "muscles": {
+        "primary": [
+          "shoulders",
+          "triceps"
+        ],
+        "secondary": [
+          "traps",
+          "abs"
+        ]
+      }
     },
     {
       "id": "barbell-row",
       "name": "Barbell Row",
-      "category": "strength"
+      "category": "strength",
+      "muscles": {
+        "primary": [
+          "lats",
+          "traps"
+        ],
+        "secondary": [
+          "biceps",
+          "forearms"
+        ]
+      }
     },
     {
       "id": "barbell-tricep-extension",
@@ -353,12 +1036,31 @@
       "category": "strength",
       "aliases": [
         "skull crusher"
-      ]
+      ],
+      "muscles": {
+        "primary": [
+          "triceps"
+        ],
+        "secondary": [
+          "chest",
+          "shoulders"
+        ]
+      }
     },
     {
       "id": "bent-over-row",
       "name": "Bent Over Row",
-      "category": "strength"
+      "category": "strength",
+      "muscles": {
+        "primary": [
+          "lats",
+          "traps"
+        ],
+        "secondary": [
+          "biceps",
+          "forearms"
+        ]
+      }
     },
     {
       "id": "bear-complex",
@@ -366,82 +1068,270 @@
       "category": "strength",
       "aliases": [
         "bear"
-      ]
+      ],
+      "muscles": {
+        "primary": [
+          "quads",
+          "shoulders",
+          "chest"
+        ],
+        "secondary": [
+          "glutes",
+          "triceps",
+          "abs"
+        ]
+      }
     },
     {
       "id": "clean-plus-front-squat-plus-jerk",
       "name": "Clean + Front Squat + Jerk",
-      "category": "strength"
+      "category": "strength",
+      "muscles": {
+        "primary": [
+          "quads",
+          "glutes",
+          "traps"
+        ],
+        "secondary": [
+          "hamstrings",
+          "lowerBack",
+          "shoulders"
+        ]
+      }
     },
     {
       "id": "clean-and-jerk-from-blocks",
       "name": "Clean and Jerk from Blocks",
-      "category": "strength"
+      "category": "strength",
+      "muscles": {
+        "primary": [
+          "quads",
+          "glutes",
+          "traps"
+        ],
+        "secondary": [
+          "hamstrings",
+          "lowerBack",
+          "shoulders"
+        ]
+      }
     },
     {
       "id": "clean-deadlift-plus-high-hang-clean-plus-clean-and-jerk",
       "name": "Clean Deadlift + High Hang Clean + Clean and Jerk",
-      "category": "strength"
+      "category": "strength",
+      "muscles": {
+        "primary": [
+          "hamstrings",
+          "glutes",
+          "lowerBack"
+        ],
+        "secondary": [
+          "traps",
+          "forearms",
+          "quads"
+        ]
+      }
     },
     {
       "id": "clean-from-blocks",
       "name": "Clean from Blocks",
-      "category": "strength"
+      "category": "strength",
+      "muscles": {
+        "primary": [
+          "quads",
+          "glutes",
+          "traps"
+        ],
+        "secondary": [
+          "hamstrings",
+          "lowerBack",
+          "shoulders"
+        ]
+      }
     },
     {
       "id": "clean-high-pull-plus-clean",
       "name": "Clean High Pull + Clean",
-      "category": "strength"
+      "category": "strength",
+      "muscles": {
+        "primary": [
+          "quads",
+          "glutes",
+          "traps"
+        ],
+        "secondary": [
+          "hamstrings",
+          "lowerBack",
+          "shoulders"
+        ]
+      }
     },
     {
       "id": "clean-high-pull-plus-power-clean-plus-front-squat",
       "name": "Clean High Pull + Power Clean + Front Squat",
-      "category": "strength"
+      "category": "strength",
+      "muscles": {
+        "primary": [
+          "quads",
+          "glutes",
+          "traps"
+        ],
+        "secondary": [
+          "hamstrings",
+          "lowerBack",
+          "shoulders"
+        ]
+      }
     },
     {
       "id": "clean-high-pull-plus-power-clean-and-jerk-plus-hang-squat",
       "name": "Clean High Pull + Power Clean and Jerk + Hang Squat",
-      "category": "strength"
+      "category": "strength",
+      "muscles": {
+        "primary": [
+          "quads",
+          "glutes",
+          "traps"
+        ],
+        "secondary": [
+          "hamstrings",
+          "lowerBack",
+          "shoulders"
+        ]
+      }
     },
     {
       "id": "clean-high-pull-plus-power-clean-plus-hang-power-clean-plus-jerk",
       "name": "Clean High Pull + Power Clean + Hang Power Clean + Jerk",
-      "category": "strength"
+      "category": "strength",
+      "muscles": {
+        "primary": [
+          "quads",
+          "glutes",
+          "traps"
+        ],
+        "secondary": [
+          "hamstrings",
+          "lowerBack",
+          "shoulders"
+        ]
+      }
     },
     {
       "id": "clean-high-pull-plus-power-clean-plus-hang-clean",
       "name": "Clean High Pull + Power Clean + Hang Clean",
-      "category": "strength"
+      "category": "strength",
+      "muscles": {
+        "primary": [
+          "quads",
+          "glutes",
+          "traps"
+        ],
+        "secondary": [
+          "hamstrings",
+          "lowerBack",
+          "shoulders"
+        ]
+      }
     },
     {
       "id": "clean-pull",
       "name": "Clean Pull",
-      "category": "strength"
+      "category": "strength",
+      "muscles": {
+        "primary": [
+          "quads",
+          "glutes",
+          "traps"
+        ],
+        "secondary": [
+          "hamstrings",
+          "lowerBack",
+          "shoulders"
+        ]
+      }
     },
     {
       "id": "close-grip-bench-press",
       "name": "Close Grip Bench Press",
-      "category": "strength"
+      "category": "strength",
+      "muscles": {
+        "primary": [
+          "chest",
+          "triceps"
+        ],
+        "secondary": [
+          "shoulders",
+          "abs"
+        ]
+      }
     },
     {
       "id": "catch-up",
       "name": "Catch Up",
-      "category": "strength"
+      "category": "strength",
+      "muscles": {
+        "primary": [
+          "quads",
+          "glutes",
+          "lowerBack"
+        ],
+        "secondary": [
+          "hamstrings",
+          "traps",
+          "forearms"
+        ]
+      }
     },
     {
       "id": "deficit-deadlift",
       "name": "Deficit Deadlift",
-      "category": "strength"
+      "category": "strength",
+      "muscles": {
+        "primary": [
+          "hamstrings",
+          "glutes",
+          "lowerBack"
+        ],
+        "secondary": [
+          "traps",
+          "forearms",
+          "quads"
+        ]
+      }
     },
     {
       "id": "drop-snatch",
       "name": "Drop Snatch",
-      "category": "strength"
+      "category": "strength",
+      "muscles": {
+        "primary": [
+          "shoulders",
+          "traps",
+          "quads"
+        ],
+        "secondary": [
+          "glutes",
+          "lowerBack",
+          "abs"
+        ]
+      }
     },
     {
       "id": "floor-press",
       "name": "Floor Press",
-      "category": "strength"
+      "category": "strength",
+      "muscles": {
+        "primary": [
+          "chest",
+          "triceps"
+        ],
+        "secondary": [
+          "shoulders",
+          "abs"
+        ]
+      }
     },
     {
       "id": "glute-ham-raise",
@@ -450,117 +1340,333 @@
       "aliases": [
         "ghd raise",
         "ghr"
-      ]
+      ],
+      "muscles": {
+        "primary": [
+          "glutes"
+        ],
+        "secondary": [
+          "hamstrings",
+          "lowerBack"
+        ]
+      }
     },
     {
       "id": "box-squat",
       "name": "Box Squat",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "quads",
+          "glutes"
+        ],
+        "secondary": [
+          "hamstrings",
+          "abs",
+          "lowerBack"
+        ]
+      }
     },
     {
       "id": "bulgarian-split-squat",
       "name": "Bulgarian Split Squat",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "quads",
+          "glutes"
+        ],
+        "secondary": [
+          "adductors",
+          "calves"
+        ]
+      }
     },
     {
       "id": "lateral-lunge",
       "name": "Lateral Lunge",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "quads",
+          "glutes"
+        ],
+        "secondary": [
+          "hamstrings",
+          "adductors"
+        ]
+      }
     },
     {
       "id": "non-alternating-forward-walking-lunge",
       "name": "Non-Alternating Forward Walking Lunge",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "quads",
+          "glutes"
+        ],
+        "secondary": [
+          "hamstrings",
+          "adductors"
+        ]
+      }
     },
     {
       "id": "plyometric-push-up",
       "name": "Plyometric Push-Up",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "chest",
+          "triceps"
+        ],
+        "secondary": [
+          "shoulders",
+          "abs"
+        ]
+      }
     },
     {
       "id": "reaction-based-plank",
       "name": "Reaction Based Plank",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "abs"
+        ],
+        "secondary": [
+          "shoulders",
+          "obliques"
+        ]
+      }
     },
     {
       "id": "reverse-hyper",
       "name": "Reverse Hyper",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "lowerBack",
+          "glutes",
+          "hamstrings"
+        ],
+        "secondary": []
+      }
     },
     {
       "id": "strict-pull-up",
       "name": "Strict Pull-Up",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "lats",
+          "biceps"
+        ],
+        "secondary": [
+          "forearms",
+          "abs"
+        ]
+      }
     },
     {
       "id": "ring-row",
       "name": "Ring Row",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "lats",
+          "traps"
+        ],
+        "secondary": [
+          "biceps",
+          "forearms"
+        ]
+      }
     },
     {
       "id": "single-leg-hip-thrust-off-bench",
       "name": "Single Leg Hip Thrust off Bench",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "glutes"
+        ],
+        "secondary": [
+          "hamstrings",
+          "lowerBack"
+        ]
+      }
     },
     {
       "id": "v-up",
       "name": "V-Up",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "abs"
+        ],
+        "secondary": [
+          "obliques"
+        ]
+      }
     },
     {
       "id": "max-effort-bar-hang",
       "name": "Max Effort Bar Hang",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "lats",
+          "biceps"
+        ],
+        "secondary": [
+          "forearms",
+          "abs"
+        ]
+      }
     },
     {
       "id": "tricep-push-up-with-hold",
       "name": "Tricep Push-Up with Hold",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "triceps"
+        ],
+        "secondary": [
+          "chest",
+          "shoulders"
+        ]
+      }
     },
     {
       "id": "max-effort-pull-up-hang",
       "name": "Max Effort Pull-Up Hang",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "lats",
+          "biceps"
+        ],
+        "secondary": [
+          "forearms",
+          "abs"
+        ]
+      }
     },
     {
       "id": "crunch-with-ankle-touch",
       "name": "Crunch with Ankle Touch",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "abs"
+        ],
+        "secondary": [
+          "obliques"
+        ]
+      }
     },
     {
       "id": "dynamic-plank-to-a-box",
       "name": "Dynamic Plank to a Box",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "abs"
+        ],
+        "secondary": [
+          "shoulders",
+          "obliques"
+        ]
+      }
     },
     {
       "id": "max-height-box-jump",
       "name": "Max Height Box Jump",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "quads",
+          "calves"
+        ],
+        "secondary": [
+          "glutes"
+        ]
+      }
     },
     {
       "id": "dynamic-superman-to-hollow-rock-on-the-pull-up-bar",
       "name": "Dynamic Superman to Hollow Rock on the Pull-Up Bar",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "abs",
+          "lowerBack"
+        ],
+        "secondary": [
+          "glutes"
+        ]
+      }
     },
     {
       "id": "dip",
       "name": "Dip",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "triceps"
+        ],
+        "secondary": [
+          "chest",
+          "shoulders"
+        ]
+      }
     },
     {
       "id": "tricep-push-up",
       "name": "Tricep Push-Up",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "triceps"
+        ],
+        "secondary": [
+          "chest",
+          "shoulders"
+        ]
+      }
     },
     {
       "id": "mountain-climber",
       "name": "Mountain Climber",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "abs"
+        ],
+        "secondary": [
+          "shoulders",
+          "quads",
+          "obliques"
+        ]
+      }
     },
     {
       "id": "mountain-climbers-on-rings",
       "name": "Mountain Climbers on Rings",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "abs"
+        ],
+        "secondary": [
+          "shoulders",
+          "quads",
+          "obliques"
+        ]
+      }
     },
     {
       "id": "muscle-up-on-rings",
@@ -568,17 +1674,48 @@
       "category": "gymnastics",
       "aliases": [
         "ring mu"
-      ]
+      ],
+      "muscles": {
+        "primary": [
+          "lats",
+          "chest",
+          "triceps"
+        ],
+        "secondary": [
+          "biceps",
+          "abs",
+          "shoulders"
+        ]
+      }
     },
     {
       "id": "plank-walk",
       "name": "Plank Walk",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "abs"
+        ],
+        "secondary": [
+          "shoulders",
+          "obliques"
+        ]
+      }
     },
     {
       "id": "nose-and-toes",
       "name": "Nose and Toes",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "shoulders",
+          "triceps"
+        ],
+        "secondary": [
+          "abs",
+          "traps"
+        ]
+      }
     },
     {
       "id": "muscle-up-on-bar",
@@ -586,72 +1723,207 @@
       "category": "gymnastics",
       "aliases": [
         "bar mu"
-      ]
+      ],
+      "muscles": {
+        "primary": [
+          "lats",
+          "chest",
+          "triceps"
+        ],
+        "secondary": [
+          "biceps",
+          "abs",
+          "shoulders"
+        ]
+      }
     },
     {
       "id": "plank-with-single-leg-lift",
       "name": "Plank with Single Leg Lift",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "abs"
+        ],
+        "secondary": [
+          "shoulders",
+          "obliques"
+        ]
+      }
     },
     {
       "id": "ring-dip",
       "name": "Ring Dip",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "triceps"
+        ],
+        "secondary": [
+          "chest",
+          "shoulders"
+        ]
+      }
     },
     {
       "id": "ring-push-up",
       "name": "Ring Push-Up",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "chest",
+          "triceps"
+        ],
+        "secondary": [
+          "shoulders",
+          "abs"
+        ]
+      }
     },
     {
       "id": "roll-up-with-one-legged-reach",
       "name": "Roll Up with One-Legged Reach",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "abs"
+        ],
+        "secondary": [
+          "obliques",
+          "hamstrings"
+        ]
+      }
     },
     {
       "id": "rope-climb",
       "name": "Rope Climb",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "lats",
+          "biceps",
+          "forearms"
+        ],
+        "secondary": [
+          "abs"
+        ]
+      }
     },
     {
       "id": "rope-lower",
       "name": "Rope Lower",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "lats",
+          "biceps",
+          "forearms"
+        ],
+        "secondary": [
+          "abs"
+        ]
+      }
     },
     {
       "id": "shoot-through",
       "name": "Shoot Through",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "abs",
+          "shoulders"
+        ],
+        "secondary": [
+          "obliques",
+          "triceps"
+        ]
+      }
     },
     {
       "id": "side-plank-with-hip-touches",
       "name": "Side Plank with Hip Touches",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "obliques"
+        ],
+        "secondary": [
+          "abs"
+        ]
+      }
     },
     {
       "id": "side-plank",
       "name": "Side Plank",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "obliques"
+        ],
+        "secondary": [
+          "abs"
+        ]
+      }
     },
     {
       "id": "skin-the-cat",
       "name": "Skin the Cat",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "lats",
+          "shoulders"
+        ],
+        "secondary": [
+          "abs",
+          "chest"
+        ]
+      }
     },
     {
       "id": "pull-up-negative",
       "name": "Pull-Up Negative",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "lats",
+          "biceps"
+        ],
+        "secondary": [
+          "forearms",
+          "abs"
+        ]
+      }
     },
     {
       "id": "spiderman",
       "name": "Spiderman",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "abs",
+          "shoulders"
+        ],
+        "secondary": [
+          "obliques",
+          "triceps"
+        ]
+      }
     },
     {
       "id": "strict-push-up-with-negative-hold",
       "name": "Strict Push-Up with Negative Hold",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "chest",
+          "triceps"
+        ],
+        "secondary": [
+          "shoulders",
+          "abs"
+        ]
+      }
     },
     {
       "id": "strict-push-up",
@@ -659,12 +1931,31 @@
       "category": "gymnastics",
       "aliases": [
         "strict pushup"
-      ]
+      ],
+      "muscles": {
+        "primary": [
+          "chest",
+          "triceps"
+        ],
+        "secondary": [
+          "shoulders",
+          "abs"
+        ]
+      }
     },
     {
       "id": "broad-jump-max-distance",
       "name": "Broad Jump Max Distance",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "quads",
+          "calves"
+        ],
+        "secondary": [
+          "glutes"
+        ]
+      }
     },
     {
       "id": "strict-toes-to-bar",
@@ -672,12 +1963,32 @@
       "category": "gymnastics",
       "aliases": [
         "strict t2b"
-      ]
+      ],
+      "muscles": {
+        "primary": [
+          "abs"
+        ],
+        "secondary": [
+          "lats",
+          "forearms",
+          "obliques"
+        ]
+      }
     },
     {
       "id": "strict-weighted-pull-up",
       "name": "Strict Weighted Pull-Up",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "lats",
+          "biceps"
+        ],
+        "secondary": [
+          "forearms",
+          "abs"
+        ]
+      }
     },
     {
       "id": "chest-to-bar-pull-up",
@@ -686,37 +1997,106 @@
       "aliases": [
         "c2b",
         "chest to bar"
-      ]
+      ],
+      "muscles": {
+        "primary": [
+          "lats",
+          "biceps"
+        ],
+        "secondary": [
+          "forearms",
+          "abs"
+        ]
+      }
     },
     {
       "id": "superman-and-hollow-rock-hold",
       "name": "Superman and Hollow Rock Hold",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "abs",
+          "lowerBack"
+        ],
+        "secondary": [
+          "glutes"
+        ]
+      }
     },
     {
       "id": "ring-roll-out",
       "name": "Ring Roll Out",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "lats",
+          "shoulders"
+        ],
+        "secondary": [
+          "abs",
+          "chest"
+        ]
+      }
     },
     {
       "id": "chin-up-negative",
       "name": "Chin-Up Negative",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "biceps",
+          "lats"
+        ],
+        "secondary": [
+          "forearms",
+          "abs"
+        ]
+      }
     },
     {
       "id": "barbell-body-row",
       "name": "Barbell Body Row",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "lats",
+          "traps"
+        ],
+        "secondary": [
+          "biceps",
+          "forearms"
+        ]
+      }
     },
     {
       "id": "chin-up",
       "name": "Chin-Up",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "biceps",
+          "lats"
+        ],
+        "secondary": [
+          "forearms",
+          "abs"
+        ]
+      }
     },
     {
       "id": "sfk-pull-up",
       "name": "SFK Pull-Up",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "lats",
+          "biceps"
+        ],
+        "secondary": [
+          "forearms",
+          "abs"
+        ]
+      }
     },
     {
       "id": "deficit-handstand-push-up",
@@ -725,17 +2105,45 @@
       "aliases": [
         "hspu",
         "deficit hspu"
-      ]
+      ],
+      "muscles": {
+        "primary": [
+          "shoulders",
+          "triceps"
+        ],
+        "secondary": [
+          "abs",
+          "traps"
+        ]
+      }
     },
     {
       "id": "flutter-kick",
       "name": "Flutter Kick",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "abs"
+        ],
+        "secondary": [
+          "obliques"
+        ]
+      }
     },
     {
       "id": "free-handstand-kick-up",
       "name": "Free Handstand Kick-Up",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "shoulders",
+          "triceps"
+        ],
+        "secondary": [
+          "abs",
+          "traps"
+        ]
+      }
     },
     {
       "id": "handstand-walk",
@@ -743,7 +2151,17 @@
       "category": "gymnastics",
       "aliases": [
         "hs walk"
-      ]
+      ],
+      "muscles": {
+        "primary": [
+          "shoulders",
+          "triceps"
+        ],
+        "secondary": [
+          "abs",
+          "traps"
+        ]
+      }
     },
     {
       "id": "handstand",
@@ -751,32 +2169,90 @@
       "category": "gymnastics",
       "aliases": [
         "hs"
-      ]
+      ],
+      "muscles": {
+        "primary": [
+          "shoulders",
+          "triceps"
+        ],
+        "secondary": [
+          "abs",
+          "traps"
+        ]
+      }
     },
     {
       "id": "hanging-leg-raise",
       "name": "Hanging Leg Raise",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "abs"
+        ],
+        "secondary": [
+          "lats",
+          "forearms",
+          "obliques"
+        ]
+      }
     },
     {
       "id": "high-plank-with-scissor-kick",
       "name": "High Plank with Scissor Kick",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "abs"
+        ],
+        "secondary": [
+          "shoulders",
+          "obliques"
+        ]
+      }
     },
     {
       "id": "high-plank-with-stability-ball",
       "name": "High Plank with Stability Ball",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "abs"
+        ],
+        "secondary": [
+          "shoulders",
+          "obliques"
+        ]
+      }
     },
     {
       "id": "incline-push-up",
       "name": "Incline Push-Up",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "chest",
+          "triceps"
+        ],
+        "secondary": [
+          "shoulders",
+          "abs"
+        ]
+      }
     },
     {
       "id": "inverted-ring-row",
       "name": "Inverted Ring Row",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "lats",
+          "traps"
+        ],
+        "secondary": [
+          "biceps",
+          "forearms"
+        ]
+      }
     },
     {
       "id": "knees-to-elbow",
@@ -784,17 +2260,45 @@
       "category": "gymnastics",
       "aliases": [
         "k2e"
-      ]
+      ],
+      "muscles": {
+        "primary": [
+          "abs"
+        ],
+        "secondary": [
+          "lats",
+          "forearms",
+          "obliques"
+        ]
+      }
     },
     {
       "id": "log-roll",
       "name": "Log Roll",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "abs"
+        ],
+        "secondary": [
+          "obliques"
+        ]
+      }
     },
     {
       "id": "l-sit",
       "name": "L-Sit",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "abs"
+        ],
+        "secondary": [
+          "triceps",
+          "shoulders",
+          "quads"
+        ]
+      }
     },
     {
       "id": "l-sit-pull-up",
@@ -802,72 +2306,200 @@
       "category": "gymnastics",
       "aliases": [
         "l sit pullup"
-      ]
+      ],
+      "muscles": {
+        "primary": [
+          "abs"
+        ],
+        "secondary": [
+          "triceps",
+          "shoulders",
+          "quads"
+        ]
+      }
     },
     {
       "id": "jumping-jack",
       "name": "Jumping Jack",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "quads",
+          "calves"
+        ],
+        "secondary": [
+          "glutes"
+        ]
+      }
     },
     {
       "id": "speed-skating",
       "name": "Speed Skating",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "quads",
+          "calves"
+        ],
+        "secondary": [
+          "glutes"
+        ]
+      }
     },
     {
       "id": "two-legs-side-to-side-jump",
       "name": "Two Legs Side to Side Jump",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "quads",
+          "calves"
+        ],
+        "secondary": [
+          "glutes"
+        ]
+      }
     },
     {
       "id": "crunch-sit-up",
       "name": "Crunch Sit-Up",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "abs"
+        ],
+        "secondary": [
+          "obliques"
+        ]
+      }
     },
     {
       "id": "v-sit-up",
       "name": "V Sit-Up",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "abs"
+        ],
+        "secondary": [
+          "obliques"
+        ]
+      }
     },
     {
       "id": "t-push-up",
       "name": "T Push-Up",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "chest",
+          "triceps"
+        ],
+        "secondary": [
+          "shoulders",
+          "abs"
+        ]
+      }
     },
     {
       "id": "candle-get-up",
       "name": "Candle Get-Up",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "abs"
+        ],
+        "secondary": [
+          "obliques"
+        ]
+      }
     },
     {
       "id": "jumping-lunge",
       "name": "Jumping Lunge",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "quads",
+          "glutes"
+        ],
+        "secondary": [
+          "hamstrings",
+          "adductors"
+        ]
+      }
     },
     {
       "id": "jumping-pull-up",
       "name": "Jumping Pull-Up",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "lats",
+          "biceps"
+        ],
+        "secondary": [
+          "forearms",
+          "abs"
+        ]
+      }
     },
     {
       "id": "hollow-rock",
       "name": "Hollow Rock",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "abs",
+          "lowerBack"
+        ],
+        "secondary": [
+          "glutes"
+        ]
+      }
     },
     {
       "id": "hand-release-push-up",
       "name": "Hand Release Push-Up",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "chest",
+          "triceps"
+        ],
+        "secondary": [
+          "shoulders",
+          "abs"
+        ]
+      }
     },
     {
       "id": "box-jump-over",
       "name": "Box Jump Over",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "quads",
+          "calves"
+        ],
+        "secondary": [
+          "glutes"
+        ]
+      }
     },
     {
       "id": "one-leg-elevated-hip-thrust",
       "name": "One Leg Elevated Hip Thrust",
-      "category": "gymnastics"
+      "category": "gymnastics",
+      "muscles": {
+        "primary": [
+          "glutes"
+        ],
+        "secondary": [
+          "hamstrings",
+          "lowerBack"
+        ]
+      }
     },
     {
       "id": "1-arm-dumbbell-row",
@@ -875,117 +2507,348 @@
       "category": "weightlifting",
       "aliases": [
         "db row"
-      ]
+      ],
+      "muscles": {
+        "primary": [
+          "lats",
+          "traps"
+        ],
+        "secondary": [
+          "biceps",
+          "forearms"
+        ]
+      }
     },
     {
       "id": "1-arm-kettlebell-waiters-walk",
       "name": "1 Arm Kettlebell Waiter's Walk",
-      "category": "weightlifting"
+      "category": "weightlifting",
+      "muscles": {
+        "primary": [
+          "forearms",
+          "traps"
+        ],
+        "secondary": [
+          "abs",
+          "glutes"
+        ]
+      }
     },
     {
       "id": "alternating-dumbbell-bicep-curl",
       "name": "Alternating Dumbbell Bicep Curl",
-      "category": "weightlifting"
+      "category": "weightlifting",
+      "muscles": {
+        "primary": [
+          "biceps"
+        ],
+        "secondary": [
+          "forearms"
+        ]
+      }
     },
     {
       "id": "arnold-press",
       "name": "Arnold Press",
-      "category": "weightlifting"
+      "category": "weightlifting",
+      "muscles": {
+        "primary": [
+          "shoulders",
+          "triceps"
+        ],
+        "secondary": [
+          "traps",
+          "abs"
+        ]
+      }
     },
     {
       "id": "back-extension",
       "name": "Back Extension",
-      "category": "weightlifting"
+      "category": "weightlifting",
+      "muscles": {
+        "primary": [
+          "lowerBack",
+          "glutes",
+          "hamstrings"
+        ],
+        "secondary": []
+      }
     },
     {
       "id": "back-rack-lunge",
       "name": "Back Rack Lunge",
-      "category": "weightlifting"
+      "category": "weightlifting",
+      "muscles": {
+        "primary": [
+          "quads",
+          "glutes"
+        ],
+        "secondary": [
+          "hamstrings",
+          "adductors"
+        ]
+      }
     },
     {
       "id": "banded-goblet-squat",
       "name": "Banded Goblet Squat",
-      "category": "weightlifting"
+      "category": "weightlifting",
+      "muscles": {
+        "primary": [
+          "quads",
+          "glutes"
+        ],
+        "secondary": [
+          "hamstrings",
+          "abs",
+          "lowerBack"
+        ]
+      }
     },
     {
       "id": "banded-sprint",
       "name": "Banded Sprint",
-      "category": "weightlifting"
+      "category": "weightlifting",
+      "muscles": {
+        "primary": [
+          "quads",
+          "calves"
+        ],
+        "secondary": [
+          "hamstrings",
+          "glutes",
+          "lats"
+        ]
+      }
     },
     {
       "id": "banded-squat-walk",
       "name": "Banded Squat Walk",
-      "category": "weightlifting"
+      "category": "weightlifting",
+      "muscles": {
+        "primary": [
+          "quads",
+          "glutes"
+        ],
+        "secondary": [
+          "hamstrings",
+          "abs",
+          "lowerBack"
+        ]
+      }
     },
     {
       "id": "banded-squat",
       "name": "Banded Squat",
-      "category": "weightlifting"
+      "category": "weightlifting",
+      "muscles": {
+        "primary": [
+          "quads",
+          "glutes"
+        ],
+        "secondary": [
+          "hamstrings",
+          "abs",
+          "lowerBack"
+        ]
+      }
     },
     {
       "id": "banded-tricep-pull-down",
       "name": "Banded Tricep Pull Down",
-      "category": "weightlifting"
+      "category": "weightlifting",
+      "muscles": {
+        "primary": [
+          "triceps"
+        ],
+        "secondary": [
+          "chest",
+          "shoulders"
+        ]
+      }
     },
     {
       "id": "bench-press-dumbbells-kettlebell",
       "name": "Bench Press Dumbbells / Kettlebell",
-      "category": "weightlifting"
+      "category": "weightlifting",
+      "muscles": {
+        "primary": [
+          "chest",
+          "triceps"
+        ],
+        "secondary": [
+          "shoulders",
+          "abs"
+        ]
+      }
     },
     {
       "id": "cleans-dumbbells",
       "name": "Cleans Dumbbells",
-      "category": "weightlifting"
+      "category": "weightlifting",
+      "muscles": {
+        "primary": [
+          "quads",
+          "glutes",
+          "traps"
+        ],
+        "secondary": [
+          "hamstrings",
+          "lowerBack",
+          "shoulders"
+        ]
+      }
     },
     {
       "id": "dumbbell-or-kettlebell-non-alternating-forward-walking-lunge",
       "name": "Dumbbell or Kettlebell Non-Alternating Forward Walking Lunge",
-      "category": "weightlifting"
+      "category": "weightlifting",
+      "muscles": {
+        "primary": [
+          "quads",
+          "glutes"
+        ],
+        "secondary": [
+          "hamstrings",
+          "adductors"
+        ]
+      }
     },
     {
       "id": "dumbbell-or-kettlebell-reverse-lunge",
       "name": "Dumbbell or Kettlebell Reverse Lunge",
-      "category": "weightlifting"
+      "category": "weightlifting",
+      "muscles": {
+        "primary": [
+          "quads",
+          "glutes"
+        ],
+        "secondary": [
+          "hamstrings",
+          "adductors"
+        ]
+      }
     },
     {
       "id": "dumbbell-forward-to-reverse-lunge",
       "name": "Dumbbell Forward to Reverse Lunge",
-      "category": "weightlifting"
+      "category": "weightlifting",
+      "muscles": {
+        "primary": [
+          "quads",
+          "glutes"
+        ],
+        "secondary": [
+          "hamstrings",
+          "adductors"
+        ]
+      }
     },
     {
       "id": "dumbbell-or-kettlebell-single-arm-bent-row",
       "name": "Dumbbell or Kettlebell Single Arm Bent Row",
-      "category": "weightlifting"
+      "category": "weightlifting",
+      "muscles": {
+        "primary": [
+          "lats",
+          "traps"
+        ],
+        "secondary": [
+          "biceps",
+          "forearms"
+        ]
+      }
     },
     {
       "id": "dumbbell-or-kettlebell-squat-snatch-single-arm",
       "name": "Dumbbell or Kettlebell Squat Snatch Single Arm",
-      "category": "weightlifting"
+      "category": "weightlifting",
+      "muscles": {
+        "primary": [
+          "shoulders",
+          "traps",
+          "quads"
+        ],
+        "secondary": [
+          "glutes",
+          "lowerBack",
+          "abs"
+        ]
+      }
     },
     {
       "id": "dumbbell-overhead-lunge",
       "name": "Dumbbell Overhead Lunge",
-      "category": "weightlifting"
+      "category": "weightlifting",
+      "muscles": {
+        "primary": [
+          "quads",
+          "glutes"
+        ],
+        "secondary": [
+          "hamstrings",
+          "adductors"
+        ]
+      }
     },
     {
       "id": "dumbbell-push-press",
       "name": "Dumbbell Push Press",
-      "category": "weightlifting"
+      "category": "weightlifting",
+      "muscles": {
+        "primary": [
+          "shoulders",
+          "triceps"
+        ],
+        "secondary": [
+          "traps",
+          "abs"
+        ]
+      }
     },
     {
       "id": "dumbbell-sit-up",
       "name": "Dumbbell Sit-Up",
-      "category": "weightlifting"
+      "category": "weightlifting",
+      "muscles": {
+        "primary": [
+          "abs"
+        ],
+        "secondary": [
+          "obliques"
+        ]
+      }
     },
     {
       "id": "dumbbell-jumping-squat",
       "name": "Dumbbell Jumping Squat",
-      "category": "weightlifting"
+      "category": "weightlifting",
+      "muscles": {
+        "primary": [
+          "quads",
+          "glutes"
+        ],
+        "secondary": [
+          "hamstrings",
+          "abs",
+          "lowerBack"
+        ]
+      }
     },
     {
       "id": "eagle-squat-with-kettlebell",
       "name": "Eagle Squat with Kettlebell",
-      "category": "weightlifting"
+      "category": "weightlifting",
+      "muscles": {
+        "primary": [
+          "adductors",
+          "quads"
+        ],
+        "secondary": [
+          "glutes"
+        ]
+      }
     },
     {
       "id": "farmers-carry",
@@ -993,12 +2856,33 @@
       "category": "weightlifting",
       "aliases": [
         "farmer carry"
-      ]
+      ],
+      "muscles": {
+        "primary": [
+          "forearms",
+          "traps"
+        ],
+        "secondary": [
+          "abs",
+          "glutes"
+        ]
+      }
     },
     {
       "id": "front-squat-dumbbells",
       "name": "Front Squat Dumbbells",
-      "category": "weightlifting"
+      "category": "weightlifting",
+      "muscles": {
+        "primary": [
+          "quads",
+          "glutes"
+        ],
+        "secondary": [
+          "hamstrings",
+          "abs",
+          "lowerBack"
+        ]
+      }
     },
     {
       "id": "goblet-squat",
@@ -1006,127 +2890,378 @@
       "category": "weightlifting",
       "aliases": [
         "kb goblet"
-      ]
+      ],
+      "muscles": {
+        "primary": [
+          "quads",
+          "glutes"
+        ],
+        "secondary": [
+          "hamstrings",
+          "abs",
+          "lowerBack"
+        ]
+      }
     },
     {
       "id": "kettlebell-deadlift",
       "name": "Kettlebell Deadlift",
-      "category": "weightlifting"
+      "category": "weightlifting",
+      "muscles": {
+        "primary": [
+          "hamstrings",
+          "glutes",
+          "lowerBack"
+        ],
+        "secondary": [
+          "traps",
+          "forearms",
+          "quads"
+        ]
+      }
     },
     {
       "id": "kettlebell-halo",
       "name": "Kettlebell Halo",
-      "category": "weightlifting"
+      "category": "weightlifting",
+      "muscles": {
+        "primary": [
+          "shoulders"
+        ],
+        "secondary": [
+          "traps",
+          "abs"
+        ]
+      }
     },
     {
       "id": "kettlebell-push-press",
       "name": "Kettlebell Push Press",
-      "category": "weightlifting"
+      "category": "weightlifting",
+      "muscles": {
+        "primary": [
+          "shoulders",
+          "triceps"
+        ],
+        "secondary": [
+          "traps",
+          "abs"
+        ]
+      }
     },
     {
       "id": "kettlebell-thruster",
       "name": "Kettlebell Thruster",
-      "category": "weightlifting"
+      "category": "weightlifting",
+      "muscles": {
+        "primary": [
+          "quads",
+          "shoulders"
+        ],
+        "secondary": [
+          "glutes",
+          "triceps"
+        ]
+      }
     },
     {
       "id": "lateral-ball-slam",
       "name": "Lateral Ball Slam",
-      "category": "weightlifting"
+      "category": "weightlifting",
+      "muscles": {
+        "primary": [
+          "abs",
+          "lats"
+        ],
+        "secondary": [
+          "shoulders",
+          "quads"
+        ]
+      }
     },
     {
       "id": "man-maker",
       "name": "Man Maker",
-      "category": "weightlifting"
+      "category": "weightlifting",
+      "muscles": {
+        "primary": [
+          "chest",
+          "shoulders",
+          "quads"
+        ],
+        "secondary": [
+          "triceps",
+          "abs",
+          "lats"
+        ]
+      }
     },
     {
       "id": "pause-goblet-squat",
       "name": "Pause Goblet Squat",
-      "category": "weightlifting"
+      "category": "weightlifting",
+      "muscles": {
+        "primary": [
+          "quads",
+          "glutes"
+        ],
+        "secondary": [
+          "hamstrings",
+          "abs",
+          "lowerBack"
+        ]
+      }
     },
     {
       "id": "plate-push-up",
       "name": "Plate Push-Up",
-      "category": "weightlifting"
+      "category": "weightlifting",
+      "muscles": {
+        "primary": [
+          "chest",
+          "triceps"
+        ],
+        "secondary": [
+          "shoulders",
+          "abs"
+        ]
+      }
     },
     {
       "id": "plate-sit-up",
       "name": "Plate Sit-Up",
-      "category": "weightlifting"
+      "category": "weightlifting",
+      "muscles": {
+        "primary": [
+          "abs"
+        ],
+        "secondary": [
+          "obliques"
+        ]
+      }
     },
     {
       "id": "rear-delt-fly",
       "name": "Rear Delt Fly",
-      "category": "weightlifting"
+      "category": "weightlifting",
+      "muscles": {
+        "primary": [
+          "shoulders"
+        ],
+        "secondary": [
+          "traps",
+          "chest"
+        ]
+      }
     },
     {
       "id": "renegade-row",
       "name": "Renegade Row",
-      "category": "weightlifting"
+      "category": "weightlifting",
+      "muscles": {
+        "primary": [
+          "lats",
+          "traps"
+        ],
+        "secondary": [
+          "biceps",
+          "forearms"
+        ]
+      }
     },
     {
       "id": "russian-twist-with-kettlebell",
       "name": "Russian Twist with Kettlebell",
-      "category": "weightlifting"
+      "category": "weightlifting",
+      "muscles": {
+        "primary": [
+          "obliques"
+        ],
+        "secondary": [
+          "abs"
+        ]
+      }
     },
     {
       "id": "seated-kettlebell-press",
       "name": "Seated Kettlebell Press",
-      "category": "weightlifting"
+      "category": "weightlifting",
+      "muscles": {
+        "primary": [
+          "shoulders",
+          "triceps"
+        ],
+        "secondary": [
+          "traps",
+          "abs"
+        ]
+      }
     },
     {
       "id": "single-arm-dumbbell-press",
       "name": "Single Arm Dumbbell Press",
-      "category": "weightlifting"
+      "category": "weightlifting",
+      "muscles": {
+        "primary": [
+          "shoulders",
+          "triceps"
+        ],
+        "secondary": [
+          "traps",
+          "abs"
+        ]
+      }
     },
     {
       "id": "single-arm-kettlebell-press",
       "name": "Single Arm Kettlebell Press",
-      "category": "weightlifting"
+      "category": "weightlifting",
+      "muscles": {
+        "primary": [
+          "shoulders",
+          "triceps"
+        ],
+        "secondary": [
+          "traps",
+          "abs"
+        ]
+      }
     },
     {
       "id": "single-arm-kettlebell-bench-press",
       "name": "Single Arm Kettlebell Bench Press",
-      "category": "weightlifting"
+      "category": "weightlifting",
+      "muscles": {
+        "primary": [
+          "chest",
+          "triceps"
+        ],
+        "secondary": [
+          "shoulders",
+          "abs"
+        ]
+      }
     },
     {
       "id": "single-kettlebell-bottoms-up-press",
       "name": "Single Kettlebell Bottoms Up Press",
-      "category": "weightlifting"
+      "category": "weightlifting",
+      "muscles": {
+        "primary": [
+          "shoulders",
+          "triceps"
+        ],
+        "secondary": [
+          "traps",
+          "abs"
+        ]
+      }
     },
     {
       "id": "single-kettlebell-suitcase-deadlift",
       "name": "Single Kettlebell Suitcase Deadlift",
-      "category": "weightlifting"
+      "category": "weightlifting",
+      "muscles": {
+        "primary": [
+          "hamstrings",
+          "glutes",
+          "lowerBack"
+        ],
+        "secondary": [
+          "traps",
+          "forearms",
+          "quads"
+        ]
+      }
     },
     {
       "id": "snatch-dumbbells-kettlebell",
       "name": "Snatch Dumbbells / Kettlebell",
-      "category": "weightlifting"
+      "category": "weightlifting",
+      "muscles": {
+        "primary": [
+          "shoulders",
+          "traps",
+          "quads"
+        ],
+        "secondary": [
+          "glutes",
+          "lowerBack",
+          "abs"
+        ]
+      }
     },
     {
       "id": "straight-leg-weighted-crunch",
       "name": "Straight-Leg Weighted Crunch",
-      "category": "weightlifting"
+      "category": "weightlifting",
+      "muscles": {
+        "primary": [
+          "abs"
+        ],
+        "secondary": [
+          "obliques"
+        ]
+      }
     },
     {
       "id": "strict-one-arm-kettlebell-press",
       "name": "Strict One-Arm Kettlebell Press",
-      "category": "weightlifting"
+      "category": "weightlifting",
+      "muscles": {
+        "primary": [
+          "shoulders",
+          "triceps"
+        ],
+        "secondary": [
+          "traps",
+          "abs"
+        ]
+      }
     },
     {
       "id": "tire-flip",
       "name": "Tire Flip",
-      "category": "weightlifting"
+      "category": "weightlifting",
+      "muscles": {
+        "primary": [
+          "glutes",
+          "quads",
+          "lats"
+        ],
+        "secondary": [
+          "lowerBack",
+          "forearms"
+        ]
+      }
     },
     {
       "id": "tricep-dumbbell-extension",
       "name": "Tricep Dumbbell Extension",
-      "category": "weightlifting"
+      "category": "weightlifting",
+      "muscles": {
+        "primary": [
+          "triceps"
+        ],
+        "secondary": [
+          "chest",
+          "shoulders"
+        ]
+      }
     },
     {
       "id": "tricep-rollback",
       "name": "Tricep Rollback",
-      "category": "weightlifting"
+      "category": "weightlifting",
+      "muscles": {
+        "primary": [
+          "triceps"
+        ],
+        "secondary": [
+          "chest",
+          "shoulders"
+        ]
+      }
     },
     {
       "id": "turkish-get-up",
@@ -1134,22 +3269,66 @@
       "category": "weightlifting",
       "aliases": [
         "tgu"
-      ]
+      ],
+      "muscles": {
+        "primary": [
+          "shoulders",
+          "abs"
+        ],
+        "secondary": [
+          "obliques",
+          "glutes",
+          "triceps"
+        ]
+      }
     },
     {
       "id": "turkish-sit-up",
       "name": "Turkish Sit-Up",
-      "category": "weightlifting"
+      "category": "weightlifting",
+      "muscles": {
+        "primary": [
+          "shoulders",
+          "abs"
+        ],
+        "secondary": [
+          "obliques",
+          "glutes",
+          "triceps"
+        ]
+      }
     },
     {
       "id": "wall-ball-sit-up",
       "name": "Wall Ball Sit-Up",
-      "category": "weightlifting"
+      "category": "weightlifting",
+      "muscles": {
+        "primary": [
+          "quads",
+          "shoulders"
+        ],
+        "secondary": [
+          "glutes",
+          "triceps",
+          "abs"
+        ]
+      }
     },
     {
       "id": "wall-balls-slam-balls-sit-up",
       "name": "Wall Balls / Slam Balls Sit-Up",
-      "category": "weightlifting"
+      "category": "weightlifting",
+      "muscles": {
+        "primary": [
+          "quads",
+          "shoulders"
+        ],
+        "secondary": [
+          "glutes",
+          "triceps",
+          "abs"
+        ]
+      }
     },
     {
       "id": "wall-walk",
@@ -1157,32 +3336,88 @@
       "category": "weightlifting",
       "aliases": [
         "wall walks"
-      ]
+      ],
+      "muscles": {
+        "primary": [
+          "shoulders",
+          "abs"
+        ],
+        "secondary": [
+          "triceps",
+          "chest"
+        ]
+      }
     },
     {
       "id": "weighted-pull-up",
       "name": "Weighted Pull-Up",
-      "category": "weightlifting"
+      "category": "weightlifting",
+      "muscles": {
+        "primary": [
+          "lats",
+          "biceps"
+        ],
+        "secondary": [
+          "forearms",
+          "abs"
+        ]
+      }
     },
     {
       "id": "weighted-push-up",
       "name": "Weighted Push-Up",
-      "category": "weightlifting"
+      "category": "weightlifting",
+      "muscles": {
+        "primary": [
+          "chest",
+          "triceps"
+        ],
+        "secondary": [
+          "shoulders",
+          "abs"
+        ]
+      }
     },
     {
       "id": "weighted-sit-up",
       "name": "Weighted Sit-Up",
-      "category": "weightlifting"
+      "category": "weightlifting",
+      "muscles": {
+        "primary": [
+          "abs"
+        ],
+        "secondary": [
+          "obliques"
+        ]
+      }
     },
     {
       "id": "weighted-step-up",
       "name": "Weighted Step-Up",
-      "category": "weightlifting"
+      "category": "weightlifting",
+      "muscles": {
+        "primary": [
+          "quads",
+          "glutes"
+        ],
+        "secondary": [
+          "adductors",
+          "calves"
+        ]
+      }
     },
     {
       "id": "single-skip",
       "name": "Single Skip",
-      "category": "monostructural"
+      "category": "monostructural",
+      "muscles": {
+        "primary": [
+          "calves"
+        ],
+        "secondary": [
+          "quads"
+        ]
+      }
     },
     {
       "id": "triple-under",
@@ -1190,27 +3425,79 @@
       "category": "monostructural",
       "aliases": [
         "tu"
-      ]
+      ],
+      "muscles": {
+        "primary": [
+          "calves"
+        ],
+        "secondary": [
+          "quads"
+        ]
+      }
     },
     {
       "id": "running",
       "name": "Running",
-      "category": "monostructural"
+      "category": "monostructural",
+      "muscles": {
+        "primary": [
+          "quads",
+          "calves"
+        ],
+        "secondary": [
+          "hamstrings",
+          "glutes",
+          "lats"
+        ]
+      }
     },
     {
       "id": "biking",
       "name": "Biking",
-      "category": "monostructural"
+      "category": "monostructural",
+      "muscles": {
+        "primary": [
+          "quads",
+          "calves"
+        ],
+        "secondary": [
+          "hamstrings",
+          "glutes",
+          "lats"
+        ]
+      }
     },
     {
       "id": "swimming",
       "name": "Swimming",
-      "category": "monostructural"
+      "category": "monostructural",
+      "muscles": {
+        "primary": [
+          "quads",
+          "calves"
+        ],
+        "secondary": [
+          "hamstrings",
+          "glutes",
+          "lats"
+        ]
+      }
     },
     {
       "id": "rowing",
       "name": "Rowing",
-      "category": "monostructural"
+      "category": "monostructural",
+      "muscles": {
+        "primary": [
+          "quads",
+          "calves"
+        ],
+        "secondary": [
+          "hamstrings",
+          "glutes",
+          "lats"
+        ]
+      }
     }
   ]
 }

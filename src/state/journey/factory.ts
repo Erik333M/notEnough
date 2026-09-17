@@ -1,3 +1,4 @@
+import { NO_MUSCLE_WORK } from './muscles';
 /**
  * Constructors for every Success Journey shape.
  *
@@ -124,7 +125,9 @@ export function createMovement(
   category: MovementCategory,
   aliases: string[] = [],
 ): Movement {
-  return { id: makeId(), name, category, aliases, isCustom: true };
+  // Untagged on purpose: nobody has said what a movement somebody just
+  // invented works, and an unshaded figure is honest where a guess is not.
+  return { id: makeId(), name, category, aliases, isCustom: true, muscles: NO_MUSCLE_WORK };
 }
 
 export function createHabit(
@@ -175,5 +178,6 @@ export function createJourneyState(schemaVersion: number): JourneyState {
     habits: [],
     checks: {},
     units: 'metric',
+    bodyForm: 'male',
   };
 }

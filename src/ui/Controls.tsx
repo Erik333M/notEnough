@@ -287,7 +287,17 @@ export const StatTile = memo(function StatTile({
 }) {
   return (
     <View style={styles.statTile}>
-      <Text style={[styles.statValue, accent && { color: accentColor[accent] }]} numberOfLines={1}>
+      {/*
+        Shrinks rather than truncates. Three tiles across a narrow phone left
+        "0.00 km" rendering as "0.00…", which is a measurement turned into
+        nonsense — the one thing a stat tile must not do.
+      */}
+      <Text
+        style={[styles.statValue, accent && { color: accentColor[accent] }]}
+        numberOfLines={1}
+        adjustsFontSizeToFit
+        minimumFontScale={0.7}
+      >
         {value}
       </Text>
       <Text style={styles.statLabel} numberOfLines={1}>
