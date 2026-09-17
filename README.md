@@ -16,19 +16,19 @@ The premise is in the name: when a target becomes comfortable, the app raises it
 
 | The team | A monthly challenge | How the squad did |
 |---|---|---|
-| ![Coach's team](docs/screenshots/11-team-coach.png) | ![Challenge board](docs/screenshots/12-challenge-board.png) | ![Session progress](docs/screenshots/19-session-progress.png) |
+| ![Coach's team](docs/screenshots/11-team-coach.jpg) | ![Challenge board](docs/screenshots/12-challenge-board.jpg) | ![Session progress](docs/screenshots/19-session-progress.jpg) |
 
 **Being coached** — your work sits beside your own, and you can see exactly what is shared.
 
 | Today | 3 Victories | What your coach sees |
 |---|---|---|
-| ![Athlete's today](docs/screenshots/14-athlete-today.png) | ![Victories](docs/screenshots/15-victories.png) | ![Visibility](docs/screenshots/17-visibility.png) |
+| ![Athlete's today](docs/screenshots/14-athlete-today.jpg) | ![Victories](docs/screenshots/15-victories.jpg) | ![Visibility](docs/screenshots/17-visibility.jpg) |
 
 **Training alone** — unchanged, and with no sign that any of the above exists.
 
 | Daily goals | Stopwatch | Progress |
 |---|---|---|
-| ![Goals](docs/screenshots/03-goals.png) | ![Stopwatch](docs/screenshots/05-stopwatch.png) | ![Progress](docs/screenshots/07-progress.png) |
+| ![Goals](docs/screenshots/03-goals.jpg) | ![Stopwatch](docs/screenshots/05-stopwatch.jpg) | ![Progress](docs/screenshots/07-progress.jpg) |
 
 ---
 
@@ -142,7 +142,7 @@ what keeps the whole feature invisible to them rather than present and disabled.
 
 | Joining a team | Your teams | The team wall |
 |---|---|---|
-| ![Opening question](docs/screenshots/09-intent.png) | ![Teams](docs/screenshots/10-teams.png) | ![Wall](docs/screenshots/18-team-wall.png) |
+| ![Opening question](docs/screenshots/09-intent.jpg) | ![Teams](docs/screenshots/10-teams.jpg) | ![Wall](docs/screenshots/18-team-wall.jpg) |
 
 ### Why challenges do not leak
 

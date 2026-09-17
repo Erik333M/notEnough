@@ -209,7 +209,9 @@ const browser = await chromium.launch({ channel: 'chrome', headless: true });
 async function open(person) {
   const context = await browser.newContext({
     viewport: { width: 412, height: 900 },
-    deviceScaleFactor: 2,
+    // 560 CSS px wide once captured — what the README's three-column tables
+    // show, and enough to stay crisp on a retina screen.
+    deviceScaleFactor: 1.36,
   });
   const page = await context.newPage();
   await page.goto(APP, { waitUntil: 'networkidle' });
@@ -223,10 +225,23 @@ async function open(person) {
   return page;
 }
 
+/**
+ * Captures at the width the README actually renders, as JPEG.
+ *
+ * These are dark UI with large gradients, which PNG stores badly: the same
+ * nineteen shots came to 7.9 MB as full-scale PNGs and 1.8 MB this way, with
+ * no visible difference at the size a reader sees. A README nobody waits for
+ * is worth more than pixels nobody looks at.
+ */
 async function shot(page, name) {
   try {
-    await page.screenshot({ path: path.join(SHOTS, `${name}.png`), timeout: 10000 });
-    console.log(`  ${name}.png`);
+    await page.screenshot({
+      path: path.join(SHOTS, `${name}.jpg`),
+      type: 'jpeg',
+      quality: 82,
+      timeout: 10000,
+    });
+    console.log(`  ${name}.jpg`);
   } catch {
     console.log(`  [warn] ${name} timed out`);
   }
