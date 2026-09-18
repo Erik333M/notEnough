@@ -4,6 +4,7 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import type { Friendship } from '../../api/friends';
 import { accentColor, palette, radius } from '../../theme/theme';
+import { Avatar } from '../../ui/Avatar';
 import { Button } from '../../ui/Button';
 import { GlassCard } from '../../ui/Glass';
 import { levelName } from './level';
@@ -11,8 +12,8 @@ import { levelName } from './level';
 /**
  * One person, as much of them as you are allowed to see.
  *
- * A name, a streak, a level. Somebody who has not opened the app since this
- * feature existed shows no figures at all rather than zeroes — a zero reads
+ * A face, a name, a streak, a level. Somebody who has not opened the app
+ * since this feature existed shows no figures at all rather than zeroes — a zero reads
  * as a judgement, and the truth is that they simply have not published.
  */
 export const FriendRow = memo(function FriendRow({
@@ -34,9 +35,7 @@ export const FriendRow = memo(function FriendRow({
   return (
     <GlassCard style={styles.card}>
       <View style={styles.top}>
-        <View style={styles.avatar}>
-          <Text style={styles.initials}>{initialsOf(profile.name)}</Text>
-        </View>
+        <Avatar name={profile.name} uri={profile.avatarUrl} size={40} />
 
         <View style={styles.body}>
           <Text style={styles.name} numberOfLines={1}>
@@ -76,23 +75,9 @@ export const FriendRow = memo(function FriendRow({
   );
 });
 
-function initialsOf(name: string): string {
-  const parts = name.trim().split(/\s+/).slice(0, 2);
-  return parts.map((part) => part[0]?.toUpperCase() ?? '').join('') || '?';
-}
-
 const styles = StyleSheet.create({
   card: { gap: 12, padding: 14 },
   top: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  avatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: palette.violetSoft,
-  },
-  initials: { fontSize: 13.5, fontWeight: '800', color: palette.violet },
   body: { flex: 1, gap: 2 },
   name: { fontSize: 14.5, fontWeight: '800', color: palette.text },
   meta: { fontSize: 12, fontWeight: '600', color: palette.textMuted },

@@ -57,6 +57,21 @@ if (!health?.ok) {
   process.exit(1);
 }
 
+/*
+ * Refuse to run against an API that predates the current routes.
+ *
+ * A long-lived dev server answers /api/health perfectly and 404s anything
+ * added since it started. That surfaces here as "2 console errors" with no
+ * hint of the cause, which has cost more debugging time than any real bug in
+ * this project. One probe of the newest route is cheaper.
+ */
+const probe = await fetch(`${API}/api/avatars/me`).catch(() => null);
+if (probe?.status === 404) {
+  console.error(`\nThe API at ${API} predates the avatar routes — it is a stale process.`);
+  console.error('Restart it:  lsof -ti:4137 | xargs kill && node server/src/index.js\n');
+  process.exit(1);
+}
+
 const browser = await chromium.launch({ channel: 'chrome', headless: !HEADED });
 const page = await browser.newPage({ viewport: { width: 412, height: 900 }, deviceScaleFactor: 2 });
 

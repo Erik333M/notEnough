@@ -14,13 +14,20 @@ export type FriendStatus = 'pending' | 'accepted';
 /**
  * Everything one person can see of another.
  *
- * Six fields. The figures are published by the owner's own device from data
- * this server never reads, so they say how someone is doing without saying
- * anything about what they did.
+ * The figures are published by the owner's own device from data this server
+ * never reads, so they say how someone is doing without saying anything about
+ * what they did.
  */
 export type PublicProfile = {
   userId: string;
   name: string;
+  /**
+   * A path to pass through `avatarSource`, or null for initials.
+   *
+   * Null on a pending request as well as on somebody who never set one: a
+   * request is a question, and it grants no more than the name it has to.
+   */
+  avatarUrl: string | null;
   streak: number;
   level: number;
   daysWon: number;

@@ -195,8 +195,8 @@ friendsRouter.get('/', async (req, res, next) => {
     /**
      * A pending row carries a name and nothing else.
      *
-     * You have to know who is asking, so the name is necessary. Their streak
-     * and level are not: the profile route refuses those until a request is
+     * You have to know who is asking, so the name is necessary. Their face,
+     * streak and level are not: the profile route refuses those until a request is
      * accepted, and this list would otherwise hand over the same figures
      * through a different door.
      */
@@ -206,7 +206,17 @@ friendsRouter.get('/', async (req, res, next) => {
       const profile =
         row.status === 'accepted'
           ? full
-          : { userId: full.userId, name: full.name, streak: 0, level: 1, daysWon: 0, updatedAt: null };
+          : {
+              userId: full.userId,
+              name: full.name,
+              // Nulled rather than dropped: a field that is missing on one
+              // shape and present on the other is how the two drift apart.
+              avatarUrl: null,
+              streak: 0,
+              level: 1,
+              daysWon: 0,
+              updatedAt: null,
+            };
       return { id: row.id, status: row.status, profile };
     };
 

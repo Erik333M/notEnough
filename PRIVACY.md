@@ -1,6 +1,6 @@
 # Privacy Policy
 
-**Last updated: 16 September 2026**
+**Last updated: 18 September 2026**
 
 NOTenough is a training journal. This document describes exactly what the app
 stores, where it stores it, and what you can delete. It describes the app as it
@@ -19,6 +19,9 @@ and the file paths are given so you can check.
   They are stored in your device's secure keystore and never leave the phone.
 - If you join a team, your coach sees **only the work they set you** and what you
   recorded against it. Your own training is never visible to them.
+- A **profile picture is optional**. If you set one it is seen by your friends
+  and teammates, exactly like your name; the app asks for photo access only at
+  the moment you tap to choose one.
 - There is **no analytics, no tracking, no advertising, and no third-party SDK**
   receiving your data.
 - You can delete your health answers and your entire account from inside the
@@ -48,6 +51,7 @@ Only if you create an account, and only when the app can reach the server.
 | Name, email address | To identify your account. |
 | Password | Sent once when you register or sign in. It is stored only as a scrypt hash with a per-account salt — never in plain text. |
 | Your journal state | So the same account shows the same journal on another device. Stored as one private block per account, which the server does not read into. |
+| Your profile picture — only if you set one | Stored as an image file beside the database, not inside it. Shown to your friends and to people on a team you share: the same people who can already see your name. Removing it deletes the file. |
 | Team work — only if you are in a team | Sessions a coach set you, and the results you logged against them. Stored separately from your journal, because more than one person can see it. |
 
 The server is the small Node service in [`server/`](server/). It is run by you
@@ -112,7 +116,7 @@ athlete in both.
 
 | What | Who sees it |
 | --- | --- |
-| Your name and role | Everyone on that team's roster. |
+| Your name, and your picture if you set one | Everyone on that team's roster. |
 | Your email address | **Nobody** — not other athletes, and not your coach. Rosters carry names only. |
 | Your results | Your coach. Teammates only if the coach opens that one session's board. |
 | Your score in a challenge you joined | Everyone on that team, on that challenge's board. One number, with your name. |
@@ -162,7 +166,13 @@ athlete is on two rosters.
   messages.
 - **No location tracking.** The run timer measures elapsed time and a distance
   you enter yourself; it does not read GPS.
-- **No contacts, photo or microphone access.**
+- **No contacts access, and no camera or microphone.** The photo picker is
+  configured without the camera and microphone permissions, so the app cannot
+  open your camera or record audio.
+- **No photo library access until you ask for it.** Permission is requested at
+  the moment you tap to set a profile picture, never at launch, and only the
+  one image you pick is read. Refusing is a normal answer — you keep your
+  initials.
 
 ## Your controls
 
@@ -172,6 +182,7 @@ athlete is on two rosters.
 | Delete your account and everything synced | Settings → *Delete account* | Your account row and your stored journal are both removed from the server. |
 | Stop syncing | Settings → *Sign out* | The token is cleared. The app keeps working offline. |
 | End your coach's access | Teams → open the team → *Leave* | Access ends at once; your results stay with you. |
+| Remove your profile picture | You → *Remove photo* | The image file is deleted from the server, not just hidden. |
 | Come off a leaderboard | Open the challenge → *Leave the challenge* | Your entry and score are deleted. |
 | Use the app with no account at all | Never sign in | Nothing is sent anywhere. |
 

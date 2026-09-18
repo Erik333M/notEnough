@@ -25,6 +25,8 @@
  * mutate, and a check can never go stale between testing and writing.
  */
 
+import { avatarUrlFor } from './avatar-store.js';
+
 /* ------------------------------------------------------------- membership */
 
 /**
@@ -195,9 +197,13 @@ export function rosterOf(data, teamId, users) {
     .filter((row) => row.teamId === teamId)
     .map((row) => {
       const user = users.find((candidate) => candidate.id === row.userId);
+      const avatar = data.avatars.find((entry) => entry.userId === row.userId);
       return {
         userId: row.userId,
         name: user?.name ?? 'Unknown',
+        // Travels with the name, on the same reasoning: a squad list you are
+        // already allowed to read is allowed to have faces on it.
+        avatarUrl: avatar ? avatarUrlFor(avatar.file) : null,
         role: row.role,
         status: row.status,
         joinedAt: row.createdAt,

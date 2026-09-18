@@ -46,6 +46,7 @@ import { config } from './config.js';
  * @property {Object[]} entries
  * @property {Object[]} friendships
  * @property {Object[]} profiles
+ * @property {Object[]} avatars
  */
 
 /**
@@ -72,6 +73,7 @@ const EMPTY = {
   entries: [],
   friendships: [],
   profiles: [],
+  avatars: [],
 };
 
 /** @type {Schema | null} */
@@ -103,6 +105,7 @@ async function load() {
       entries: Array.isArray(parsed.entries) ? parsed.entries : [],
       friendships: Array.isArray(parsed.friendships) ? parsed.friendships : [],
       profiles: Array.isArray(parsed.profiles) ? parsed.profiles : [],
+      avatars: Array.isArray(parsed.avatars) ? parsed.avatars : [],
     };
   } catch (error) {
     if (error.code !== 'ENOENT') {
@@ -164,6 +167,8 @@ export function write(mutator) {
  *
  * Teams they coached are left standing: other people's memberships and work
  * live in them, and deleting your account should not delete a squad.
+ *
+ * Returns the avatar file name to unlink, if they had one.
  */
 export function purgeUserData(data, userId) {
   const theirs = new Set(
@@ -184,6 +189,12 @@ export function purgeUserData(data, userId) {
     (row) => row.requesterId !== userId && row.addresseeId !== userId,
   );
   data.profiles = data.profiles.filter((row) => row.userId !== userId);
+  // The row goes here; the file on disk is removed by the caller, which can
+  // await. Returning the name is the only way this synchronous mutator can
+  // hand that job on without leaving an orphan in the avatar directory.
+  const avatar = data.avatars.find((row) => row.userId === userId);
+  data.avatars = data.avatars.filter((row) => row.userId !== userId);
+  return avatar?.file ?? null;
 }
 
 export async function findUserByEmail(email) {

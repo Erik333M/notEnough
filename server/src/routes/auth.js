@@ -2,6 +2,7 @@ import crypto from 'node:crypto';
 import { Router } from 'express';
 
 import { hashPassword, publicUser, requireAuth, signToken, verifyPassword } from '../auth.js';
+import { deleteAvatar } from '../avatar-store.js';
 import { findUserByEmail, purgeUserData, write } from '../db.js';
 import { requireEmail, requirePassword, requireString } from '../validate.js';
 
@@ -99,13 +100,16 @@ authRouter.patch('/me', requireAuth, async (req, res, next) => {
 authRouter.delete('/me', requireAuth, async (req, res, next) => {
   try {
     const { id } = req.user;
-    await write((data) => {
+    const avatarFile = await write((data) => {
       data.users = data.users.filter((row) => row.id !== id);
       delete data.states[id];
       // Memberships, assignments and results go too. Leaving them would keep a
       // deleted person on their coach's roster forever.
-      purgeUserData(data, id);
+      return purgeUserData(data, id);
     });
+    // The row is gone; the bytes have to go too, or a deleted account leaves
+    // its face on the disk behind a URL that still works.
+    if (avatarFile) await deleteAvatar(avatarFile);
     return res.status(204).end();
   } catch (error) {
     return next(error);

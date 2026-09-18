@@ -25,7 +25,7 @@ export type PolicySection = {
   rows?: PolicyRow[];
 };
 
-export const POLICY_UPDATED = '16 September 2026';
+export const POLICY_UPDATED = '18 September 2026';
 
 export const POLICY_SUMMARY = [
   'Everything you write is kept on your device first. The app works fully offline.',
@@ -82,6 +82,11 @@ export const POLICY_SECTIONS: PolicySection[] = [
         term: 'Your journal state',
         detail:
           'So the same account shows the same journal on another device. Stored as one private block per account that the server does not read into and cannot serve to anyone else.',
+      },
+      {
+        term: 'Your profile picture, only if you set one',
+        detail:
+          'Stored as an image file on the server and shown to your friends and to people on a team you share — the same people who can already see your name. There is no picture until you choose one, and removing it deletes the file.',
       },
       {
         term: 'Team work, only if you are in a team',
@@ -165,7 +170,17 @@ export const POLICY_SECTIONS: PolicySection[] = [
         detail:
           'The run timer counts elapsed time and a distance you enter yourself. It does not read GPS.',
       },
-      { term: 'No contacts, photos or microphone', detail: 'The app never asks for them.' },
+      { term: 'No contacts', detail: 'The app never asks for your address book.' },
+      {
+        term: 'No camera or microphone',
+        detail:
+          'The photo picker is configured without them, so the app cannot open your camera or record audio.',
+      },
+      {
+        term: 'No photo library access until you ask for it',
+        detail:
+          'Permission is requested at the moment you tap to set a profile picture, never at launch — and only the single image you choose is read. Refusing is a normal answer: you keep your initials.',
+      },
     ],
   },
   {
@@ -183,6 +198,11 @@ export const POLICY_SECTIONS: PolicySection[] = [
         term: 'Your whole account',
         detail:
           'Settings → Delete account. Removes both your account and your synced journal from the server.',
+      },
+      {
+        term: 'Your profile picture',
+        detail:
+          'You → Remove photo. The file is deleted from the server, not just hidden.',
       },
       {
         term: 'Stop syncing',
