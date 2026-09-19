@@ -5,6 +5,7 @@ import { EventForm } from '../features/events/EventForm';
 import { EventRosterSection } from '../features/events/EventRosterSection';
 import { EventGamesSection } from '../features/events/EventGamesSection';
 import { EventSquadsSection } from '../features/events/EventSquadsSection';
+import { StaffRotaSection } from '../features/events/StaffRotaSection';
 import { ageLabel, durationLabel, formatRange, phaseLabel } from '../features/events/eventCopy';
 import { useEventDetail } from '../features/events/useEventDetail';
 import { InviteCard } from '../features/teams/InviteCard';
@@ -137,6 +138,13 @@ export default function EventDetailScreen({
         <Appear delay={140}>
           <EventGamesSection eventId={eventId} />
         </Appear>
+
+        {/* Staff only — there is nothing here a camper should be reading. */}
+        {detail.isStaff ? (
+          <Appear delay={145}>
+            <StaffRotaSection teamId={team.id} roster={roster} />
+          </Appear>
+        ) : null}
 
         {detail.isStaff ? (
           <Appear delay={150}>
