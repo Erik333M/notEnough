@@ -12,7 +12,7 @@
     "start": "node src/index.js",
     "dev": "node --watch src/index.js",
     "smoke": "node scripts/smoke.js",
-    "test": "node scripts/teams.test.js && node scripts/sessions.test.js && node scripts/shares.test.js && node scripts/challenges.test.js && node scripts/friends.test.js && node scripts/avatars.test.js && node scripts/events.test.js && node scripts/event-teams.test.js && node scripts/event-games.test.js && node scripts/event-tasks.test.js && node scripts/event-chat.test.js"
+    "test": "node scripts/storage.test.js && node scripts/teams.test.js && node scripts/sessions.test.js && node scripts/shares.test.js && node scripts/challenges.test.js && node scripts/friends.test.js && node scripts/avatars.test.js && node scripts/events.test.js && node scripts/event-teams.test.js && node scripts/event-games.test.js && node scripts/event-tasks.test.js && node scripts/event-chat.test.js"
   },
   "dependencies": {
     "cors": "^2.8.5",

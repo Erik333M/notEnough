@@ -29,6 +29,21 @@ export const config = {
   isProduction: process.env.NODE_ENV === 'production',
 };
 
+/**
+ * Chat lives in its own file, beside the database rather than inside it.
+ *
+ * Every write rewrites a whole file. With messages in db.json, posting one
+ * would rewrite every team, session and result in the system — so a busy
+ * channel would make the cost of saving anything grow with the size of
+ * everything. Splitting them means a message rewrites messages.
+ *
+ * Derived from dbFile rather than configured separately, so a test that points
+ * DB_FILE at a temp path does not silently share one messages file with every
+ * other run on the machine.
+ */
+config.messagesFile =
+  process.env.MESSAGES_FILE ?? config.dbFile.replace(/\.json$/, '') + '.messages.json';
+
 if (config.isProduction && !process.env.JWT_SECRET) {
   throw new Error('JWT_SECRET must be set in production.');
 }

@@ -21,6 +21,8 @@ import { WebSocket } from 'ws';
 const PORT = 4201;
 const base = `http://localhost:${PORT}`;
 const dbFile = path.join(os.tmpdir(), `notenough-chat-${Date.now()}.json`);
+/** Derived by config.js the same way; the test must clean both up. */
+const messagesFile = dbFile.replace(/\.json$/, '') + '.messages.json';
 
 let failures = 0;
 function check(label, condition, detail = '') {
@@ -249,6 +251,63 @@ try {
   const readAfter = await call('GET', `/api/events/${event.id}/messages`, { token: kid.token });
   check('and cannot read the history either', readAfter.status === 403, `got ${readAfter.status}`);
 
+  /* ------------------------------------------------------ its own file */
+
+  console.log('\n where messages are kept');
+  const core = JSON.parse(await fs.readFile(dbFile, 'utf8'));
+  check('the database file holds no messages', core.messages === undefined,
+    JSON.stringify(Object.keys(core).filter((key) => key === 'messages')));
+  const kept = JSON.parse(await fs.readFile(messagesFile, 'utf8'));
+  check('they are in a file of their own', Array.isArray(kept) && kept.length > 0,
+    String(kept?.length));
+
+  /*
+   * The whole reason for the split. Posting used to rewrite every team,
+   * session and result in the system; if that is still happening, this fails.
+   */
+  const coreStamp = (await fs.stat(dbFile)).mtimeMs;
+  await new Promise((resolve) => setTimeout(resolve, 20));
+  await call('POST', `/api/events/${event.id}/messages`, {
+    token: boss.token,
+    body: { body: 'Another one.' },
+  });
+  const coreStampAfter = (await fs.stat(dbFile)).mtimeMs;
+  check('posting does not rewrite the database file', coreStampAfter === coreStamp,
+    `${coreStamp} then ${coreStampAfter}`);
+  const grew = JSON.parse(await fs.readFile(messagesFile, 'utf8'));
+  check('only the messages file grew', grew.length === kept.length + 1,
+    `${kept.length} then ${grew.length}`);
+
+  /* ------------------------------------------------ an author who leaves */
+
+  console.log('\n an author who deletes their account');
+  const helper = await signUp('Helper');
+  await call('POST', '/api/teams/join', { token: helper.token, body: { code: campTeam.inviteCode } });
+  await call('PATCH', `/api/teams/${campTeam.id}/members/${helper.id}`, {
+    token: boss.token,
+    body: { role: 'coach' },
+  });
+  await call('POST', `/api/events/${event.id}/messages`, {
+    token: helper.token,
+    body: { body: 'Coach trip leaves at ten.' },
+  });
+  await call('DELETE', '/api/auth/me', { token: helper.token });
+
+  const orphaned = (await call('GET', `/api/events/${event.id}/messages`, { token: boss.token })).body;
+  const theirs = orphaned.messages.find((row) => row.body === 'Coach trip leaves at ten.');
+  /*
+   * Kept, unlike a share. A shared boast is about its author and is a ghost
+   * without one; an announcement is information other people were given and
+   * may still be relying on. It loses the name rather than the message, and
+   * staff can still delete it — which was the reason shares could not stay.
+   */
+  check('their announcement survives them', Boolean(theirs), JSON.stringify(orphaned.messages));
+  check('but no longer carries a name', theirs?.name === 'Someone', theirs?.name);
+  const sweep = await call('DELETE', `/api/events/${event.id}/messages/${theirs.id}`, {
+    token: boss.token,
+  });
+  check('and staff can still take it down', sweep.status === 204, `got ${sweep.status}`);
+
   /* ------------------------------------------------------------ deleting */
 
   console.log('\n taking a message back');
@@ -267,6 +326,7 @@ try {
   for (const entry of sockets) entry.socket.close();
   server.kill();
   await fs.rm(dbFile, { force: true });
+  await fs.rm(messagesFile, { force: true });
 }
 
 console.log(failures === 0 ? '\nAll checks passed.\n' : `\n${failures} check(s) failed.\n`);
