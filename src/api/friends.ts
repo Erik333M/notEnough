@@ -49,6 +49,29 @@ type FriendLists = {
   outgoing: Friendship[];
 };
 
+/**
+ * One post on a friend feed.
+ *
+ * The same row a team wall carries, with no team on it. Who can see it is
+ * worked out from live friendships when the feed is read, not stamped on the
+ * post — so unfriending somebody takes your posts back from them.
+ */
+export type FeedPost = {
+  id: string;
+  teamId: null;
+  userId: string;
+  authorName: string;
+  avatarUrl: string | null;
+  kind: 'streak' | 'personalBest' | 'habit' | 'work';
+  achievementId: string;
+  title: string;
+  detail: string;
+  value: number;
+  achievedAt: string;
+  note: string;
+  createdAt: string;
+};
+
 export const friendsApi = {
   /** Yours to share. Generated the first time it is asked for, then stable. */
   code: (token: string): Promise<ApiResult<{ code: string }>> =>
@@ -63,6 +86,31 @@ export const friendsApi = {
   /** By id, and only for somebody on a roster you are also on. */
   requestTeammate: (token: string, userId: string): Promise<ApiResult<{ friendship: Friendship }>> =>
     request('/api/friends/request-teammate', { method: 'POST', token, body: { userId } }),
+
+  /* --------------------------------------------------------------- feed */
+
+  /** Your posts and your friends', newest first. Your own are included. */
+  feed: (token: string): Promise<ApiResult<{ feed: FeedPost[]; friendCount: number }>> =>
+    request('/api/friends/feed', { token }),
+
+  /** No audience to pick: a friend post goes to everybody you have added. */
+  postToFriends: (
+    token: string,
+    body: {
+      kind: FeedPost['kind'];
+      achievementId: string;
+      title: string;
+      detail: string;
+      value: number;
+      achievedAt: string;
+      note?: string;
+    },
+  ): Promise<ApiResult<{ share: FeedPost }>> =>
+    request('/api/friends/shares', { method: 'POST', token, body }),
+
+  /** Yours only. A friend feed has no moderator. */
+  removePost: (token: string, shareId: string): Promise<ApiResult<unknown>> =>
+    request(`/api/friends/shares/${shareId}`, { method: 'DELETE', token }),
 
   accept: (token: string, friendshipId: string): Promise<ApiResult<{ friendship: Friendship }>> =>
     request(`/api/friends/${friendshipId}/accept`, { method: 'POST', token }),

@@ -89,6 +89,11 @@ export const POLICY_SECTIONS: PolicySection[] = [
           'Stored as an image file on the server and shown to your friends and to people on a team you share — the same people who can already see your name. There is no picture until you choose one, and removing it deletes the file.',
       },
       {
+        term: 'Anything you post to your friends',
+        detail:
+          'An achievement you chose to show them: two lines, your name and the date. Who can see it is worked out from your friendships each time the feed is read, so removing somebody as a friend takes your posts back from them.',
+      },
+      {
         term: 'Messages you post to an event channel',
         detail:
           'Only the staff of an event can post; everybody at that event reads it. Stored on the server so people who were not looking still see it. Anyone can delete their own message, and event staff can delete any of them.',
@@ -220,6 +225,10 @@ export const POLICY_SECTIONS: PolicySection[] = [
         term: 'Your profile picture',
         detail:
           'You → Remove photo. The file is deleted from the server, not just hidden.',
+      },
+      {
+        term: 'Something you posted to your friends',
+        detail: 'Tap the cross on your own post. It is deleted, not hidden.',
       },
       {
         term: 'A message you posted',

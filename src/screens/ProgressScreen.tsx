@@ -42,7 +42,7 @@ export default function ProgressScreen({ bottomInset }: { bottomInset: number })
   const work = useMyWork();
   const achievements = useAchievements(work.completed);
   const { memberships } = useTeams();
-  const { sharedIds, share } = useSharing();
+  const { sharedIds, friendCount, friendPosts, teamsWith, share } = useSharing();
   const [sharing, setSharing] = useState<Achievement | null>(null);
 
   // Screen-specific history math, memoised per state change. The 7-day series
@@ -169,7 +169,7 @@ export default function ProgressScreen({ bottomInset }: { bottomInset: number })
           <SectionHeader
             title="Achievements"
             meta={
-              memberships.length > 0
+              memberships.length > 0 || friendCount > 0
                 ? 'Yours until you choose to share one'
                 : 'Read from what you have already done'
             }
@@ -180,7 +180,14 @@ export default function ProgressScreen({ bottomInset }: { bottomInset: number })
                 key={achievement.id}
                 achievement={achievement}
                 shared={sharedIds.has(achievement.id)}
-                onShare={memberships.length > 0 ? () => setSharing(achievement) : undefined}
+                // Offered as soon as there is anybody to show it to — a team,
+                // a friend, or both. Gating this on teams alone left somebody
+                // with friends and no squad unable to share at all.
+                onShare={
+                  memberships.length > 0 || friendCount > 0
+                    ? () => setSharing(achievement)
+                    : undefined
+                }
               />
             ))}
           </View>
@@ -190,11 +197,21 @@ export default function ProgressScreen({ bottomInset }: { bottomInset: number })
       <ShareAchievementSheet
         achievement={sharing}
         teams={memberships}
+        friendCount={friendCount}
+        takenTeamIds={sharing ? teamsWith(sharing.id) : new Set()}
+        friendsTaken={sharing ? friendPosts.has(sharing.id) : false}
         onClose={() => setSharing(null)}
-        onShare={async (teamId, note) => {
+        onShare={async (audience, note) => {
           if (!sharing) return false;
-          const ok = await share(sharing, teamId, note);
-          notify(ok ? 'Shared with your team.' : 'Could not share that right now.', ok ? 'success' : 'error');
+          const ok = await share(sharing, audience, note);
+          notify(
+            ok
+              ? audience.kind === 'friends'
+                ? 'Shared with your friends.'
+                : 'Shared with your team.'
+              : 'Could not share that right now.',
+            ok ? 'success' : 'error',
+          );
           return ok;
         }}
       />

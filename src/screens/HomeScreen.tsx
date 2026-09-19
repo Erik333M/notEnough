@@ -28,10 +28,13 @@ const METAS: Record<View['key'], string | undefined> = {
 export default function HomeScreen({
   bottomInset,
   onOpenTimer,
+  onOpenFriends,
 }: {
   bottomInset: number;
   /** The timer is a tab, not a drill-down; the shell handles the switch. */
   onOpenTimer: () => void;
+  /** Friends lives under the You tab, so this is a tab switch too. */
+  onOpenFriends: () => void;
 }) {
   const stack = useStack<View>({ key: 'today' });
   const view = stack.current;
@@ -53,6 +56,7 @@ export default function HomeScreen({
           onOpenGoals={() => stack.push({ key: 'goals' })}
           onOpenVictories={() => stack.push({ key: 'victories' })}
           onOpenTimer={onOpenTimer}
+          onOpenFriends={onOpenFriends}
         />
       )}
     </TabStack>

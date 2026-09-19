@@ -37,6 +37,9 @@ export function AppShell() {
   const [resetNonce, setResetNonce] = useState(0);
   /** A friend code from a shared link, until the Friends screen takes it. */
   const [friendCode, setFriendCode] = useState<string | undefined>(undefined);
+  // Set when the feed on Home asks for the Friends screen, which lives under
+  // a different tab; cleared by that tab as soon as it has acted on it.
+  const [wantFriends, setWantFriends] = useState(false);
 
   const { user } = useAuth();
   const stats = useStats();
@@ -163,7 +166,14 @@ export function AppShell() {
         style={styles.screen}
       >
         {route === 'home' ? (
-          <HomeScreen bottomInset={bottomInset} onOpenTimer={() => navigate('train')} />
+          <HomeScreen
+            bottomInset={bottomInset}
+            onOpenTimer={() => navigate('train')}
+            onOpenFriends={() => {
+              setWantFriends(true);
+              navigate('profile');
+            }}
+          />
         ) : route === 'journey' ? (
           <SuccessJourneyScreen bottomInset={bottomInset} />
         ) : route === 'train' ? (
@@ -175,6 +185,8 @@ export function AppShell() {
             bottomInset={bottomInset}
             pendingFriendCode={friendCode}
             onFriendCodeUsed={() => setFriendCode(undefined)}
+            openFriends={wantFriends}
+            onOpenedFriends={() => setWantFriends(false)}
           />
         )}
       </Animated.View>

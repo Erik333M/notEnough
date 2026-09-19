@@ -18,6 +18,7 @@ import { Button } from '../../ui/Button';
 import { Chip, RoundIconButton, SectionHeader } from '../../ui/Controls';
 import { TextArea } from '../../ui/Field';
 import type { Achievement } from './derive';
+import type { Audience } from './useSharing';
 
 /**
  * Publish one achievement to one team.
@@ -28,43 +29,69 @@ import type { Achievement } from './derive';
  * private a moment ago. A button labelled only "Share" would not be telling
  * the truth about that.
  *
- * So it shows the exact words that will appear, names the team they go to, and
- * says plainly that this reveals those lines and no more. One team at a time,
+ * So it shows the exact words that will appear, names who they go to, and says
+ * plainly that this reveals those lines and no more. One audience at a time,
  * deliberately: "post everywhere" is how people share to an audience they had
  * forgotten they had.
+ *
+ * Your friends are one of those audiences, alongside each team. An audience
+ * that already has this achievement is shown as taken rather than hidden, so
+ * it reads as "already done" instead of as a missing option.
  */
 export function ShareAchievementSheet({
   achievement,
   teams,
+  friendCount,
+  takenTeamIds,
+  friendsTaken,
   onClose,
   onShare,
 }: {
   achievement: Achievement | null;
   teams: { team: Team; role: TeamRole }[];
+  /** Zero means no friends yet, so the option is not offered at all. */
+  friendCount: number;
+  /** Teams that already have this achievement. */
+  takenTeamIds: Set<string>;
+  friendsTaken: boolean;
   onClose: () => void;
-  onShare: (teamId: string, note: string) => Promise<boolean>;
+  onShare: (audience: Audience, note: string) => Promise<boolean>;
 }) {
   const insets = useSafeAreaInsets();
-  const [teamId, setTeamId] = useState<string | null>(null);
+  const [target, setTarget] = useState<Audience | null>(null);
   const [note, setNote] = useState('');
   const [busy, setBusy] = useState(false);
+
+  const open = teams.filter((row) => !takenTeamIds.has(row.team.id));
+  const friendsOpen = friendCount > 0 && !friendsTaken;
 
   useEffect(() => {
     if (!achievement) return;
     setNote('');
     // Pre-selected only when there is no choice to make.
-    setTeamId(teams.length === 1 ? teams[0].team.id : null);
-  }, [achievement, teams]);
+    const only =
+      open.length === 1 && !friendsOpen
+        ? ({ kind: 'team', id: open[0].team.id } as Audience)
+        : open.length === 0 && friendsOpen
+          ? ({ kind: 'friends' } as Audience)
+          : null;
+    setTarget(only);
+    // `open` is derived from props that change together with the achievement.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [achievement, teams, friendCount, friendsTaken]);
 
   const submit = useCallback(async () => {
-    if (!teamId) return;
+    if (!target) return;
     setBusy(true);
-    const ok = await onShare(teamId, note.trim());
+    const ok = await onShare(target, note.trim());
     setBusy(false);
     if (ok) onClose();
-  }, [note, onClose, onShare, teamId]);
+  }, [note, onClose, onShare, target]);
 
-  const chosen = teams.find((row) => row.team.id === teamId)?.team.name;
+  const chosen =
+    target?.kind === 'friends'
+      ? 'your friends'
+      : teams.find((row) => row.team.id === (target?.kind === 'team' ? target.id : null))?.team.name;
 
   return (
     <Modal
@@ -112,7 +139,7 @@ export function ShareAchievementSheet({
 
                 <Text style={styles.warning}>
                   {chosen
-                    ? `Everyone in ${chosen} will see those two lines, your name and the date. Nothing else — not your journal, your goals, or anything you have not shared.`
+                    ? `${target?.kind === 'friends' ? 'Everyone you have added as a friend' : `Everyone in ${chosen}`} will see those two lines, your name and the date. Nothing else — not your journal, your goals, or anything you have not shared.`
                     : 'Whoever you pick will see those two lines, your name and the date. Nothing else — not your journal, your goals, or anything you have not shared.'}
                 </Text>
 
@@ -123,15 +150,26 @@ export function ShareAchievementSheet({
                     showsHorizontalScrollIndicator={false}
                     contentContainerStyle={styles.chips}
                   >
-                    {teams.map(({ team }) => (
+                    {friendCount > 0 ? (
                       <Chip
-                        key={team.id}
-                        label={team.name}
-                        active={team.id === teamId}
-                        onPress={() => setTeamId(team.id)}
-                        accent="cyan"
+                        label={friendsTaken ? 'Friends · shared' : 'Your friends'}
+                        active={target?.kind === 'friends'}
+                        onPress={() => !friendsTaken && setTarget({ kind: 'friends' })}
+                        accent="violet"
                       />
-                    ))}
+                    ) : null}
+                    {teams.map(({ team }) => {
+                      const taken = takenTeamIds.has(team.id);
+                      return (
+                        <Chip
+                          key={team.id}
+                          label={taken ? `${team.name} · shared` : team.name}
+                          active={target?.kind === 'team' && target.id === team.id}
+                          onPress={() => !taken && setTarget({ kind: 'team', id: team.id })}
+                          accent="cyan"
+                        />
+                      );
+                    })}
                   </ScrollView>
                 </View>
 
@@ -144,10 +182,10 @@ export function ShareAchievementSheet({
                 />
 
                 <Button
-                  label={chosen ? `Share with ${chosen}` : 'Pick a team first'}
+                  label={chosen ? `Share with ${chosen}` : 'Pick who sees it'}
                   icon="share-outline"
                   loading={busy}
-                  disabled={!teamId}
+                  disabled={!target}
                   onPress={submit}
                 />
 

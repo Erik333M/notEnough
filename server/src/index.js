@@ -13,6 +13,7 @@ import { eventFieldsRouter } from './routes/event-fields.js';
 import { eventGamesRouter } from './routes/event-games.js';
 import { eventTeamsRouter } from './routes/event-teams.js';
 import { eventsRouter } from './routes/events.js';
+import { friendFeedRouter } from './routes/friend-feed.js';
 import { friendsRouter } from './routes/friends.js';
 import { profilesRouter } from './routes/profiles.js';
 import { sessionActionsRouter } from './routes/session-actions.js';
@@ -62,6 +63,7 @@ app.use('/api/events', eventTeamsRouter);
 app.use('/api/events', eventFieldsRouter);
 app.use('/api/events', eventGamesRouter);
 app.use('/api/events', eventChatRouter);
+app.use('/api/friends', friendFeedRouter);
 app.use('/api/friends', friendsRouter);
 app.use('/api/friends', profilesRouter);
 // Two routers, one path: session-actions holds the verbs (hand out, start from

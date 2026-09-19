@@ -7,6 +7,7 @@ import { TodayHero } from '../features/goals/TodayHero';
 import { QuickAction } from '../features/goals/QuickAction';
 import { VictoriesTodayCard } from '../features/victories/VictoriesTodayCard';
 import { AssignedWorkCard } from '../features/teams/AssignedWorkCard';
+import { FeedSection } from '../features/friends/FeedSection';
 import { LogResultSheet } from '../features/teams/LogResultSheet';
 import { useMyWork } from '../features/teams/useMyWork';
 import { dayKey } from '../lib/time';
@@ -31,6 +32,7 @@ export default function TodayScreen({
   onOpenGoals,
   onOpenVictories,
   onOpenTimer,
+  onOpenFriends,
 }: {
   bottomInset: number;
   /** Pushes onto the Home tab's own stack. */
@@ -38,6 +40,8 @@ export default function TodayScreen({
   onOpenVictories: () => void;
   /** Switches tab — the timer is a place you go, not a drill-down. */
   onOpenTimer: () => void;
+  /** The feed lives here, but Friends itself is a screen under the You tab. */
+  onOpenFriends: () => void;
 }) {
   const state = useAppState();
   const stats = useStats();
@@ -165,6 +169,10 @@ export default function TodayScreen({
             <Text style={styles.pushAccent}>{projection.stretchGoal.toLowerCase()}</Text>.
           </Text>
         </GlassCard>
+      </Appear>
+
+      <Appear delay={240}>
+        <FeedSection onOpenFriends={onOpenFriends} />
       </Appear>
 
       <LogResultSheet

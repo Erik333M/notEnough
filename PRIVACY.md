@@ -51,6 +51,7 @@ Only if you create an account, and only when the app can reach the server.
 | Name, email address | To identify your account. |
 | Password | Sent once when you register or sign in. It is stored only as a scrypt hash with a per-account salt — never in plain text. |
 | Your journal state | So the same account shows the same journal on another device. Stored as one private block per account, which the server does not read into. |
+| Anything you post to your friends | An achievement you chose to show them: two lines, your name and the date. Who sees it is worked out from your friendships at read time, so unfriending somebody takes your posts back from them. |
 | Messages you post to an event channel | Only an event's staff can post; everybody at that event reads them. Stored on the server so somebody who was not looking still sees them. |
 | Statistics recorded in an event | Goals, cards, whatever the organiser chose to count. Visible to everybody at that event, and kept separately from your own training. |
 | Your profile picture — only if you set one | Stored as an image file beside the database, not inside it. Shown to your friends and to people on a team you share: the same people who can already see your name. Removing it deletes the file. |
@@ -212,6 +213,7 @@ arrives when you have the channel open.
 | Stop syncing | Settings → *Sign out* | The token is cleared. The app keeps working offline. |
 | End your coach's access | Teams → open the team → *Leave* | Access ends at once; your results stay with you. |
 | Remove your profile picture | You → *Remove photo* | The image file is deleted from the server, not just hidden. |
+| Delete something you posted to your friends | Home → tap the cross on your own post | Deleted, not hidden. |
 | Delete something you posted in a channel | Open the channel → tap your message | Deleted for everybody, not hidden. |
 | Come off a leaderboard | Open the challenge → *Leave the challenge* | Your entry and score are deleted. |
 | Use the app with no account at all | Never sign in | Nothing is sent anywhere. |

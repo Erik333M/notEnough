@@ -42,11 +42,16 @@ export default function ProfileScreen({
   bottomInset,
   pendingFriendCode,
   onFriendCodeUsed,
+  openFriends = false,
+  onOpenedFriends,
 }: {
   bottomInset: number;
   /** A code from a shared link, handed down by the shell. */
   pendingFriendCode?: string;
   onFriendCodeUsed?: () => void;
+  /** Set when the feed on Home sent somebody here to find people. */
+  openFriends?: boolean;
+  onOpenedFriends?: () => void;
 }) {
   const stack = useStack<View>({ key: 'profile' });
   const view = stack.current;
@@ -56,6 +61,15 @@ export default function ProfileScreen({
   useEffect(() => {
     if (pendingFriendCode && view.key !== 'friends') stack.push({ key: 'friends' });
   }, [pendingFriendCode, stack, view.key]);
+
+  // Same idea, from the feed on Home: land on Friends rather than on the
+  // profile root with the reason for coming already lost. Cleared straight
+  // away so a later visit to this tab opens where it usually does.
+  useEffect(() => {
+    if (!openFriends) return;
+    if (view.key !== 'friends') stack.push({ key: 'friends' });
+    onOpenedFriends?.();
+  }, [openFriends, onOpenedFriends, stack, view.key]);
 
   return (
     <TabStack
