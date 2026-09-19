@@ -25,7 +25,7 @@ export type PolicySection = {
   rows?: PolicyRow[];
 };
 
-export const POLICY_UPDATED = '18 September 2026';
+export const POLICY_UPDATED = '19 September 2026';
 
 export const POLICY_SUMMARY = [
   'Everything you write is kept on your device first. The app works fully offline.',
@@ -87,6 +87,11 @@ export const POLICY_SECTIONS: PolicySection[] = [
         term: 'Your profile picture, only if you set one',
         detail:
           'Stored as an image file on the server and shown to your friends and to people on a team you share — the same people who can already see your name. There is no picture until you choose one, and removing it deletes the file.',
+      },
+      {
+        term: 'Messages you post to an event channel',
+        detail:
+          'Only the staff of an event can post; everybody at that event reads it. Stored on the server so people who were not looking still see it. Anyone can delete their own message, and event staff can delete any of them.',
       },
       {
         term: 'Team work, only if you are in a team',
@@ -152,6 +157,18 @@ export const POLICY_SECTIONS: PolicySection[] = [
     ],
   },
   {
+    id: 'events',
+    title: 'If you join an event',
+    icon: 'calendar-outline',
+    accent: 'cyan',
+    body: [
+      'A camp or a training week is a team with dates on it, so everything in "If you join a team" applies to it too. Three things are particular to events.',
+      'The age group on an event is a label, not a check. The app holds no birthdates and never asks your age — it is there so somebody reading the event knows who it is meant for.',
+      'Statistics recorded in an event — goals, cards, whatever the organiser chose to count — are visible to everybody at that event. They are figures from its games, kept separately from your own training, which nobody at the event can see.',
+      'The channel carries messages from the event staff to everybody there. Campers cannot post to it. That is deliberate: an app that let children message each other would need moderation, reporting and blocking, and this one has none of those.',
+    ],
+  },
+  {
     id: 'never',
     title: 'What the app never does',
     icon: 'close-circle-outline',
@@ -203,6 +220,11 @@ export const POLICY_SECTIONS: PolicySection[] = [
         term: 'Your profile picture',
         detail:
           'You → Remove photo. The file is deleted from the server, not just hidden.',
+      },
+      {
+        term: 'A message you posted',
+        detail:
+          'Open the event channel and tap your own message. It is deleted for everybody, not hidden.',
       },
       {
         term: 'Stop syncing',

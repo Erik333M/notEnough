@@ -1,0 +1,249 @@
+import { Ionicons } from '@expo/vector-icons';
+import { useState } from 'react';
+import { RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
+
+import { EventForm } from '../features/events/EventForm';
+import { EventRosterSection } from '../features/events/EventRosterSection';
+import { EventGamesSection } from '../features/events/EventGamesSection';
+import { EventSquadsSection } from '../features/events/EventSquadsSection';
+import { StaffRotaSection } from '../features/events/StaffRotaSection';
+import { ageLabel, durationLabel, formatRange, phaseLabel } from '../features/events/eventCopy';
+import { useEventDetail } from '../features/events/useEventDetail';
+import { InviteCard } from '../features/teams/InviteCard';
+import { accentColor, palette } from '../theme/theme';
+import { Appear, Pill, SectionHeader, StatTile } from '../ui/Controls';
+import { Button } from '../ui/Button';
+import { GlassCard } from '../ui/Glass';
+import { StackHeaderBar } from '../ui/StackHeaderBar';
+import { useToast } from '../ui/Toast';
+import { PressableScale } from '../ui/Touchable';
+
+/**
+ * One event: when it runs, who is there, and — for staff — the controls.
+ *
+ * A camper and a staff member see the same page. What differs is what is
+ * actionable on it, which is decided by the role the server sent back rather
+ * than by anything this screen works out for itself.
+ */
+export default function EventDetailScreen({
+  eventId,
+  bottomInset,
+  onBack,
+  onOpenChat,
+}: {
+  eventId: string;
+  bottomInset: number;
+  onBack: () => void;
+  onOpenChat: (eventName: string) => void;
+}) {
+  const detail = useEventDetail(eventId);
+  const { notify } = useToast();
+  const [editing, setEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+
+  if (detail.loading) {
+    return (
+      <View style={styles.centre}>
+        <Text style={styles.quiet}>Loading…</Text>
+      </View>
+    );
+  }
+
+  if (!detail.data) {
+    return (
+      <View style={styles.centre}>
+        <Text style={styles.quiet}>{detail.error ?? 'That event is not available.'}</Text>
+        <Button label="Back" variant="ghost" onPress={onBack} />
+      </View>
+    );
+  }
+
+  const { event, team, counts, days, roster } = detail.data;
+  const ages = ageLabel(event.ageMin, event.ageMax);
+  const full = counts.campers >= event.capacity;
+
+  return (
+    <View style={styles.screen}>
+      <StackHeaderBar
+        title={team.name}
+        meta={`${formatRange(event.startDate, event.endDate)} · ${durationLabel(days)}`}
+        onBack={onBack}
+        backLabel="Back to your teams"
+      />
+
+      <ScrollView
+        contentContainerStyle={[styles.content, { paddingBottom: bottomInset }]}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={async () => {
+              setRefreshing(true);
+              await detail.refresh();
+              setRefreshing(false);
+            }}
+            tintColor={palette.textMuted}
+          />
+        }
+      >
+        {/*
+          The channel is the thing people open the event for once it is
+          running, so it sits above everything rather than under the roster.
+        */}
+        <Appear>
+          <PressableScale
+            haptic="light"
+            onPress={() => onOpenChat(team.name)}
+            accessibilityLabel={`Open the ${team.name} channel`}
+          >
+            <GlassCard style={styles.chatRow}>
+              <View style={styles.chatIcon}>
+                <Ionicons name="chatbubbles" size={17} color={accentColor.violet} />
+              </View>
+              <View style={styles.chatBody}>
+                <Text style={styles.chatTitle}>Channel</Text>
+                <Text style={styles.chatCopy}>
+                  {detail.isStaff
+                    ? 'Post to everybody at the event'
+                    : 'Announcements from the staff'}
+                </Text>
+              </View>
+              <Ionicons name="chevron-forward" size={16} color={palette.textFaint} />
+            </GlassCard>
+          </PressableScale>
+        </Appear>
+
+        <Appear delay={25}>
+          <GlassCard style={styles.head}>
+            <View style={styles.pills}>
+              <Pill label={phaseLabel(event.startDate, event.endDate)} icon="time-outline" accent="cyan" />
+              {ages ? <Pill label={ages} icon="person-outline" accent="violet" /> : null}
+              {full ? <Pill label="Full" icon="alert-circle-outline" accent="amber" /> : null}
+            </View>
+
+            <View style={styles.tiles}>
+              <StatTile label="campers" value={`${counts.campers}/${event.capacity}`} accent="lime" />
+              <StatTile label="staff" value={`${counts.staff}/${event.staffTarget}`} accent="violet" />
+              <StatTile label="days" value={String(days)} accent="cyan" />
+            </View>
+
+            {counts.staff < event.staffTarget ? (
+              <Text style={styles.warn}>
+                {event.staffTarget - counts.staff} more staff needed. Anyone who has joined can be
+                made staff below.
+              </Text>
+            ) : null}
+          </GlassCard>
+        </Appear>
+
+        {detail.isStaff ? (
+          <Appear delay={50}>
+            <SectionHeader title="How people join" />
+            <InviteCard code={team.inviteCode} />
+            <Text style={styles.note}>
+              One code for everybody, staff included. A full event puts new arrivals on the waiting
+              list instead of turning them away — and making somebody staff lets them in, because
+              staff never take a camper's place.
+            </Text>
+          </Appear>
+        ) : null}
+
+        <Appear delay={100}>
+          <EventRosterSection
+            roster={roster}
+            isStaff={detail.isStaff}
+            busy={detail.busy}
+            myId={detail.myId}
+            onSetMember={async (userId, change) => {
+              const result = await detail.setMember(userId, change);
+              if (!result.ok && result.message) notify(result.message, 'error');
+            }}
+          />
+        </Appear>
+
+        <Appear delay={125}>
+          <EventSquadsSection eventId={eventId} />
+        </Appear>
+
+        <Appear delay={140}>
+          <EventGamesSection eventId={eventId} />
+        </Appear>
+
+        {/* Staff only — there is nothing here a camper should be reading. */}
+        {detail.isStaff ? (
+          <Appear delay={145}>
+            <StaffRotaSection teamId={team.id} roster={roster} />
+          </Appear>
+        ) : null}
+
+        {detail.isStaff ? (
+          <Appear delay={150}>
+            <SectionHeader title="Settings" />
+            {editing ? (
+              <GlassCard style={styles.form}>
+                <EventForm
+                  initial={{
+                    name: team.name,
+                    startDate: event.startDate,
+                    endDate: event.endDate,
+                    ageMin: event.ageMin,
+                    ageMax: event.ageMax,
+                    capacity: event.capacity,
+                    staffTarget: event.staffTarget,
+                  }}
+                  submitLabel="Save changes"
+                  busy={saving}
+                  onSubmit={async (input) => {
+                    setSaving(true);
+                    const result = await detail.update(input);
+                    setSaving(false);
+                    if (result.ok) {
+                      setEditing(false);
+                      notify('Event updated.', 'success');
+                    } else {
+                      notify(result.message, 'error');
+                    }
+                  }}
+                />
+                <Button label="Cancel" variant="ghost" onPress={() => setEditing(false)} />
+              </GlassCard>
+            ) : (
+              <Button
+                label="Edit the event"
+                icon="create-outline"
+                variant="ghost"
+                onPress={() => setEditing(true)}
+              />
+            )}
+          </Appear>
+        ) : null}
+      </ScrollView>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  screen: { flex: 1 },
+  centre: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12, padding: 24 },
+  quiet: { fontSize: 13, fontWeight: '600', color: palette.textMuted },
+  content: { padding: 18, gap: 16 },
+  head: { gap: 12, padding: 16 },
+  chatRow: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 14 },
+  chatIcon: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: palette.violetSoft,
+  },
+  chatBody: { flex: 1, gap: 2 },
+  chatTitle: { fontSize: 14.5, fontWeight: '800', color: palette.text },
+  chatCopy: { fontSize: 12, fontWeight: '600', color: palette.textMuted },
+  pills: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  tiles: { flexDirection: 'row', gap: 10 },
+  warn: { fontSize: 12, lineHeight: 17, fontWeight: '700', color: accentColor.amber },
+  note: { fontSize: 11.5, lineHeight: 17, fontWeight: '600', color: palette.textFaint },
+  form: { gap: 12, padding: 14 },
+});

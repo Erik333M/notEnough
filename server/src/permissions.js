@@ -182,6 +182,75 @@ export function canViewProfile(data, viewerId, ownerId) {
   return viewerId === ownerId || areFriends(data, viewerId, ownerId);
 }
 
+/* ------------------------------------------------------------------ events */
+
+/**
+ * The event rows attached to a team, or null for an ordinary squad.
+ *
+ * Every rule below asks this first, so a plain team keeps behaving exactly as
+ * it did before events existed — no ceiling, no dates, nothing to migrate.
+ */
+export function eventOf(data, teamId) {
+  return data.events.find((row) => row.teamId === teamId) ?? null;
+}
+
+/**
+ * Who is actually there.
+ *
+ * Staff are counted apart from campers and do not consume a place. A camp
+ * "for 40" means forty children; the four adults running it were never what
+ * the number was about.
+ */
+export function eventCounts(data, teamId) {
+  const active = data.memberships.filter(
+    (row) => row.teamId === teamId && row.status === 'active',
+  );
+  return {
+    campers: active.filter((row) => row.role === 'athlete').length,
+    staff: active.filter((row) => row.role === 'coach').length,
+  };
+}
+
+/**
+ * Whether one more person will fit.
+ *
+ * An ordinary team has no ceiling and never has had, so this answers yes for
+ * everything that is not an event.
+ */
+export function canJoinTeam(data, teamId) {
+  const event = eventOf(data, teamId);
+  if (!event) return true;
+  return eventCounts(data, teamId).campers < event.capacity;
+}
+
+/**
+ * Squads inside an event.
+ *
+ * A child team is a team, with the same memberships and the same rules. What
+ * makes it a child is that it is reached through its event: it never appears
+ * in somebody's list of teams, and its code will not let anybody in.
+ */
+export function childTeamsOf(data, parentTeamId) {
+  return data.teams.filter((row) => row.parentTeamId === parentTeamId && !row.archived);
+}
+
+/**
+ * Who may change anything about an event.
+ *
+ * The event's staff, which is to say the coaches of the event's own team.
+ * Deliberately not "the coach of the child team": a camp's organiser must be
+ * able to fix any squad in it, including one they did not create — and the
+ * same goes for its games, its stat fields and the numbers recorded in them.
+ */
+export function canManageEvent(data, userId, event) {
+  return Boolean(event) && canManageTeam(data, userId, event.teamId);
+}
+
+/** Everyone at the event may see how it is divided up. */
+export function canViewEvent(data, userId, event) {
+  return Boolean(event) && canViewTeam(data, userId, event.teamId);
+}
+
 /* ------------------------------------------------------------- projections */
 
 /**

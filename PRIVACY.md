@@ -1,6 +1,6 @@
 # Privacy Policy
 
-**Last updated: 18 September 2026**
+**Last updated: 19 September 2026**
 
 NOTenough is a training journal. This document describes exactly what the app
 stores, where it stores it, and what you can delete. It describes the app as it
@@ -51,6 +51,8 @@ Only if you create an account, and only when the app can reach the server.
 | Name, email address | To identify your account. |
 | Password | Sent once when you register or sign in. It is stored only as a scrypt hash with a per-account salt — never in plain text. |
 | Your journal state | So the same account shows the same journal on another device. Stored as one private block per account, which the server does not read into. |
+| Messages you post to an event channel | Only an event's staff can post; everybody at that event reads them. Stored on the server so somebody who was not looking still sees them. |
+| Statistics recorded in an event | Goals, cards, whatever the organiser chose to count. Visible to everybody at that event, and kept separately from your own training. |
 | Your profile picture — only if you set one | Stored as an image file beside the database, not inside it. Shown to your friends and to people on a team you share: the same people who can already see your name. Removing it deletes the file. |
 | Team work — only if you are in a team | Sessions a coach set you, and the results you logged against them. Stored separately from your journal, because more than one person can see it. |
 
@@ -157,6 +159,33 @@ Relevant code: [`server/src/permissions.js`](server/src/permissions.js),
 by tests in [`server/scripts/`](server/scripts/), including the case where one
 athlete is on two rosters.
 
+## If you join an event
+
+A camp or a training week is **a team with dates on it**, so everything in
+["If you join a team"](#if-you-join-a-team) applies to it as well. Three things
+are particular to events.
+
+**The age group is a label, not a check.** The app holds no birthdates and never
+asks your age. It is there so somebody reading the event knows who it is meant
+for; the organiser decides who is in.
+
+**Statistics belong to the event.** Whatever the organiser chose to count —
+goals, assists, cards — is visible to everybody at that event. It is recorded
+from its games and kept apart from your own training, which nobody there can
+see.
+
+**The channel is one-way.** Event staff post; everybody at the event reads.
+Campers cannot post to it, and there is no private messaging between people
+anywhere in this app. That is deliberate rather than unfinished: an app that let
+children message each other would need moderation, reporting and blocking, and
+this one has none of those. Anyone can delete their own message, and event staff
+can delete any message in their channel.
+
+Messages travel over a websocket to the same server as everything else, so they
+are delivered as they are posted rather than on a refresh. Nothing about them
+goes to a third party, and there is no push notification service — a message
+arrives when you have the channel open.
+
 ## What the app does not do
 
 - **No analytics or telemetry.** There is no analytics SDK in the project.
@@ -183,6 +212,7 @@ athlete is on two rosters.
 | Stop syncing | Settings → *Sign out* | The token is cleared. The app keeps working offline. |
 | End your coach's access | Teams → open the team → *Leave* | Access ends at once; your results stay with you. |
 | Remove your profile picture | You → *Remove photo* | The image file is deleted from the server, not just hidden. |
+| Delete something you posted in a channel | Open the channel → tap your message | Deleted for everybody, not hidden. |
 | Come off a leaderboard | Open the challenge → *Leave the challenge* | Your entry and score are deleted. |
 | Use the app with no account at all | Never sign in | Nothing is sent anywhere. |
 

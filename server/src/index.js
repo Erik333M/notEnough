@@ -1,5 +1,6 @@
 import cors from 'cors';
 import express from 'express';
+import http from 'node:http';
 import os from 'node:os';
 
 import { config } from './config.js';
@@ -7,13 +8,20 @@ import { authRouter } from './routes/auth.js';
 import { avatarsRouter } from './routes/avatars.js';
 import { stateRouter } from './routes/state.js';
 import { challengesRouter } from './routes/challenges.js';
+import { eventChatRouter } from './routes/event-chat.js';
+import { eventFieldsRouter } from './routes/event-fields.js';
+import { eventGamesRouter } from './routes/event-games.js';
+import { eventTeamsRouter } from './routes/event-teams.js';
+import { eventsRouter } from './routes/events.js';
 import { friendsRouter } from './routes/friends.js';
 import { profilesRouter } from './routes/profiles.js';
 import { sessionActionsRouter } from './routes/session-actions.js';
 import { sharesRouter } from './routes/shares.js';
 import { sessionsRouter } from './routes/sessions.js';
+import { teamMembersRouter } from './routes/team-members.js';
 import { teamsRouter } from './routes/teams.js';
 import { workRouter } from './routes/work.js';
+import { attachRealtime } from './realtime.js';
 import { ValidationError } from './validate.js';
 
 const app = express();
@@ -41,10 +49,19 @@ app.use('/api/auth', authRouter);
 app.use('/api/avatars', avatarsRouter);
 app.use('/api/state', stateRouter);
 app.use('/api/teams', teamsRouter);
+// Membership verbs live in their own file for length; same path, same rules.
+app.use('/api/teams', teamMembersRouter);
 app.use('/api/teams', sharesRouter);
 // Team-scoped creation and listing share the /api/teams path; acting on one
 // challenge is addressed by its own id under /detail.
 app.use('/api/teams', challengesRouter);
+app.use('/api/events', eventsRouter);
+// Squads inside an event; same path, split for length.
+app.use('/api/events', eventTeamsRouter);
+// What the event counts, and the games it counts them in.
+app.use('/api/events', eventFieldsRouter);
+app.use('/api/events', eventGamesRouter);
+app.use('/api/events', eventChatRouter);
 app.use('/api/friends', friendsRouter);
 app.use('/api/friends', profilesRouter);
 // Two routers, one path: session-actions holds the verbs (hand out, start from
@@ -78,11 +95,20 @@ function localAddresses() {
     .map((entry) => entry.address);
 }
 
-app.listen(config.port, '0.0.0.0', () => {
+/*
+ * One HTTP server for both, so the websocket rides the port the app already
+ * knows how to reach. A second port would be a second thing to open on a
+ * phone's network, and the first to be blocked by anything in the way.
+ */
+const server = http.createServer(app);
+attachRealtime(server);
+
+server.listen(config.port, '0.0.0.0', () => {
   console.log(`\nNOTenough API listening on port ${config.port}`);
   console.log(`  local:   http://localhost:${config.port}/api/health`);
   for (const address of localAddresses()) {
     console.log(`  device:  http://${address}:${config.port}/api/health`);
   }
+  console.log(`  live:    ws://localhost:${config.port}/ws`);
   console.log(`  data:    ${config.dbFile}\n`);
 });

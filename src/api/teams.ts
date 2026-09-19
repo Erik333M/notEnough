@@ -388,4 +388,30 @@ export const teamsApi = {
     body: { amount: number; done: boolean; notes?: string },
   ): Promise<ApiResult<{ result: Result }>> =>
     request(`/api/work/assignments/${assignmentId}/result`, { method: 'PUT', token, body }),
+
+  /**
+   * Hand out one piece of standalone work, to one person or several.
+   *
+   * With `kind: 'check'` and no session this is also how an event's staff rota
+   * is written — a job with a title, an owner and a date is the same row as a
+   * drill with a title, an owner and a date, and giving it a second table
+   * would mean a second set of rules about who may tick it off.
+   */
+  assignWork: (
+    token: string,
+    teamId: string,
+    body: {
+      assigneeUserIds: string[];
+      title: string;
+      detail?: string;
+      kind?: TaskKind;
+      target?: number;
+      dueDate: DayKey;
+    },
+  ): Promise<ApiResult<{ assignments: Assignment[] }>> =>
+    request('/api/work/assignments', { method: 'POST', token, body: { teamId, ...body } }),
+
+  /** Withdraw it. Any coach of its team; the result goes with it. */
+  removeWork: (token: string, assignmentId: string): Promise<ApiResult<unknown>> =>
+    request(`/api/work/assignments/${assignmentId}`, { method: 'DELETE', token }),
 };

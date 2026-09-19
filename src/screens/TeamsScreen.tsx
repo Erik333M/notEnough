@@ -3,6 +3,8 @@ import { BackHandler } from 'react-native';
 
 import { useTeamStack } from '../features/teams/useTeamStack';
 import ChallengeScreen from './ChallengeScreen';
+import EventChatScreen from './EventChatScreen';
+import EventDetailScreen from './EventDetailScreen';
 import CoachVisibilityScreen from './CoachVisibilityScreen';
 import SessionScreen from './SessionScreen';
 import TeamDetailScreen from './TeamDetailScreen';
@@ -49,6 +51,29 @@ export default function TeamsScreen({
     );
   }
 
+  if (nav.view.key === 'eventChat') {
+    return (
+      <EventChatScreen
+        eventId={nav.view.eventId}
+        eventName={nav.view.eventName}
+        bottomInset={bottomInset}
+        onBack={nav.back}
+      />
+    );
+  }
+
+  if (nav.view.key === 'event') {
+    const { eventId } = nav.view;
+    return (
+      <EventDetailScreen
+        eventId={eventId}
+        bottomInset={bottomInset}
+        onBack={nav.back}
+        onOpenChat={(eventName) => nav.openEventChat(eventId, eventName)}
+      />
+    );
+  }
+
   if (nav.view.key === 'challenge') {
     return (
       <ChallengeScreen
@@ -85,6 +110,7 @@ export default function TeamsScreen({
       bottomInset={bottomInset}
       initialAction={initialAction}
       onOpenTeam={nav.openTeam}
+      onOpenEvent={nav.openEvent}
     />
   );
 }
