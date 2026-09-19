@@ -198,6 +198,59 @@ export function requireTeamInput(body) {
   };
 }
 
+/** A camp cannot sensibly run longer than a couple of months. */
+export const EVENT_MAX_DAYS = 60;
+
+/**
+ * Inclusive, so a camp that starts and ends on the same day lasts one day.
+ *
+ * Both keys are parsed as UTC. A DayKey is a local-time label, but a
+ * difference between two of them is the same number either way, and forcing
+ * one zone keeps a daylight-saving boundary from costing a day.
+ */
+export function dayCount(startDate, endDate) {
+  const ms = Date.parse(`${endDate}T00:00:00Z`) - Date.parse(`${startDate}T00:00:00Z`);
+  return Math.round(ms / 86400000) + 1;
+}
+
+/**
+ * A camp, a training week, a competition weekend.
+ *
+ * An event is a team with a shape: dates, an age group, and a ceiling on how
+ * many people fit. It is deliberately not a second kind of object — the
+ * roster, roles and permissions underneath are the ones teams already use.
+ *
+ * The age group is a label, not a gate. The app stores no birthdates and is
+ * not going to start: it exists so a parent reading the camp knows whether it
+ * is meant for their child, and the organiser decides who is in.
+ */
+export function requireEventInput(body) {
+  const startDate = requireDayKey(body?.startDate, 'startDate');
+  const endDate = requireDayKey(body?.endDate, 'endDate');
+  const days = dayCount(startDate, endDate);
+  if (days < 1) throw new ValidationError('endDate', 'The last day cannot be before the first.');
+  if (days > EVENT_MAX_DAYS) {
+    throw new ValidationError('endDate', `An event can run for at most ${EVENT_MAX_DAYS} days.`);
+  }
+
+  const ageMin = requireNumber(body?.ageMin ?? 0, 'ageMin', { min: 0, max: 99 });
+  const ageMax = requireNumber(body?.ageMax ?? 99, 'ageMax', { min: 0, max: 99 });
+  if (ageMax < ageMin) {
+    throw new ValidationError('ageMax', 'The oldest age cannot be below the youngest.');
+  }
+
+  return {
+    ...requireTeamInput(body),
+    startDate,
+    endDate,
+    days,
+    ageMin,
+    ageMax,
+    capacity: requireNumber(body?.capacity ?? 50, 'capacity', { min: 1, max: 500 }),
+    staffTarget: requireNumber(body?.staffTarget ?? 1, 'staffTarget', { min: 1, max: 100 }),
+  };
+}
+
 /**
  * One piece of work a coach is handing out.
  *

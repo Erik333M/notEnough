@@ -7,11 +7,13 @@ import { authRouter } from './routes/auth.js';
 import { avatarsRouter } from './routes/avatars.js';
 import { stateRouter } from './routes/state.js';
 import { challengesRouter } from './routes/challenges.js';
+import { eventsRouter } from './routes/events.js';
 import { friendsRouter } from './routes/friends.js';
 import { profilesRouter } from './routes/profiles.js';
 import { sessionActionsRouter } from './routes/session-actions.js';
 import { sharesRouter } from './routes/shares.js';
 import { sessionsRouter } from './routes/sessions.js';
+import { teamMembersRouter } from './routes/team-members.js';
 import { teamsRouter } from './routes/teams.js';
 import { workRouter } from './routes/work.js';
 import { ValidationError } from './validate.js';
@@ -41,10 +43,13 @@ app.use('/api/auth', authRouter);
 app.use('/api/avatars', avatarsRouter);
 app.use('/api/state', stateRouter);
 app.use('/api/teams', teamsRouter);
+// Membership verbs live in their own file for length; same path, same rules.
+app.use('/api/teams', teamMembersRouter);
 app.use('/api/teams', sharesRouter);
 // Team-scoped creation and listing share the /api/teams path; acting on one
 // challenge is addressed by its own id under /detail.
 app.use('/api/teams', challengesRouter);
+app.use('/api/events', eventsRouter);
 app.use('/api/friends', friendsRouter);
 app.use('/api/friends', profilesRouter);
 // Two routers, one path: session-actions holds the verbs (hand out, start from

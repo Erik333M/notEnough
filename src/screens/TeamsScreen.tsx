@@ -3,6 +3,7 @@ import { BackHandler } from 'react-native';
 
 import { useTeamStack } from '../features/teams/useTeamStack';
 import ChallengeScreen from './ChallengeScreen';
+import EventDetailScreen from './EventDetailScreen';
 import CoachVisibilityScreen from './CoachVisibilityScreen';
 import SessionScreen from './SessionScreen';
 import TeamDetailScreen from './TeamDetailScreen';
@@ -49,6 +50,12 @@ export default function TeamsScreen({
     );
   }
 
+  if (nav.view.key === 'event') {
+    return (
+      <EventDetailScreen eventId={nav.view.eventId} bottomInset={bottomInset} onBack={nav.back} />
+    );
+  }
+
   if (nav.view.key === 'challenge') {
     return (
       <ChallengeScreen
@@ -85,6 +92,7 @@ export default function TeamsScreen({
       bottomInset={bottomInset}
       initialAction={initialAction}
       onOpenTeam={nav.openTeam}
+      onOpenEvent={nav.openEvent}
     />
   );
 }

@@ -3,8 +3,17 @@ import { Router } from 'express';
 
 import { requireAuth } from '../auth.js';
 import { read, write } from '../db.js';
-import { canManageTeam, canViewTeam, membershipOf, rosterOf, teamsFor } from '../permissions.js';
+import {
+  canJoinTeam,
+  canManageTeam,
+  canViewTeam,
+  eventOf,
+  membershipOf,
+  rosterOf,
+  teamsFor,
+} from '../permissions.js';
 import { ValidationError, makeInviteCode, requireInviteCode, requireTeamInput } from '../validate.js';
+import { createTeamRow } from '../teams-core.js';
 
 export const teamsRouter = Router();
 
@@ -24,34 +33,9 @@ const forbidden = (res) =>
 teamsRouter.post('/', async (req, res, next) => {
   try {
     const input = requireTeamInput(req.body);
-    const now = new Date().toISOString();
-    const team = {
-      id: crypto.randomUUID(),
-      name: input.name,
-      notes: input.notes,
-      ownerId: req.user.id,
-      inviteCode: makeInviteCode(),
-      createdAt: now,
-      archived: false,
-    };
-
-    const created = await write((data) => {
-      // Collision on a six-character code is unlikely but not impossible, and
-      // a duplicate would silently send an athlete to the wrong squad.
-      while (data.teams.some((row) => row.inviteCode === team.inviteCode)) {
-        team.inviteCode = makeInviteCode();
-      }
-      data.teams.push(team);
-      data.memberships.push({
-        id: crypto.randomUUID(),
-        userId: req.user.id,
-        teamId: team.id,
-        role: 'coach',
-        status: 'active',
-        createdAt: now,
-      });
-      return team;
-    });
+    const created = await write((data) =>
+      createTeamRow(data, { name: input.name, notes: input.notes, ownerId: req.user.id }),
+    );
 
     return res.status(201).json({ team: created, role: 'coach' });
   } catch (error) {
@@ -69,8 +53,16 @@ teamsRouter.post('/', async (req, res, next) => {
 teamsRouter.get('/', async (req, res, next) => {
   try {
     const data = await read();
+    /*
+     * Events are left out on purpose.
+     *
+     * A camp has a team row underneath it, so without this filter it would
+     * appear twice on the same screen — once as a squad and once as an event —
+     * with a different destination behind each. The event list is the one that
+     * can say when it runs and how full it is, so that is the one it belongs in.
+     */
     const mine = teamsFor(data, req.user.id)
-      .filter(({ team }) => !team.archived)
+      .filter(({ team }) => !team.archived && !eventOf(data, team.id))
       .map(({ team, membership }) => ({ team, role: membership.role }));
     return res.json({ teams: mine });
   } catch (error) {
@@ -94,19 +86,35 @@ teamsRouter.post('/join', async (req, res, next) => {
       // Re-scanning a code you already used is a no-op, not an error: it should
       // land you in the team you expected either way.
       if (existing) {
-        existing.status = 'active';
-        return { team, role: existing.role };
+        // Re-scanning does not promote you off a waiting list you are on.
+        if (existing.status !== 'pending') existing.status = 'active';
+        return { team, role: existing.role, status: existing.status };
       }
+
+      /*
+       * An event has a ceiling; an ordinary squad does not.
+       *
+       * A full event does not turn you away — it puts you on the waiting list,
+       * as `pending`, which grants nothing at all until staff admit you. That
+       * is not only kinder than a dead end; it is the only way a full camp can
+       * still take on another adult. Staff arrive through the same code as
+       * everybody else, and promoting somebody to coach admits them, because a
+       * coach never occupied a camper's place to begin with.
+       *
+       * Checked in here rather than before the write, so two people scanning
+       * the code at the same moment cannot both take the last place.
+       */
+      const status = canJoinTeam(data, team.id) ? 'active' : 'pending';
 
       data.memberships.push({
         id: crypto.randomUUID(),
         userId,
         teamId: team.id,
         role: 'athlete',
-        status: 'active',
+        status,
         createdAt: new Date().toISOString(),
       });
-      return { team, role: 'athlete' };
+      return { team, role: 'athlete', status, event: eventOf(data, team.id) };
     });
 
     if (outcome.error) {
@@ -114,7 +122,12 @@ teamsRouter.post('/join', async (req, res, next) => {
         .status(404)
         .json({ error: 'no_such_team', field: 'code', message: 'No team uses that code.' });
     }
-    return res.json({ team: outcome.team, role: outcome.role });
+    return res.json({
+      team: outcome.team,
+      role: outcome.role,
+      status: outcome.status ?? 'active',
+      event: outcome.event ?? null,
+    });
   } catch (error) {
     return next(error);
   }
@@ -173,49 +186,6 @@ teamsRouter.patch('/:teamId', async (req, res, next) => {
 
     if (!updated) return forbidden(res);
     return res.json({ team: updated });
-  } catch (error) {
-    return next(error);
-  }
-});
-
-/**
- * Leave a team, or — as a coach — remove someone from it.
- *
- * The membership goes; nothing the person recorded does. Their results stay
- * theirs, and the coach simply stops being able to reach them, because access
- * was never stored on the result in the first place: it was derived from a
- * membership that no longer exists.
- */
-teamsRouter.delete('/:teamId/members/:userId', async (req, res, next) => {
-  try {
-    const { teamId, userId } = req.params;
-    const callerId = req.user.id;
-
-    const outcome = await write((data) => {
-      const self = userId === callerId;
-      if (!self && !canManageTeam(data, callerId, teamId)) return { error: 'forbidden' };
-
-      const target = data.memberships.find(
-        (row) => row.userId === userId && row.teamId === teamId,
-      );
-      if (!target) return { error: 'forbidden' };
-
-      // A team with no coach can never be administered again, and the rows
-      // would outlive anyone able to delete them.
-      const coaches = data.memberships.filter(
-        (row) => row.teamId === teamId && row.role === 'coach' && row.status === 'active',
-      );
-      if (target.role === 'coach' && coaches.length <= 1) return { error: 'last_coach' };
-
-      data.memberships = data.memberships.filter((row) => row.id !== target.id);
-      return { ok: true };
-    });
-
-    if (outcome.error === 'last_coach') {
-      throw new ValidationError('userId', 'A team needs at least one coach. Add another first.');
-    }
-    if (outcome.error) return forbidden(res);
-    return res.status(204).end();
   } catch (error) {
     return next(error);
   }

@@ -47,6 +47,7 @@ import { config } from './config.js';
  * @property {Object[]} friendships
  * @property {Object[]} profiles
  * @property {Object[]} avatars
+ * @property {Object[]} events
  */
 
 /**
@@ -74,6 +75,7 @@ const EMPTY = {
   friendships: [],
   profiles: [],
   avatars: [],
+  events: [],
 };
 
 /** @type {Schema | null} */
@@ -106,6 +108,7 @@ async function load() {
       friendships: Array.isArray(parsed.friendships) ? parsed.friendships : [],
       profiles: Array.isArray(parsed.profiles) ? parsed.profiles : [],
       avatars: Array.isArray(parsed.avatars) ? parsed.avatars : [],
+      events: Array.isArray(parsed.events) ? parsed.events : [],
     };
   } catch (error) {
     if (error.code !== 'ENOENT') {

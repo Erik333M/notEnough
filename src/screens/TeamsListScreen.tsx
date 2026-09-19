@@ -2,15 +2,17 @@ import { Ionicons } from '@expo/vector-icons';
 import { useCallback, useState } from 'react';
 import { KeyboardAvoidingView, Platform, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 
+import { EventsSection } from '../features/events/EventsSection';
+import { TeamRow } from '../features/teams/TeamRow';
+import { useEvents } from '../features/events/useEvents';
 import { useTeams } from '../state/TeamsContext';
-import { accentColor, palette, radius } from '../theme/theme';
-import { Appear, Pill, SectionHeader } from '../ui/Controls';
+import { palette, radius } from '../theme/theme';
+import { Appear, SectionHeader } from '../ui/Controls';
 import { EmptyState } from '../ui/Feedback';
 import { Button } from '../ui/Button';
 import { Field } from '../ui/Field';
 import { GlassCard } from '../ui/Glass';
 import { useToast } from '../ui/Toast';
-import { PressableScale } from '../ui/Touchable';
 
 /**
  * The root of the Teams tab: every team you are in, whichever side of the
@@ -26,13 +28,16 @@ export default function TeamsListScreen({
   bottomInset,
   initialAction,
   onOpenTeam,
+  onOpenEvent,
 }: {
   bottomInset: number;
   /** Set when the opening question sent someone straight here to act. */
   initialAction?: 'join' | 'create';
   onOpenTeam: (teamId: string) => void;
+  onOpenEvent: (eventId: string) => void;
 }) {
   const { capabilities, memberships, error, refresh, createTeam, joinTeam } = useTeams();
+  const events = useEvents();
   const { notify } = useToast();
 
   const [refreshing, setRefreshing] = useState(false);
@@ -45,9 +50,9 @@ export default function TeamsListScreen({
 
   const handleRefresh = useCallback(async () => {
     setRefreshing(true);
-    await refresh();
+    await Promise.all([refresh(), events.refresh()]);
     setRefreshing(false);
-  }, [refresh]);
+  }, [events, refresh]);
 
   const handleJoin = useCallback(async () => {
     setBusy('join');
@@ -76,7 +81,10 @@ export default function TeamsListScreen({
     }
   }, [createTeam, name, notify, onOpenTeam]);
 
-  const empty = !capabilities.loading && memberships.length === 0;
+  // Events count as belonging to something. Somebody running a camp and no
+  // squad should not be told they have joined nothing.
+  const empty =
+    !capabilities.loading && !events.loading && memberships.length === 0 && events.events.length === 0;
 
   return (
     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.flex}>
@@ -105,37 +113,25 @@ export default function TeamsListScreen({
           </Appear>
         ) : null}
 
+        <Appear>
+          <EventsSection
+            events={events.events}
+            onOpenEvent={onOpenEvent}
+            onCreate={async (input) => {
+              const result = await events.create(input);
+              return result.ok
+                ? { ok: true, id: result.created.event.id }
+                : { ok: false, message: result.message };
+            }}
+          />
+        </Appear>
+
         {memberships.length > 0 ? (
           <Appear>
             <SectionHeader title="Your teams" meta={`${memberships.length} in total`} />
             <View style={styles.list}>
               {memberships.map(({ team, role }) => (
-                <PressableScale key={team.id} haptic="light" onPress={() => onOpenTeam(team.id)}>
-                  <GlassCard style={styles.row}>
-                    <View style={styles.rowIcon}>
-                      <Ionicons
-                        name={role === 'coach' ? 'clipboard' : 'barbell'}
-                        size={18}
-                        color={role === 'coach' ? accentColor.violet : accentColor.cyan}
-                      />
-                    </View>
-                    <View style={styles.rowBody}>
-                      <Text style={styles.rowTitle} numberOfLines={1}>
-                        {team.name}
-                      </Text>
-                      {team.notes ? (
-                        <Text style={styles.rowCopy} numberOfLines={1}>
-                          {team.notes}
-                        </Text>
-                      ) : null}
-                    </View>
-                    <Pill
-                      label={role === 'coach' ? 'Coach' : 'Athlete'}
-                      accent={role === 'coach' ? 'violet' : 'cyan'}
-                    />
-                    <Ionicons name="chevron-forward" size={16} color={palette.textFaint} />
-                  </GlassCard>
-                </PressableScale>
+                <TeamRow key={team.id} team={team} role={role} onOpen={() => onOpenTeam(team.id)} />
               ))}
             </View>
           </Appear>
@@ -225,18 +221,6 @@ const styles = StyleSheet.create({
   },
   noticeText: { flex: 1, fontSize: 12, fontWeight: '600', color: palette.amber },
   list: { gap: 10 },
-  row: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 14 },
-  rowIcon: {
-    width: 38,
-    height: 38,
-    borderRadius: radius.md,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(255,255,255,0.06)',
-  },
-  rowBody: { flex: 1, gap: 2 },
-  rowTitle: { fontSize: 15, fontWeight: '800', color: palette.text },
-  rowCopy: { fontSize: 12, fontWeight: '600', color: palette.textMuted },
   actions: { gap: 10 },
   form: { gap: 12, padding: 16 },
   formTitle: { fontSize: 16, fontWeight: '800', color: palette.text },
