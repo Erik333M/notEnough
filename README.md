@@ -10,7 +10,7 @@ The premise is in the name: when a target becomes comfortable, the app raises it
 ![React Native 0.86](https://img.shields.io/badge/React%20Native-0.86-61DAFB?logo=react&logoColor=black)
 ![TypeScript strict](https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white)
 ![Express 5](https://img.shields.io/badge/Express-5-000000?logo=express&logoColor=white)
-![checks 502](https://img.shields.io/badge/automated%20checks-502%20passing-2ea44f)
+![checks 880](https://img.shields.io/badge/automated%20checks-880%20passing-2ea44f)
 
 **Coaching a squad** — the coach sets the work and sees only what came back from it.
 
@@ -67,11 +67,34 @@ The app finds the API by itself: it reuses the LAN address Metro is already serv
 by definition reachable from a physical phone. Set `EXPO_PUBLIC_API_URL` to override.
 
 ```bash
+npm run dev                # API + Metro together, QR code in your terminal
 npm run typecheck          # strict TypeScript, no errors
 npm run web                # run it in a browser instead
-cd server && npm run smoke # 22 checks against the running API
-npm run e2e                # 27 checks driving the real UI (needs `npm run web`)
+cd server && npm run smoke # 26 checks against the running API
+npm run e2e                # 41 checks driving the real UI (needs `npm run web`)
+npm run count              # total every automated check (slow; Playwright)
 ```
+
+### Showing it to somebody who is not on your Wi-Fi
+
+```bash
+brew install cloudflared   # once
+npm run share
+```
+
+`npm run dev` puts the app on your LAN, which is all a phone in the same room needs. `npm run share`
+is for the other case: it tunnels **both** halves — Metro, so Expo Go can fetch the bundle, and the
+API, so sign-in and chat work — then starts Metro with `EXPO_PUBLIC_API_URL` already pointing at the
+public address.
+
+Two things to know. The API tunnel is **a public address on the internet**: while it is up, anybody
+holding the URL can reach your machine and register an account. It is long and random, so nobody
+finds it by accident, but stop the script when you are done. And unless you set `JWT_SECRET`, the
+server signs sessions with a dev key that is in this repository — fine among people you trust,
+not otherwise. The script says both of these before it starts.
+
+This needs no Apple or Google account and builds nothing. It also only works while your laptop is
+awake, which is the trade: it is a way to demonstrate the app, not to deploy it.
 
 ---
 
@@ -320,18 +343,18 @@ lost.
 
 No unit tests. Instead, two suites that exercise the real thing end to end:
 
-**`cd server && npm run smoke`** — 22 checks against a running API: registration, duplicate
+**`cd server && npm run smoke`** — 26 checks against a running API: registration, duplicate
 rejection, field-tagged validation errors, login, wrong-password handling, account enumeration
 resistance, `401` on unauthenticated access, state push/pull, the stale-write `409` rule, and that a
 token dies with its account.
 
-**`cd server && npm test`** — 135 checks covering team authorization, sessions, sharing and
-challenges. Mostly
+**`cd server && npm test`** — 389 checks covering storage, team authorization, sessions,
+sharing, challenges, avatars, and events down to the live chat socket. Mostly
 negative: an athlete cannot assign work, a coach cannot log a result for someone, a coach of another
 team sees nothing of this one, a roster never carries an email address, and saving private training
 publishes nothing at all.
 
-**`npm run e2e:teams`** — 89 checks driving **two browser contexts at once**, a coach and an athlete,
+**`npm run e2e:teams`** — 94 checks driving **two browser contexts at once**, a coach and an athlete,
 because the whole point of the feature is that two people see different things. It runs the full
 loop: create a team, join with the code, build a session, hand it out, log a short result, read it
 back as the coach, share an achievement, see it on the wall, set a challenge, win a victory and
@@ -341,7 +364,7 @@ watch the score follow it onto the board.
 checks over the pure logic behind achievements, notification scheduling and challenge windows
 (month ends, leap days, inclusive boundaries), compiled on the fly so nothing native is involved.
 
-**`npm run e2e`** — 27 checks driving the real UI in Chrome via Playwright
+**`npm run e2e`** — 41 checks driving the real UI in Chrome via Playwright
 ([`e2e/drive.mjs`](e2e/drive.mjs)):
 
 ```
@@ -355,7 +378,8 @@ reload → still signed in, state intact, zero console errors
 
 Data assertions are made **against the API, not the screen**, so a UI that renders the right thing
 for the wrong reason still fails. Plus `npm run typecheck` (strict, clean) and a production Metro
-bundle for Android and web. **502 checks pass in total.**
+bundle for Android and web. **880 checks pass in total** — run `npm run count` to total them
+again rather than trusting this sentence, which has been wrong before.
 
 The screenshots above are generated, not posed: [`e2e/shots.mjs`](e2e/shots.mjs) seeds a squad
 through the same endpoints the app uses and photographs the result, so a picture cannot show a

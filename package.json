@@ -35,6 +35,7 @@
   "scripts": {
     "start": "expo start --lan",
     "dev": "bash scripts/dev.sh",
+    "share": "bash scripts/share.sh",
     "android": "expo start --lan --android",
     "ios": "expo start --lan --ios",
     "web": "expo start --web",
@@ -44,6 +45,7 @@
     "e2e:teams": "node e2e/teams/drive.mjs",
     "e2e:shell": "node e2e/shell.mjs",
     "test:journey": "bash scripts/journey-domain.sh",
+    "count": "bash scripts/count-checks.sh",
     "e2e:catalogue": "node e2e/catalogue.mjs",
     "e2e:friends": "node e2e/friends.mjs",
     "e2e:muscles": "node e2e/muscles.mjs",
