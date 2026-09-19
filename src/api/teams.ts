@@ -36,6 +36,8 @@ export type RosterEntry = {
   userId: string;
   /** Names only. The server never puts an email in a roster. */
   name: string;
+  /** A path for `avatarSource`, or null. Travels with the name. */
+  avatarUrl: string | null;
   role: TeamRole;
   status: MembershipStatus;
   joinedAt: string;

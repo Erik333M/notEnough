@@ -4,12 +4,13 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import type { RosterEntry } from '../../api/teams';
 import { accentColor, palette, radius } from '../../theme/theme';
+import { Avatar } from '../../ui/Avatar';
 import { Pill, RoundIconButton } from '../../ui/Controls';
 
 /**
  * One person on the roster.
  *
- * Name and role only. The server never sends an email address here, so there
+ * Name, face and role. The server never sends an email address here, so there
  * is nothing else to show even if a screen wanted to — joining a squad is not
  * consent to hand your address to everyone else who scanned the same code.
  */
@@ -29,9 +30,7 @@ export const RosterRow = memo(function RosterRow({
 
   return (
     <View style={styles.row}>
-      <View style={styles.avatar}>
-        <Text style={styles.initials}>{initialsOf(entry.name)}</Text>
-      </View>
+      <Avatar name={entry.name} uri={entry.avatarUrl} size={34} />
 
       <View style={styles.body}>
         <Text style={styles.name} numberOfLines={1}>
@@ -75,11 +74,6 @@ export const RosterRow = memo(function RosterRow({
   );
 });
 
-function initialsOf(name: string): string {
-  const parts = name.trim().split(/\s+/).slice(0, 2);
-  return parts.map((part) => part[0]?.toUpperCase() ?? '').join('') || '?';
-}
-
 const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
@@ -90,15 +84,6 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
     backgroundColor: palette.glass,
   },
-  avatar: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: palette.violetSoft,
-  },
-  initials: { fontSize: 12, fontWeight: '800', color: palette.violet },
   body: { flex: 1, gap: 2 },
   name: { fontSize: 14, fontWeight: '700', color: palette.text },
   you: { fontSize: 11, fontWeight: '700', color: palette.textFaint },

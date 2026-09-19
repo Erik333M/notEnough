@@ -20,6 +20,12 @@ export const config = {
   tokenTtl: process.env.TOKEN_TTL ?? '30d',
 
   dbFile: process.env.DB_FILE ?? path.join(here, '..', 'data', 'db.json'),
+
+  /**
+   * Avatar bytes, beside the database rather than inside it. See
+   * avatar-store.js for why they are not a column.
+   */
+  avatarDir: process.env.AVATAR_DIR ?? path.join(here, '..', 'data', 'avatars'),
   isProduction: process.env.NODE_ENV === 'production',
 };
 

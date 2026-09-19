@@ -1,8 +1,8 @@
 import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
 import { memo, useMemo } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native';
 
+import { useAvatar } from '../features/profile/useAvatar';
 import { useMyWork } from '../features/teams/useMyWork';
 import type { IconName } from '../state/types';
 import { useAppState, useStats } from '../state/DataContext';
@@ -10,7 +10,8 @@ import { useAuth } from '../state/AuthContext';
 import { useCapabilities } from '../state/TeamsContext';
 import { activeDayCount, bestStreak } from '../state/selectors';
 import { totalDaysWon } from '../state/victories';
-import { accentColor, gradients, palette, radius } from '../theme/theme';
+import { accentColor, palette, radius } from '../theme/theme';
+import { Avatar } from '../ui/Avatar';
 import { Appear, SectionHeader } from '../ui/Controls';
 import { GlassCard } from '../ui/Glass';
 import { PressableScale } from '../ui/Touchable';
@@ -37,6 +38,7 @@ export default function ProfileHomeScreen({
   const stats = useStats();
   const capabilities = useCapabilities();
   const work = useMyWork();
+  const avatar = useAvatar();
 
   const figures = useMemo(() => {
     if (!state) return { streak: 0, best: 0, days: 0, victories: 0 };
@@ -82,14 +84,35 @@ export default function ProfileHomeScreen({
     >
       <Appear>
         <GlassCard style={styles.head} elevated>
-          <LinearGradient
-            colors={gradients.accent}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={styles.avatar}
+          {/*
+            The picture is the button. A separate "change photo" row would be
+            one more thing to read on a screen whose whole job is to be
+            scannable, and tapping your own face is what people already try.
+          */}
+          <PressableScale
+            haptic="light"
+            onPress={avatar.choose}
+            accessibilityLabel={
+              avatar.avatarUrl ? 'Change your profile picture' : 'Add a profile picture'
+            }
           >
-            <Text style={styles.initials}>{initialsOf(user?.name ?? '')}</Text>
-          </LinearGradient>
+            <View>
+              <Avatar
+                name={user?.name ?? ''}
+                uri={avatar.avatarUrl}
+                size={76}
+                tone="accent"
+                style={styles.avatar}
+              />
+              <View style={styles.badge}>
+                {avatar.busy ? (
+                  <ActivityIndicator size="small" color={palette.text} />
+                ) : (
+                  <Ionicons name="camera" size={13} color={palette.text} />
+                )}
+              </View>
+            </View>
+          </PressableScale>
 
           <Text style={styles.name} numberOfLines={1}>
             {user?.name ?? 'Athlete'}
@@ -97,6 +120,17 @@ export default function ProfileHomeScreen({
           <Text style={styles.email} numberOfLines={1}>
             {user?.email ?? ''}
           </Text>
+
+          {/* Only offered once there is something to remove. */}
+          {avatar.avatarUrl ? (
+            <PressableScale
+              haptic="light"
+              onPress={avatar.remove}
+              accessibilityLabel="Remove your profile picture"
+            >
+              <Text style={styles.removePhoto}>Remove photo</Text>
+            </PressableScale>
+          ) : null}
 
           <View style={styles.figures}>
             <Figure value={figures.streak} label="day streak" accent="amber" />
@@ -168,23 +202,30 @@ const Figure = memo(function Figure({
   );
 });
 
-function initialsOf(name: string): string {
-  const parts = name.trim().split(/\s+/).slice(0, 2);
-  return parts.map((part) => part[0]?.toUpperCase() ?? '').join('') || '?';
-}
-
 const styles = StyleSheet.create({
   content: { padding: 18, gap: 16 },
   head: { alignItems: 'center', gap: 6, paddingVertical: 22 },
-  avatar: {
-    width: 76,
-    height: 76,
-    borderRadius: 38,
+  avatar: { marginBottom: 6 },
+  badge: {
+    position: 'absolute',
+    right: -2,
+    bottom: 4,
+    width: 26,
+    height: 26,
+    borderRadius: 13,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 6,
+    backgroundColor: palette.bg2,
+    borderWidth: 1.5,
+    borderColor: 'rgba(255,255,255,0.14)',
   },
-  initials: { fontSize: 26, fontWeight: '800', color: palette.onAccent },
+  removePhoto: {
+    marginTop: 8,
+    fontSize: 11.5,
+    fontWeight: '700',
+    color: palette.textFaint,
+    textDecorationLine: 'underline',
+  },
   name: { fontSize: 20, fontWeight: '800', color: palette.text },
   email: { fontSize: 12.5, fontWeight: '600', color: palette.textMuted },
   figures: { flexDirection: 'row', gap: 10, marginTop: 16, alignSelf: 'stretch' },

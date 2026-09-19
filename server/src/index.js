@@ -4,6 +4,7 @@ import os from 'node:os';
 
 import { config } from './config.js';
 import { authRouter } from './routes/auth.js';
+import { avatarsRouter } from './routes/avatars.js';
 import { stateRouter } from './routes/state.js';
 import { challengesRouter } from './routes/challenges.js';
 import { friendsRouter } from './routes/friends.js';
@@ -18,7 +19,9 @@ import { ValidationError } from './validate.js';
 const app = express();
 
 app.use(cors());
-app.use(express.json({ limit: '1mb' }));
+// 1mb was fine for state blobs; an avatar arrives base64-encoded, which
+// inflates it by a third, so the ceiling has to clear the store's own limit.
+app.use(express.json({ limit: '2mb' }));
 
 // One-line request log — enough to debug a device that will not sync, without
 // pulling in a logging framework.
@@ -35,6 +38,7 @@ app.get('/api/health', (_req, res) => {
 });
 
 app.use('/api/auth', authRouter);
+app.use('/api/avatars', avatarsRouter);
 app.use('/api/state', stateRouter);
 app.use('/api/teams', teamsRouter);
 app.use('/api/teams', sharesRouter);

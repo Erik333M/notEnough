@@ -209,7 +209,8 @@ try {
   check('and the name', seen.body.profile.name === 'Ada');
   check(
     'and nothing else at all',
-    Object.keys(seen.body.profile).sort().join(',') === 'daysWon,level,name,streak,updatedAt,userId',
+    Object.keys(seen.body.profile).sort().join(',') ===
+      'avatarUrl,daysWon,level,name,streak,updatedAt,userId',
     Object.keys(seen.body.profile).join(','),
   );
 
