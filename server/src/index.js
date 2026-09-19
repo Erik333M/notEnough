@@ -7,6 +7,8 @@ import { authRouter } from './routes/auth.js';
 import { avatarsRouter } from './routes/avatars.js';
 import { stateRouter } from './routes/state.js';
 import { challengesRouter } from './routes/challenges.js';
+import { eventFieldsRouter } from './routes/event-fields.js';
+import { eventGamesRouter } from './routes/event-games.js';
 import { eventTeamsRouter } from './routes/event-teams.js';
 import { eventsRouter } from './routes/events.js';
 import { friendsRouter } from './routes/friends.js';
@@ -53,6 +55,9 @@ app.use('/api/teams', challengesRouter);
 app.use('/api/events', eventsRouter);
 // Squads inside an event; same path, split for length.
 app.use('/api/events', eventTeamsRouter);
+// What the event counts, and the games it counts them in.
+app.use('/api/events', eventFieldsRouter);
+app.use('/api/events', eventGamesRouter);
 app.use('/api/friends', friendsRouter);
 app.use('/api/friends', profilesRouter);
 // Two routers, one path: session-actions holds the verbs (hand out, start from

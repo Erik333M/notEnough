@@ -235,13 +235,14 @@ export function childTeamsOf(data, parentTeamId) {
 }
 
 /**
- * Who may set up and fill the squads inside an event.
+ * Who may change anything about an event.
  *
  * The event's staff, which is to say the coaches of the event's own team.
  * Deliberately not "the coach of the child team": a camp's organiser must be
- * able to fix any squad in it, including one they did not create.
+ * able to fix any squad in it, including one they did not create — and the
+ * same goes for its games, its stat fields and the numbers recorded in them.
  */
-export function canManageEventTeams(data, userId, event) {
+export function canManageEvent(data, userId, event) {
   return Boolean(event) && canManageTeam(data, userId, event.teamId);
 }
 

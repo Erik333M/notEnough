@@ -48,6 +48,9 @@ import { config } from './config.js';
  * @property {Object[]} profiles
  * @property {Object[]} avatars
  * @property {Object[]} events
+ * @property {Object[]} statFields
+ * @property {Object[]} games
+ * @property {Object[]} gameStats
  */
 
 /**
@@ -76,6 +79,9 @@ const EMPTY = {
   profiles: [],
   avatars: [],
   events: [],
+  statFields: [],
+  games: [],
+  gameStats: [],
 };
 
 /** @type {Schema | null} */
@@ -109,6 +115,9 @@ async function load() {
       profiles: Array.isArray(parsed.profiles) ? parsed.profiles : [],
       avatars: Array.isArray(parsed.avatars) ? parsed.avatars : [],
       events: Array.isArray(parsed.events) ? parsed.events : [],
+      statFields: Array.isArray(parsed.statFields) ? parsed.statFields : [],
+      games: Array.isArray(parsed.games) ? parsed.games : [],
+      gameStats: Array.isArray(parsed.gameStats) ? parsed.gameStats : [],
     };
   } catch (error) {
     if (error.code !== 'ENOENT') {

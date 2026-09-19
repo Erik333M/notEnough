@@ -5,7 +5,7 @@ import { requireAuth } from '../auth.js';
 import { read, write } from '../db.js';
 import { avatarUrlFor } from '../avatar-store.js';
 import {
-  canManageEventTeams,
+  canManageEvent,
   canViewEvent,
   childTeamsOf,
   membershipOf,
@@ -87,7 +87,7 @@ eventTeamsRouter.get('/:eventId/teams', async (req, res, next) => {
         };
       });
 
-    return res.json({ squads, unassigned, canManage: canManageEventTeams(data, req.user.id, event) });
+    return res.json({ squads, unassigned, canManage: canManageEvent(data, req.user.id, event) });
   } catch (error) {
     return next(error);
   }
@@ -101,7 +101,7 @@ eventTeamsRouter.post('/:eventId/teams', async (req, res, next) => {
 
     const created = await write((data) => {
       const event = data.events.find((row) => row.id === req.params.eventId);
-      if (!canManageEventTeams(data, userId, event)) return null;
+      if (!canManageEvent(data, userId, event)) return null;
       if (childTeamsOf(data, event.teamId).length >= 40) return { error: 'too_many' };
 
       /*
@@ -140,7 +140,7 @@ eventTeamsRouter.patch('/:eventId/teams/:teamId', async (req, res, next) => {
 
     const updated = await write((data) => {
       const event = data.events.find((row) => row.id === req.params.eventId);
-      if (!canManageEventTeams(data, userId, event)) return null;
+      if (!canManageEvent(data, userId, event)) return null;
       const team = data.teams.find(
         (row) => row.id === req.params.teamId && row.parentTeamId === event.teamId,
       );
@@ -177,7 +177,7 @@ eventTeamsRouter.put('/:eventId/teams/:teamId/members/:userId', async (req, res,
 
     const outcome = await write((data) => {
       const event = data.events.find((row) => row.id === eventId);
-      if (!canManageEventTeams(data, callerId, event)) return { error: 'forbidden' };
+      if (!canManageEvent(data, callerId, event)) return { error: 'forbidden' };
 
       const team = data.teams.find(
         (row) => row.id === teamId && row.parentTeamId === event.teamId && !row.archived,
@@ -223,7 +223,7 @@ eventTeamsRouter.delete('/:eventId/teams/:teamId/members/:userId', async (req, r
 
     const removed = await write((data) => {
       const event = data.events.find((row) => row.id === eventId);
-      if (!canManageEventTeams(data, callerId, event)) return null;
+      if (!canManageEvent(data, callerId, event)) return null;
       const team = data.teams.find(
         (row) => row.id === teamId && row.parentTeamId === event.teamId,
       );

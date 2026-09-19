@@ -12,6 +12,7 @@ import {
   rosterOf,
 } from '../permissions.js';
 import { createTeamRow } from '../teams-core.js';
+import { ensureScoreField } from '../stats-core.js';
 import { dayCount, requireEventInput } from '../validate.js';
 
 /**
@@ -74,6 +75,8 @@ eventsRouter.post('/', async (req, res, next) => {
         createdAt: new Date().toISOString(),
       };
       data.events.push(event);
+      // Every event can hold a standings table from the moment it exists.
+      ensureScoreField(data, event.id);
       return detailOf(data, event);
     });
 
