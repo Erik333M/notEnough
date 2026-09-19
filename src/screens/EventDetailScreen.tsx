@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
 import { RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 
@@ -15,6 +16,7 @@ import { Button } from '../ui/Button';
 import { GlassCard } from '../ui/Glass';
 import { StackHeaderBar } from '../ui/StackHeaderBar';
 import { useToast } from '../ui/Toast';
+import { PressableScale } from '../ui/Touchable';
 
 /**
  * One event: when it runs, who is there, and — for staff — the controls.
@@ -27,10 +29,12 @@ export default function EventDetailScreen({
   eventId,
   bottomInset,
   onBack,
+  onOpenChat,
 }: {
   eventId: string;
   bottomInset: number;
   onBack: () => void;
+  onOpenChat: (eventName: string) => void;
 }) {
   const detail = useEventDetail(eventId);
   const { notify } = useToast();
@@ -83,7 +87,34 @@ export default function EventDetailScreen({
           />
         }
       >
+        {/*
+          The channel is the thing people open the event for once it is
+          running, so it sits above everything rather than under the roster.
+        */}
         <Appear>
+          <PressableScale
+            haptic="light"
+            onPress={() => onOpenChat(team.name)}
+            accessibilityLabel={`Open the ${team.name} channel`}
+          >
+            <GlassCard style={styles.chatRow}>
+              <View style={styles.chatIcon}>
+                <Ionicons name="chatbubbles" size={17} color={accentColor.violet} />
+              </View>
+              <View style={styles.chatBody}>
+                <Text style={styles.chatTitle}>Channel</Text>
+                <Text style={styles.chatCopy}>
+                  {detail.isStaff
+                    ? 'Post to everybody at the event'
+                    : 'Announcements from the staff'}
+                </Text>
+              </View>
+              <Ionicons name="chevron-forward" size={16} color={palette.textFaint} />
+            </GlassCard>
+          </PressableScale>
+        </Appear>
+
+        <Appear delay={25}>
           <GlassCard style={styles.head}>
             <View style={styles.pills}>
               <Pill label={phaseLabel(event.startDate, event.endDate)} icon="time-outline" accent="cyan" />
@@ -198,6 +229,18 @@ const styles = StyleSheet.create({
   quiet: { fontSize: 13, fontWeight: '600', color: palette.textMuted },
   content: { padding: 18, gap: 16 },
   head: { gap: 12, padding: 16 },
+  chatRow: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 14 },
+  chatIcon: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: palette.violetSoft,
+  },
+  chatBody: { flex: 1, gap: 2 },
+  chatTitle: { fontSize: 14.5, fontWeight: '800', color: palette.text },
+  chatCopy: { fontSize: 12, fontWeight: '600', color: palette.textMuted },
   pills: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   tiles: { flexDirection: 'row', gap: 10 },
   warn: { fontSize: 12, lineHeight: 17, fontWeight: '700', color: accentColor.amber },

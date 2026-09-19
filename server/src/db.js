@@ -51,6 +51,7 @@ import { config } from './config.js';
  * @property {Object[]} statFields
  * @property {Object[]} games
  * @property {Object[]} gameStats
+ * @property {Object[]} messages
  */
 
 /**
@@ -82,6 +83,7 @@ const EMPTY = {
   statFields: [],
   games: [],
   gameStats: [],
+  messages: [],
 };
 
 /** @type {Schema | null} */
@@ -118,6 +120,7 @@ async function load() {
       statFields: Array.isArray(parsed.statFields) ? parsed.statFields : [],
       games: Array.isArray(parsed.games) ? parsed.games : [],
       gameStats: Array.isArray(parsed.gameStats) ? parsed.gameStats : [],
+      messages: Array.isArray(parsed.messages) ? parsed.messages : [],
     };
   } catch (error) {
     if (error.code !== 'ENOENT') {

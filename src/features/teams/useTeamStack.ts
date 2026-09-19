@@ -17,7 +17,8 @@ export type TeamView =
   | { key: 'session'; teamId: string; sessionId: string }
   | { key: 'visibility'; teamId: string; teamName: string }
   | { key: 'challenge'; teamId: string; challengeId: string }
-  | { key: 'event'; eventId: string };
+  | { key: 'event'; eventId: string }
+  | { key: 'eventChat'; eventId: string; eventName: string };
 
 type Action = { type: 'push'; view: TeamView } | { type: 'pop' } | { type: 'reset' };
 
@@ -51,6 +52,7 @@ export type TeamNav = {
   openVisibility: (teamId: string, teamName: string) => void;
   openChallenge: (teamId: string, challengeId: string) => void;
   openEvent: (eventId: string) => void;
+  openEventChat: (eventId: string, eventName: string) => void;
   back: () => void;
   reset: () => void;
 };
@@ -81,6 +83,11 @@ export function useTeamStack(): TeamNav {
     (eventId: string) => dispatch({ type: 'push', view: { key: 'event', eventId } }),
     [],
   );
+  const openEventChat = useCallback(
+    (eventId: string, eventName: string) =>
+      dispatch({ type: 'push', view: { key: 'eventChat', eventId, eventName } }),
+    [],
+  );
   const back = useCallback(() => dispatch({ type: 'pop' }), []);
   const reset = useCallback(() => dispatch({ type: 'reset' }), []);
 
@@ -93,9 +100,20 @@ export function useTeamStack(): TeamNav {
       openVisibility,
       openChallenge,
       openEvent,
+      openEventChat,
       back,
       reset,
     }),
-    [stack, openTeam, openSession, openVisibility, openChallenge, openEvent, back, reset],
+    [
+      stack,
+      openTeam,
+      openSession,
+      openVisibility,
+      openChallenge,
+      openEvent,
+      openEventChat,
+      back,
+      reset,
+    ],
   );
 }

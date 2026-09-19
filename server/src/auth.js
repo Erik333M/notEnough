@@ -39,6 +39,23 @@ export function publicUser(user) {
   return { id: user.id, email: user.email, name: user.name, createdAt: user.createdAt };
 }
 
+/**
+ * Verify a token and return the user, or null.
+ *
+ * Pulled out of the middleware so the websocket hub can authenticate without
+ * pretending to be an HTTP request. One implementation, so a token that is
+ * good enough for a socket is exactly one that is good enough for a route.
+ */
+export async function userFromToken(token) {
+  if (typeof token !== 'string' || !token) return null;
+  try {
+    const payload = jwt.verify(token, config.jwtSecret);
+    return (await findUserById(payload.sub)) ?? null;
+  } catch {
+    return null;
+  }
+}
+
 /** Express middleware: verifies the bearer token and attaches `req.user`. */
 export async function requireAuth(req, res, next) {
   const header = req.get('authorization') ?? '';
