@@ -12,8 +12,16 @@ import { makeInviteCode } from './validate.js';
  *
  * Must be called inside a `write`, so the uniqueness check below is made
  * against the same snapshot that is about to be persisted.
+ *
+ * `addOwnerMembership` is off for a squad inside an event. Creating Red Team
+ * does not put the organiser on Red Team — they are staff of the camp above
+ * it, which is already what lets them administer every squad in it, and a
+ * creator quietly counted as a member would sit in every standings table.
  */
-export function createTeamRow(data, { name, notes, ownerId }) {
+export function createTeamRow(
+  data,
+  { name, notes, ownerId, parentTeamId = null, addOwnerMembership = true },
+) {
   const now = new Date().toISOString();
   const team = {
     id: crypto.randomUUID(),
@@ -21,6 +29,15 @@ export function createTeamRow(data, { name, notes, ownerId }) {
     notes,
     ownerId,
     inviteCode: makeInviteCode(),
+    /**
+     * Set only on a squad inside an event.
+     *
+     * A child team is reached through its camp and never on its own: it is
+     * left out of the ordinary team list, and its invite code is refused at
+     * the join route. Otherwise a forwarded code would be a way into a camp's
+     * squad without being in the camp.
+     */
+    parentTeamId,
     createdAt: now,
     archived: false,
   };
@@ -32,14 +49,16 @@ export function createTeamRow(data, { name, notes, ownerId }) {
   }
 
   data.teams.push(team);
-  data.memberships.push({
-    id: crypto.randomUUID(),
-    userId: ownerId,
-    teamId: team.id,
-    role: 'coach',
-    status: 'active',
-    createdAt: now,
-  });
+  if (addOwnerMembership) {
+    data.memberships.push({
+      id: crypto.randomUUID(),
+      userId: ownerId,
+      teamId: team.id,
+      role: 'coach',
+      status: 'active',
+      createdAt: now,
+    });
+  }
 
   return team;
 }

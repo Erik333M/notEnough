@@ -3,6 +3,7 @@ import { RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native
 
 import { EventForm } from '../features/events/EventForm';
 import { EventRosterSection } from '../features/events/EventRosterSection';
+import { EventSquadsSection } from '../features/events/EventSquadsSection';
 import { ageLabel, durationLabel, formatRange, phaseLabel } from '../features/events/eventCopy';
 import { useEventDetail } from '../features/events/useEventDetail';
 import { InviteCard } from '../features/teams/InviteCard';
@@ -126,6 +127,10 @@ export default function EventDetailScreen({
               if (!result.ok && result.message) notify(result.message, 'error');
             }}
           />
+        </Appear>
+
+        <Appear delay={125}>
+          <EventSquadsSection eventId={eventId} />
         </Appear>
 
         {detail.isStaff ? (

@@ -223,6 +223,33 @@ export function canJoinTeam(data, teamId) {
   return eventCounts(data, teamId).campers < event.capacity;
 }
 
+/**
+ * Squads inside an event.
+ *
+ * A child team is a team, with the same memberships and the same rules. What
+ * makes it a child is that it is reached through its event: it never appears
+ * in somebody's list of teams, and its code will not let anybody in.
+ */
+export function childTeamsOf(data, parentTeamId) {
+  return data.teams.filter((row) => row.parentTeamId === parentTeamId && !row.archived);
+}
+
+/**
+ * Who may set up and fill the squads inside an event.
+ *
+ * The event's staff, which is to say the coaches of the event's own team.
+ * Deliberately not "the coach of the child team": a camp's organiser must be
+ * able to fix any squad in it, including one they did not create.
+ */
+export function canManageEventTeams(data, userId, event) {
+  return Boolean(event) && canManageTeam(data, userId, event.teamId);
+}
+
+/** Everyone at the event may see how it is divided up. */
+export function canViewEvent(data, userId, event) {
+  return Boolean(event) && canViewTeam(data, userId, event.teamId);
+}
+
 /* ------------------------------------------------------------- projections */
 
 /**

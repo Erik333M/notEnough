@@ -60,9 +60,13 @@ teamsRouter.get('/', async (req, res, next) => {
      * appear twice on the same screen — once as a squad and once as an event —
      * with a different destination behind each. The event list is the one that
      * can say when it runs and how full it is, so that is the one it belongs in.
+     *
+     * Squads inside an event are left out for the same reason: they are shown
+     * on their camp's page, where the division into teams actually means
+     * something.
      */
     const mine = teamsFor(data, req.user.id)
-      .filter(({ team }) => !team.archived && !eventOf(data, team.id))
+      .filter(({ team }) => !team.archived && !team.parentTeamId && !eventOf(data, team.id))
       .map(({ team, membership }) => ({ team, role: membership.role }));
     return res.json({ teams: mine });
   } catch (error) {
@@ -79,6 +83,10 @@ teamsRouter.post('/join', async (req, res, next) => {
     const outcome = await write((data) => {
       const team = data.teams.find((row) => row.inviteCode === code && !row.archived);
       if (!team) return { error: 'no_such_team' };
+      // A squad inside an event is filled by its staff, never by its code.
+      // Answering "no such team" keeps a forwarded code from even confirming
+      // that the squad exists.
+      if (team.parentTeamId) return { error: 'no_such_team' };
 
       const existing = data.memberships.find(
         (row) => row.userId === userId && row.teamId === team.id,
