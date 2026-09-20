@@ -78,7 +78,8 @@ npm run count              # total every automated check (slow; Playwright)
 ### Showing it to somebody who is not on your Wi-Fi
 
 ```bash
-brew install cloudflared   # once
+brew install cloudflared   # once — or grab the binary from
+                           # github.com/cloudflare/cloudflared/releases/latest
 npm run share
 ```
 
@@ -95,6 +96,10 @@ not otherwise. The script says both of these before it starts.
 
 This needs no Apple or Google account and builds nothing. It also only works while your laptop is
 awake, which is the trade: it is a way to demonstrate the app, not to deploy it.
+
+The script waits for the tunnel to start *routing*, not just to be allocated an address —
+cloudflared prints the URL several seconds before Cloudflare's edge can reach it, and a single
+check there reports a perfectly good tunnel as broken.
 
 ---
 

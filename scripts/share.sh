@@ -31,7 +31,11 @@ die() { printf '\033[1;31m✗\033[0m %s\n' "$1"; exit 1; }
 
 if ! command -v cloudflared >/dev/null 2>&1; then
   warn "This needs cloudflared to put the API on a public address."
-  warn "Install it once:  brew install cloudflared"
+  warn "Install it once, whichever suits:"
+  warn "  brew install cloudflared"
+  warn "  …or, with no Homebrew, download the binary for your Mac from"
+  warn "    https://github.com/cloudflare/cloudflared/releases/latest"
+  warn "    and put it somewhere on your PATH."
   die  "Then run this again."
 fi
 
@@ -95,8 +99,22 @@ done
 
 # Prove it end to end before Metro takes over the terminal. A tunnel that is
 # up but not routing looks exactly like a working one until somebody signs in.
-curl -fsS --max-time 8 "$API_URL/api/health" | grep -q 'notenough-api' \
-  || die "The tunnel is up but not reaching the API. Try again."
+#
+# Polled rather than checked once. cloudflared prints the address as soon as it
+# has been allocated, which is well before Cloudflare's edge can actually route
+# to it — so a single check here fails on a cold start and tells you the tunnel
+# is broken when it is merely young. Half a minute is generous; it is usually
+# a few seconds.
+say "Waiting for it to start routing…"
+ROUTED=""
+for _ in $(seq 1 30); do
+  if curl -fsS --max-time 5 "$API_URL/api/health" 2>/dev/null | grep -q 'notenough-api'; then
+    ROUTED="yes"
+    break
+  fi
+  sleep 1
+done
+[ -n "$ROUTED" ] || die "The tunnel never started reaching the API. Try again."
 
 say "API is public at $API_URL"
 say "Sessions and chat will go through it."
