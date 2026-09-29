@@ -15,10 +15,12 @@ import { activeHabits } from '../state/journey/habits';
 import { sortedMeasurements } from '../state/journey/measurements';
 import type { IntentionSlot } from '../state/journey/entryReducer';
 import type { DayKey, PlusOneKey } from '../state/journey/types';
-import { palette, radius } from '../theme/theme';
+import { radius } from '../theme/theme';
 import { Appear, Pill } from '../ui/Controls';
 import { SkeletonCard } from '../ui/Feedback';
 import { GlassCard } from '../ui/Glass';
+import type { Theme } from '../theme/tokens';
+import { useStyles } from '../theme/ThemeContext';
 
 /**
  * Home is today.
@@ -46,6 +48,7 @@ export default function SuccessJourneyHomeScreen({
   onOpenHabits: () => void;
   onOpenProgress: () => void;
 }) {
+  const styles = useStyles(makeStyles);
   const state = useAppState();
   const { journey } = useActions();
 
@@ -125,7 +128,7 @@ export default function SuccessJourneyHomeScreen({
         <GlassCard style={styles.hero} elevated>
           <View style={styles.heroTop}>
             <View style={styles.heroText}>
-              <Pill label={weekdayDateLabel()} icon="today-outline" accent="violet" />
+              <Pill label={weekdayDateLabel()} icon="today-outline" accent="spirit" />
               <Text style={styles.heroTitle}>
                 {firstTime ? 'Start wherever you like.' : 'Today’s page.'}
               </Text>
@@ -148,7 +151,7 @@ export default function SuccessJourneyHomeScreen({
           slot="decision"
           title="DECISION"
           intention={entry.decision}
-          accent="amber"
+          accent="warning"
           onChangeText={handleIntentionText}
           onCycleDone={handleIntentionDone}
         />
@@ -159,7 +162,7 @@ export default function SuccessJourneyHomeScreen({
           slot="habit"
           title="HABIT"
           intention={entry.habit}
-          accent="lime"
+          accent="body"
           onChangeText={handleIntentionText}
           onCycleDone={handleIntentionDone}
         />
@@ -204,7 +207,7 @@ export default function SuccessJourneyHomeScreen({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   content: {
     paddingHorizontal: 18,
     gap: 14,
@@ -225,12 +228,12 @@ const styles = StyleSheet.create({
     fontSize: 22,
     lineHeight: 28,
     fontWeight: '800',
-    color: palette.text,
+    color: theme.text,
   },
   heroCopy: {
     fontSize: 12,
     lineHeight: 18,
     fontWeight: '600',
-    color: palette.textMuted,
+    color: theme.textMuted,
   },
 });

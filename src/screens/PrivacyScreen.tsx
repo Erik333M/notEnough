@@ -8,9 +8,11 @@ import {
   POLICY_UPDATED,
   type PolicySection,
 } from '../features/privacy/policy';
-import { accentColor, accentSoft, palette, radius } from '../theme/theme';
+import { radius } from '../theme/theme';
 import { Appear } from '../ui/Controls';
 import { GlassCard } from '../ui/Glass';
+import type { Theme } from '../theme/tokens';
+import { useStyles, useTheme } from '../theme/ThemeContext';
 
 /**
  * The privacy policy, in the app.
@@ -22,6 +24,8 @@ import { GlassCard } from '../ui/Glass';
  * drift out of step with the copy in PRIVACY.md.
  */
 export default function PrivacyScreen({ bottomInset }: { bottomInset: number }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   return (
     <ScrollView
       contentContainerStyle={[styles.content, { paddingBottom: bottomInset }]}
@@ -30,7 +34,7 @@ export default function PrivacyScreen({ bottomInset }: { bottomInset: number }) 
     >
       <Appear>
         <GlassCard style={styles.hero} elevated>
-          <Ionicons name="lock-closed" size={24} color={accentColor.violet} />
+          <Ionicons name="lock-closed" size={24} color={theme.accent.spirit} />
           <Text style={styles.heroTitle}>What this app knows about you</Text>
           <Text style={styles.heroCopy}>
             Written to match what the code actually does, not what a template says.
@@ -39,7 +43,7 @@ export default function PrivacyScreen({ bottomInset }: { bottomInset: number }) 
           <View style={styles.summary}>
             {POLICY_SUMMARY.map((line) => (
               <View key={line} style={styles.summaryRow}>
-                <Ionicons name="checkmark-circle" size={15} color={accentColor.lime} />
+                <Ionicons name="checkmark-circle" size={15} color={theme.accent.body} />
                 <Text style={styles.summaryText}>{line}</Text>
               </View>
             ))}
@@ -66,11 +70,13 @@ export default function PrivacyScreen({ bottomInset }: { bottomInset: number }) 
 }
 
 const Section = memo(function Section({ section }: { section: PolicySection }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   return (
     <GlassCard style={styles.card}>
       <View style={styles.head}>
-        <View style={[styles.icon, { backgroundColor: accentSoft[section.accent] }]}>
-          <Ionicons name={section.icon} size={16} color={accentColor[section.accent]} />
+        <View style={[styles.icon, { backgroundColor: theme.accentSoft[section.accent] }]}>
+          <Ionicons name={section.icon} size={16} color={theme.accent[section.accent]} />
         </View>
         <Text style={styles.title}>{section.title}</Text>
       </View>
@@ -85,7 +91,7 @@ const Section = memo(function Section({ section }: { section: PolicySection }) {
         <View style={styles.rows}>
           {section.rows.map((row) => (
             <View key={row.term} style={styles.row}>
-              <Text style={[styles.term, { color: accentColor[section.accent] }]}>
+              <Text style={[styles.term, { color: theme.accent[section.accent] }]}>
                 {row.term}
               </Text>
               <Text style={styles.detail}>{row.detail}</Text>
@@ -97,7 +103,7 @@ const Section = memo(function Section({ section }: { section: PolicySection }) {
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   content: {
     paddingHorizontal: 18,
     gap: 14,
@@ -110,13 +116,13 @@ const styles = StyleSheet.create({
     fontSize: 22,
     lineHeight: 28,
     fontWeight: '800',
-    color: palette.text,
+    color: theme.text,
   },
   heroCopy: {
     fontSize: 13,
     lineHeight: 19,
     fontWeight: '600',
-    color: palette.textMuted,
+    color: theme.textMuted,
   },
   summary: {
     gap: 9,
@@ -131,12 +137,12 @@ const styles = StyleSheet.create({
     fontSize: 13,
     lineHeight: 19,
     fontWeight: '700',
-    color: palette.text,
+    color: theme.text,
   },
   updated: {
     fontSize: 11,
     fontWeight: '700',
-    color: palette.textFaint,
+    color: theme.textFaint,
   },
   card: {
     gap: 11,
@@ -158,13 +164,13 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 15,
     fontWeight: '800',
-    color: palette.text,
+    color: theme.text,
   },
   body: {
     fontSize: 13,
     lineHeight: 20,
     fontWeight: '600',
-    color: palette.textMuted,
+    color: theme.textMuted,
   },
   rows: {
     gap: 11,
@@ -181,13 +187,13 @@ const styles = StyleSheet.create({
     fontSize: 13,
     lineHeight: 19,
     fontWeight: '600',
-    color: palette.textMuted,
+    color: theme.textMuted,
   },
   footer: {
     fontSize: 11,
     lineHeight: 17,
     fontWeight: '600',
-    color: palette.textFaint,
+    color: theme.textFaint,
     textAlign: 'center',
     paddingHorizontal: 8,
   },

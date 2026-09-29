@@ -1,7 +1,7 @@
 import { memo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { accentColor, palette, radius } from '../../theme/theme';
+import { radius } from '../../theme/theme';
 import { Avatar } from '../../ui/Avatar';
 import { Button } from '../../ui/Button';
 import { Chip, SectionHeader } from '../../ui/Controls';
@@ -11,6 +11,8 @@ import { useToast } from '../../ui/Toast';
 import { PressableScale } from '../../ui/Touchable';
 import { SquadCard } from './SquadCard';
 import { useSquads } from './useSquads';
+import type { Theme } from '../../theme/tokens';
+import { useStyles } from '../../theme/ThemeContext';
 
 /**
  * Dividing a camp into squads, and filling them.
@@ -21,6 +23,7 @@ import { useSquads } from './useSquads';
  * per camper, no dragging, and the list visibly shrinks as it empties.
  */
 export const EventSquadsSection = memo(function EventSquadsSection({ eventId }: { eventId: string }) {
+  const styles = useStyles(makeStyles);
   const squads = useSquads(eventId);
   const { notify } = useToast();
   const [placing, setPlacing] = useState<string | null>(null);
@@ -144,11 +147,11 @@ export const EventSquadsSection = memo(function EventSquadsSection({ eventId }: 
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   wrap: { gap: 10 },
-  blurb: { fontSize: 12.5, lineHeight: 18, fontWeight: '600', color: palette.textMuted },
+  blurb: { fontSize: 12.5, lineHeight: 18, fontWeight: '600', color: theme.textMuted },
   pool: { gap: 10, padding: 14 },
-  poolTitle: { fontSize: 13, fontWeight: '800', color: accentColor.amber },
+  poolTitle: { fontSize: 13, fontWeight: '800', color: theme.accent.warning },
   poolRow: { gap: 8 },
   person: {
     flexDirection: 'row',
@@ -156,10 +159,10 @@ const styles = StyleSheet.create({
     gap: 10,
     padding: 8,
     borderRadius: radius.md,
-    backgroundColor: palette.glass,
+    backgroundColor: theme.surface,
   },
-  personName: { flex: 1, fontSize: 13.5, fontWeight: '700', color: palette.text },
-  hint: { fontSize: 10.5, fontWeight: '800', color: palette.textFaint, textTransform: 'uppercase' },
+  personName: { flex: 1, fontSize: 13.5, fontWeight: '700', color: theme.text },
+  hint: { fontSize: 10.5, fontWeight: '800', color: theme.textFaint, textTransform: 'uppercase' },
   choices: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, paddingLeft: 8 },
   form: { gap: 10, padding: 14 },
   formRow: { flexDirection: 'row', gap: 8 },

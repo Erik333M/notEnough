@@ -5,10 +5,12 @@ import { StyleSheet, Text, View } from 'react-native';
 import { wodIsEmpty } from '../../state/journey/entries';
 import { movementLabel } from '../../state/journey/movements';
 import type { DayKey, JourneyState, Wod } from '../../state/journey/types';
-import { accentColor, palette, radius } from '../../theme/theme';
+import { radius } from '../../theme/theme';
 import { GlassCard } from '../../ui/Glass';
 import { PressableScale } from '../../ui/Touchable';
 import { InfoTip } from './InfoTip';
+import type { Theme } from '../../theme/tokens';
+import { useStyles, useTheme } from '../../theme/ThemeContext';
 
 /**
  * The workout, summarised on the day's page.
@@ -25,6 +27,8 @@ type Props = {
 };
 
 export const WodCard = memo(function WodCard({ date, wod, journey, onOpen }: Props) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const handleOpen = useCallback(() => onOpen(date), [date, onOpen]);
   const empty = wodIsEmpty(wod);
 
@@ -49,7 +53,7 @@ export const WodCard = memo(function WodCard({ date, wod, journey, onOpen }: Pro
       >
         {empty ? (
           <View style={styles.emptyRow}>
-            <Ionicons name="add-circle-outline" size={19} color={accentColor.cyan} />
+            <Ionicons name="add-circle-outline" size={19} color={theme.accent.mind} />
             <Text style={styles.emptyText}>Log a workout</Text>
           </View>
         ) : (
@@ -91,13 +95,13 @@ export const WodCard = memo(function WodCard({ date, wod, journey, onOpen }: Pro
           </View>
         )}
 
-        <Ionicons name="chevron-forward" size={16} color={palette.textFaint} />
+        <Ionicons name="chevron-forward" size={16} color={theme.textFaint} />
       </PressableScale>
     </GlassCard>
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   card: {
     gap: 10,
   },
@@ -111,7 +115,7 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '800',
     letterSpacing: 1.4,
-    color: accentColor.cyan,
+    color: theme.accent.mind,
   },
   body: {
     flexDirection: 'row',
@@ -128,7 +132,7 @@ const styles = StyleSheet.create({
   emptyText: {
     fontSize: 14,
     fontWeight: '700',
-    color: palette.textMuted,
+    color: theme.textMuted,
   },
   summary: {
     flex: 1,
@@ -144,38 +148,38 @@ const styles = StyleSheet.create({
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: radius.sm,
-    backgroundColor: 'rgba(63,224,232,0.16)',
+    backgroundColor: theme.accentSoft.mind,
     alignItems: 'center',
   },
   tagText: {
     fontSize: 10,
     fontWeight: '800',
-    color: accentColor.cyan,
+    color: theme.accent.mind,
   },
   rounds: {
     fontSize: 11,
     fontWeight: '700',
-    color: palette.textFaint,
+    color: theme.textFaint,
   },
   structure: {
     fontSize: 13,
     fontWeight: '700',
-    color: palette.text,
+    color: theme.text,
   },
   line: {
     fontSize: 12,
     fontWeight: '600',
-    color: palette.textMuted,
+    color: theme.textMuted,
   },
   more: {
     fontSize: 11,
     fontWeight: '700',
-    color: palette.textFaint,
+    color: theme.textFaint,
   },
   result: {
     fontSize: 12,
     fontWeight: '800',
-    color: accentColor.lime,
+    color: theme.accent.body,
     marginTop: 2,
   },
 });

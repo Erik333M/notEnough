@@ -10,11 +10,13 @@ import { useAuth } from '../state/AuthContext';
 import { useCapabilities } from '../state/TeamsContext';
 import { activeDayCount, bestStreak } from '../state/selectors';
 import { totalDaysWon } from '../state/victories';
-import { accentColor, palette, radius } from '../theme/theme';
+import { radius } from '../theme/theme';
 import { Avatar } from '../ui/Avatar';
 import { Appear, SectionHeader } from '../ui/Controls';
 import { GlassCard } from '../ui/Glass';
 import { PressableScale } from '../ui/Touchable';
+import type { Theme } from '../theme/tokens';
+import { useStyles, useTheme } from '../theme/ThemeContext';
 
 /**
  * You: who you are, what you have done, and everything about your account.
@@ -33,6 +35,8 @@ export default function ProfileHomeScreen({
   bottomInset: number;
   onOpen: (key: 'progress' | 'friends' | 'settings' | 'privacy') => void;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const { user } = useAuth();
   const state = useAppState();
   const stats = useStats();
@@ -106,9 +110,9 @@ export default function ProfileHomeScreen({
               />
               <View style={styles.badge}>
                 {avatar.busy ? (
-                  <ActivityIndicator size="small" color={palette.text} />
+                  <ActivityIndicator size="small" color={theme.text} />
                 ) : (
-                  <Ionicons name="camera" size={13} color={palette.text} />
+                  <Ionicons name="camera" size={13} color={theme.text} />
                 )}
               </View>
             </View>
@@ -133,9 +137,9 @@ export default function ProfileHomeScreen({
           ) : null}
 
           <View style={styles.figures}>
-            <Figure value={figures.streak} label="day streak" accent="amber" />
-            <Figure value={figures.victories} label="days won" accent="lime" />
-            <Figure value={figures.days} label="days logged" accent="cyan" />
+            <Figure value={figures.streak} label="day streak" accent="warning" />
+            <Figure value={figures.victories} label="days won" accent="body" />
+            <Figure value={figures.days} label="days logged" accent="mind" />
           </View>
 
           {figures.best > figures.streak ? (
@@ -147,7 +151,7 @@ export default function ProfileHomeScreen({
       {capabilities.hasTeams ? (
         <Appear delay={50}>
           <GlassCard style={styles.teamCard}>
-            <Ionicons name="clipboard-outline" size={16} color={accentColor.violet} />
+            <Ionicons name="clipboard-outline" size={16} color={theme.accent.spirit} />
             <Text style={styles.teamCopy}>
               {capabilities.isCoach
                 ? 'You coach a squad. Your teams are under the Teams tab.'
@@ -169,13 +173,13 @@ export default function ProfileHomeScreen({
             >
               <GlassCard style={styles.row}>
                 <View style={styles.rowIcon}>
-                  <Ionicons name={row.icon} size={17} color={palette.text} />
+                  <Ionicons name={row.icon} size={17} color={theme.text} />
                 </View>
                 <View style={styles.rowBody}>
                   <Text style={styles.rowTitle}>{row.title}</Text>
                   <Text style={styles.rowCopy}>{row.copy}</Text>
                 </View>
-                <Ionicons name="chevron-forward" size={16} color={palette.textFaint} />
+                <Ionicons name="chevron-forward" size={16} color={theme.textFaint} />
               </GlassCard>
             </PressableScale>
           ))}
@@ -192,17 +196,19 @@ const Figure = memo(function Figure({
 }: {
   value: number;
   label: string;
-  accent: 'amber' | 'lime' | 'cyan';
+  accent: 'warning' | 'body' | 'mind';
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   return (
     <View style={styles.figure}>
-      <Text style={[styles.figureValue, { color: accentColor[accent] }]}>{value}</Text>
+      <Text style={[styles.figureValue, { color: theme.accent[accent] }]}>{value}</Text>
       <Text style={styles.figureLabel}>{label}</Text>
     </View>
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   content: { padding: 18, gap: 16 },
   head: { alignItems: 'center', gap: 6, paddingVertical: 22 },
   avatar: { marginBottom: 6 },
@@ -215,19 +221,19 @@ const styles = StyleSheet.create({
     borderRadius: 13,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: palette.bg2,
+    backgroundColor: theme.surface,
     borderWidth: 1.5,
-    borderColor: 'rgba(255,255,255,0.14)',
+    borderColor: theme.surfaceElevated,
   },
   removePhoto: {
     marginTop: 8,
     fontSize: 11.5,
     fontWeight: '700',
-    color: palette.textFaint,
+    color: theme.textFaint,
     textDecorationLine: 'underline',
   },
-  name: { fontSize: 20, fontWeight: '800', color: palette.text },
-  email: { fontSize: 12.5, fontWeight: '600', color: palette.textMuted },
+  name: { fontSize: 20, fontWeight: '800', color: theme.text },
+  email: { fontSize: 12.5, fontWeight: '600', color: theme.textMuted },
   figures: { flexDirection: 'row', gap: 10, marginTop: 16, alignSelf: 'stretch' },
   figure: {
     flex: 1,
@@ -235,13 +241,13 @@ const styles = StyleSheet.create({
     gap: 2,
     paddingVertical: 12,
     borderRadius: radius.md,
-    backgroundColor: 'rgba(255,255,255,0.05)',
+    backgroundColor: theme.surface,
   },
   figureValue: { fontSize: 20, fontWeight: '800' },
-  figureLabel: { fontSize: 10.5, fontWeight: '700', color: palette.textMuted },
-  best: { marginTop: 10, fontSize: 11.5, fontWeight: '700', color: palette.textFaint },
+  figureLabel: { fontSize: 10.5, fontWeight: '700', color: theme.textMuted },
+  best: { marginTop: 10, fontSize: 11.5, fontWeight: '700', color: theme.textFaint },
   teamCard: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  teamCopy: { flex: 1, fontSize: 12.5, lineHeight: 18, fontWeight: '600', color: palette.textMuted },
+  teamCopy: { flex: 1, fontSize: 12.5, lineHeight: 18, fontWeight: '600', color: theme.textMuted },
   rows: { gap: 10 },
   row: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 14 },
   rowIcon: {
@@ -250,9 +256,9 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(255,255,255,0.06)',
+    backgroundColor: theme.surface,
   },
   rowBody: { flex: 1, gap: 2 },
-  rowTitle: { fontSize: 14.5, fontWeight: '800', color: palette.text },
-  rowCopy: { fontSize: 12, fontWeight: '600', color: palette.textMuted },
+  rowTitle: { fontSize: 14.5, fontWeight: '800', color: theme.text },
+  rowCopy: { fontSize: 12, fontWeight: '600', color: theme.textMuted },
 });

@@ -15,7 +15,7 @@ import { useRunTimer } from '../features/timer/useRunTimer';
 import { formatDuration, formatPace } from '../lib/time';
 import { useActions } from '../state/DataContext';
 import type { RunMode } from '../state/types';
-import { palette, radius } from '../theme/theme';
+import { radius } from '../theme/theme';
 import { Button } from '../ui/Button';
 import { Appear, Pill, RoundIconButton, SectionHeader, Segmented, StatTile } from '../ui/Controls';
 import { EmptyState } from '../ui/Feedback';
@@ -23,6 +23,8 @@ import { GlassCard } from '../ui/Glass';
 import { LiveProgressRing } from '../ui/Progress';
 import { useToast } from '../ui/Toast';
 import { PressableScale } from '../ui/Touchable';
+import type { Theme } from '../theme/tokens';
+import { useStyles, useTheme } from '../theme/ThemeContext';
 
 const MODES = [
   { value: 'stopwatch' as RunMode, label: 'Stopwatch' },
@@ -36,6 +38,8 @@ export default function TimerScreen({
   bottomInset: number;
   onOpenPlan: () => void;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const [mode, setMode] = useState<RunMode>('stopwatch');
 
   return (
@@ -58,6 +62,8 @@ export default function TimerScreen({
 const DISTANCE_STEPS = [100, 400, 1000];
 
 function StopwatchPanel() {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const timer = useRunTimer();
   const { addRun } = useActions();
   const { notify } = useToast();
@@ -102,7 +108,7 @@ function StopwatchPanel() {
           <Pill
             label={running ? 'Recording' : started ? 'Paused' : 'Ready'}
             icon={running ? 'radio-button-on' : 'time-outline'}
-            accent={running ? 'lime' : 'cyan'}
+            accent={running ? 'body' : 'mind'}
           />
           <TimerDigits value={elapsed} size={64} />
           <View style={styles.statRow}>
@@ -129,7 +135,7 @@ function StopwatchPanel() {
                 <Ionicons
                   name={running ? 'pause' : 'play'}
                   size={30}
-                  color={running ? palette.rose : palette.onAccent}
+                  color={running ? theme.error : theme.onPrimary}
                 />
               </View>
             </PressableScale>
@@ -138,7 +144,7 @@ function StopwatchPanel() {
               onPress={lap}
               disabled={!running}
               size={52}
-              accent="cyan"
+              accent="mind"
               accessibilityLabel="Record a lap"
             />
           </View>
@@ -209,6 +215,7 @@ const LapRow = memo(function LapRow({
   total: number;
   split: number;
 }) {
+  const styles = useStyles(makeStyles);
   return (
     <Animated.View entering={FadeIn.duration(200)} layout={LinearTransition} style={styles.lapRow}>
       <View style={styles.lapBadge}>
@@ -233,14 +240,18 @@ const PaceTile = memo(function PaceTile({
   read: () => number;
   running: boolean;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   // `running` is in the dep list so the label refreshes on each start/pause.
   const pace = useMemo(() => formatPace(distance, read()), [distance, read, running]);
-  return <StatTile value={`${pace}`} label="min / km" accent="cyan" />;
+  return <StatTile value={`${pace}`} label="min / km" accent="mind" />;
 });
 
 /* --------------------------------------------------------------- intervals */
 
 function IntervalPanel() {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const timer = useRunTimer();
   const { addRun } = useActions();
   const { notify } = useToast();
@@ -344,14 +355,14 @@ function IntervalPanel() {
           <Pill
             label={`Round ${Math.min(phase.round, rounds)} / ${rounds}`}
             icon="repeat"
-            accent="violet"
+            accent="spirit"
           />
           <LiveProgressRing
             progress={phaseProgress}
-            accent={phase.work ? 'cyan' : 'amber'}
+            accent={phase.work ? 'mind' : 'warning'}
             size={228}
           >
-            <Text style={[styles.phaseLabel, !phase.work && { color: palette.amber }]}>
+            <Text style={[styles.phaseLabel, !phase.work && { color: theme.warning }]}>
               {phase.work ? 'WORK' : 'RECOVER'}
             </Text>
             <TimerDigits value={remaining} mode="countdown" size={54} />
@@ -378,7 +389,7 @@ function IntervalPanel() {
                 <Ionicons
                   name={running ? 'pause' : 'play'}
                   size={30}
-                  color={running ? palette.rose : palette.onAccent}
+                  color={running ? theme.error : theme.onPrimary}
                 />
               </View>
             </PressableScale>
@@ -387,7 +398,7 @@ function IntervalPanel() {
               onPress={handleSave}
               disabled={!started}
               size={52}
-              accent="lime"
+              accent="body"
               accessibilityLabel="Save this session"
             />
           </View>
@@ -455,6 +466,8 @@ const IntervalStepper = memo(function IntervalStepper({
   onChange: (next: number) => void;
   disabled?: boolean;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   return (
     <View style={[styles.intervalRow, disabled && styles.intervalRowDisabled]}>
       <Text style={styles.intervalLabel}>{label}</Text>
@@ -482,7 +495,7 @@ const IntervalStepper = memo(function IntervalStepper({
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   content: {
     paddingHorizontal: 18,
     gap: 14,
@@ -515,12 +528,12 @@ const styles = StyleSheet.create({
     borderRadius: 39,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: palette.lime,
+    backgroundColor: theme.primary,
   },
   primaryControlActive: {
-    backgroundColor: palette.roseSoft,
+    backgroundColor: theme.errorSoft,
     borderWidth: 2,
-    borderColor: palette.rose,
+    borderColor: theme.error,
   },
   distanceRow: {
     flexDirection: 'row',
@@ -535,14 +548,14 @@ const styles = StyleSheet.create({
     borderRadius: radius.sm,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: palette.glassStrong,
+    backgroundColor: theme.surfaceElevated,
     borderWidth: StyleSheet.hairlineWidth * 2,
-    borderColor: palette.hairlineStrong,
+    borderColor: theme.borderStrong,
   },
   distanceChipText: {
     fontSize: 13,
     fontWeight: '800',
-    color: palette.text,
+    color: theme.text,
   },
   lapRow: {
     flexDirection: 'row',
@@ -550,7 +563,7 @@ const styles = StyleSheet.create({
     gap: 12,
     paddingVertical: 9,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: palette.hairline,
+    borderBottomColor: theme.border,
   },
   lapBadge: {
     width: 30,
@@ -558,36 +571,36 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: palette.glassStrong,
+    backgroundColor: theme.surfaceElevated,
   },
   lapBadgeText: {
     fontSize: 12,
     fontWeight: '800',
-    color: palette.textMuted,
+    color: theme.textMuted,
   },
   lapSplit: {
     flex: 1,
     fontSize: 17,
     fontWeight: '800',
-    color: palette.text,
+    color: theme.text,
     fontVariant: ['tabular-nums'],
   },
   lapTotal: {
     fontSize: 13,
     fontWeight: '700',
-    color: palette.textFaint,
+    color: theme.textFaint,
     fontVariant: ['tabular-nums'],
   },
   phaseLabel: {
     fontSize: 12,
     fontWeight: '800',
     letterSpacing: 2,
-    color: palette.cyan,
+    color: theme.accent.mind,
   },
   phaseHint: {
     fontSize: 12,
     fontWeight: '600',
-    color: palette.textFaint,
+    color: theme.textFaint,
   },
   intervalRow: {
     flexDirection: 'row',
@@ -601,7 +614,7 @@ const styles = StyleSheet.create({
   intervalLabel: {
     fontSize: 14,
     fontWeight: '700',
-    color: palette.textMuted,
+    color: theme.textMuted,
   },
   intervalControls: {
     flexDirection: 'row',
@@ -613,12 +626,12 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 19,
     fontWeight: '800',
-    color: palette.text,
+    color: theme.text,
     fontVariant: ['tabular-nums'],
   },
   lockedHint: {
     fontSize: 12,
-    color: palette.textFaint,
+    color: theme.textFaint,
     fontWeight: '600',
   },
 });

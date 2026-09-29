@@ -4,12 +4,15 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import type { FeedPost } from '../../api/friends';
 import type { IconName } from '../../state/types';
-import { accentColor, palette, radius } from '../../theme/theme';
+import { radius } from '../../theme/theme';
 import { Avatar } from '../../ui/Avatar';
 import { RoundIconButton, SectionHeader } from '../../ui/Controls';
 import { GlassCard } from '../../ui/Glass';
 import { PressableScale } from '../../ui/Touchable';
 import { useFeed } from './useFeed';
+import type { Theme } from '../../theme/tokens';
+import { useStyles, useTheme } from '../../theme/ThemeContext';
+import type { AccentName } from '../../theme/tokens';
 
 /**
  * What the people you train alongside have been doing.
@@ -30,11 +33,12 @@ const KIND_ICON: Record<FeedPost['kind'], IconName> = {
   work: 'barbell',
 };
 
-const KIND_ACCENT: Record<FeedPost['kind'], string> = {
-  streak: accentColor.amber,
-  personalBest: accentColor.lime,
-  habit: accentColor.cyan,
-  work: accentColor.violet,
+/** Roles, resolved against the live theme at render. */
+const KIND_ACCENT: Record<FeedPost['kind'], AccentName> = {
+  streak: 'warning',
+  personalBest: 'body',
+  habit: 'mind',
+  work: 'spirit',
 };
 
 export const FeedSection = memo(function FeedSection({
@@ -42,6 +46,8 @@ export const FeedSection = memo(function FeedSection({
 }: {
   onOpenFriends: () => void;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const { feed, friendCount, loading, myId, remove } = useFeed();
 
   // Nothing at all to say yet, and no friends to say it to: stay out of the way.
@@ -57,7 +63,7 @@ export const FeedSection = memo(function FeedSection({
       {feed.length === 0 ? (
         <PressableScale haptic="light" onPress={onOpenFriends}>
           <GlassCard style={styles.quiet}>
-            <Ionicons name="people-outline" size={16} color={palette.textFaint} />
+            <Ionicons name="people-outline" size={16} color={theme.textFaint} />
             <Text style={styles.quietText}>
               Nothing shared yet. Anything you earn can be posted here from your achievements.
             </Text>
@@ -74,8 +80,8 @@ export const FeedSection = memo(function FeedSection({
                 </Text>
                 <Text style={styles.when}>{agoOf(post.createdAt)}</Text>
               </View>
-              <View style={[styles.badge, { backgroundColor: `${KIND_ACCENT[post.kind]}22` }]}>
-                <Ionicons name={KIND_ICON[post.kind]} size={13} color={KIND_ACCENT[post.kind]} />
+              <View style={[styles.badge, { backgroundColor: theme.accentSoft[KIND_ACCENT[post.kind]] }]}>
+                <Ionicons name={KIND_ICON[post.kind]} size={13} color={theme.accent[KIND_ACCENT[post.kind]]} />
               </View>
               {post.userId === myId ? (
                 <RoundIconButton
@@ -108,15 +114,15 @@ function agoOf(iso: string): string {
   return days === 1 ? 'yesterday' : `${days}d ago`;
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   wrap: { gap: 10 },
   quiet: { flexDirection: 'row', alignItems: 'center', gap: 10, padding: 14 },
-  quietText: { flex: 1, fontSize: 12.5, lineHeight: 18, fontWeight: '600', color: palette.textMuted },
+  quietText: { flex: 1, fontSize: 12.5, lineHeight: 18, fontWeight: '600', color: theme.textMuted },
   post: { gap: 6, padding: 14 },
   head: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   who: { flex: 1, gap: 1 },
-  name: { fontSize: 13.5, fontWeight: '800', color: palette.text },
-  when: { fontSize: 10.5, fontWeight: '600', color: palette.textFaint },
+  name: { fontSize: 13.5, fontWeight: '800', color: theme.text },
+  when: { fontSize: 10.5, fontWeight: '600', color: theme.textFaint },
   badge: {
     width: 26,
     height: 26,
@@ -124,7 +130,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  title: { fontSize: 14.5, fontWeight: '800', color: palette.text },
-  detail: { fontSize: 12.5, lineHeight: 18, fontWeight: '600', color: palette.textMuted },
-  note: { fontSize: 12.5, lineHeight: 18, fontWeight: '600', color: palette.textFaint, fontStyle: 'italic' },
+  title: { fontSize: 14.5, fontWeight: '800', color: theme.text },
+  detail: { fontSize: 12.5, lineHeight: 18, fontWeight: '600', color: theme.textMuted },
+  note: { fontSize: 12.5, lineHeight: 18, fontWeight: '600', color: theme.textFaint, fontStyle: 'italic' },
 });

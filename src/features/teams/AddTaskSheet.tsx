@@ -11,11 +11,13 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import type { TaskKind } from '../../api/teams';
-import { palette, radius } from '../../theme/theme';
+import { radius } from '../../theme/theme';
 import { Button } from '../../ui/Button';
 import { RoundIconButton, SectionHeader, Segmented, Stepper } from '../../ui/Controls';
 import { Field } from '../../ui/Field';
 import { TASK_KIND_HINT, TASK_KIND_LABEL, TASK_KINDS, TASK_KIND_UNIT } from './taskCopy';
+import type { Theme } from '../../theme/tokens';
+import { useStyles } from '../../theme/ThemeContext';
 
 /**
  * Add one task to a session.
@@ -43,6 +45,7 @@ export function AddTaskSheet({
   onClose: () => void;
   onAdd: (input: { title: string; detail: string; kind: TaskKind; target: number }) => Promise<void> | void;
 }) {
+  const styles = useStyles(makeStyles);
   const insets = useSafeAreaInsets();
   const [title, setTitle] = useState('');
   const [detail, setDetail] = useState('');
@@ -147,13 +150,13 @@ export function AddTaskSheet({
   );
 }
 
-const styles = StyleSheet.create({
-  backdrop: { flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(2,3,10,0.72)' },
+const makeStyles = (theme: Theme) => StyleSheet.create({
+  backdrop: { flex: 1, justifyContent: 'flex-end', backgroundColor: theme.scrim },
   sheetWrap: { maxHeight: '92%' },
   sheet: {
     gap: 14,
     padding: 18,
-    backgroundColor: '#111634',
+    backgroundColor: theme.surfaceElevated,
     borderTopLeftRadius: radius.xl,
     borderTopRightRadius: radius.xl,
   },
@@ -162,9 +165,9 @@ const styles = StyleSheet.create({
     width: 38,
     height: 4,
     borderRadius: 2,
-    backgroundColor: palette.hairlineStrong,
+    backgroundColor: theme.borderStrong,
   },
   block: { gap: 8 },
-  label: { fontSize: 10, fontWeight: '800', letterSpacing: 1.3, color: palette.textFaint },
-  note: { fontSize: 12, fontWeight: '600', color: palette.textMuted },
+  label: { fontSize: 10, fontWeight: '800', letterSpacing: 1.3, color: theme.textFaint },
+  note: { fontSize: 12, fontWeight: '600', color: theme.textMuted },
 });

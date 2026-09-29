@@ -4,9 +4,11 @@ import { memo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { longDateLabel } from '../../lib/time';
-import { accentColor, palette, radius } from '../../theme/theme';
+import { radius } from '../../theme/theme';
 import { PressableScale } from '../../ui/Touchable';
 import type { Achievement } from './derive';
+import type { Theme } from '../../theme/tokens';
+import { useStyles, useTheme } from '../../theme/ThemeContext';
 
 /**
  * One achievement.
@@ -24,7 +26,9 @@ export const AchievementCard = memo(function AchievementCard({
   shared?: boolean;
   onShare?: () => void;
 }) {
-  const tint = accentColor[achievement.accent];
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
+  const tint = theme.accent[achievement.accent];
 
   return (
     <View style={styles.card}>
@@ -51,7 +55,7 @@ export const AchievementCard = memo(function AchievementCard({
 
       {shared ? (
         <View style={styles.sharedTag}>
-          <Ionicons name="checkmark" size={12} color={palette.textFaint} />
+          <Ionicons name="checkmark" size={12} color={theme.textFaint} />
           <Text style={styles.sharedText}>Shared</Text>
         </View>
       ) : onShare ? (
@@ -71,7 +75,7 @@ export const AchievementCard = memo(function AchievementCard({
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   card: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -79,9 +83,9 @@ const styles = StyleSheet.create({
     padding: 14,
     borderRadius: radius.lg,
     overflow: 'hidden',
-    backgroundColor: palette.glass,
+    backgroundColor: theme.surface,
     borderWidth: StyleSheet.hairlineWidth * 2,
-    borderColor: palette.hairline,
+    borderColor: theme.border,
   },
   icon: {
     width: 40,
@@ -91,9 +95,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   body: { flex: 1, gap: 2 },
-  title: { fontSize: 14.5, fontWeight: '800', color: palette.text },
-  detail: { fontSize: 12.5, lineHeight: 17, fontWeight: '600', color: palette.textMuted },
-  date: { fontSize: 11, fontWeight: '700', color: palette.textFaint },
+  title: { fontSize: 14.5, fontWeight: '800', color: theme.text },
+  detail: { fontSize: 12.5, lineHeight: 17, fontWeight: '600', color: theme.textMuted },
+  date: { fontSize: 11, fontWeight: '700', color: theme.textFaint },
   shareButton: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -105,5 +109,5 @@ const styles = StyleSheet.create({
   },
   shareText: { fontSize: 12, fontWeight: '800' },
   sharedTag: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  sharedText: { fontSize: 11.5, fontWeight: '700', color: palette.textFaint },
+  sharedText: { fontSize: 11.5, fontWeight: '700', color: theme.textFaint },
 });

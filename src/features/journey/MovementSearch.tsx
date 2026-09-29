@@ -4,9 +4,11 @@ import { StyleSheet, TextInput, View } from 'react-native';
 
 import { MOVEMENT_CATEGORY_LABEL } from '../../state/journey/movements';
 import type { MovementCategory } from '../../state/journey/types';
-import { palette, radius } from '../../theme/theme';
+import { radius } from '../../theme/theme';
 import { Chip } from '../../ui/Controls';
 import { PressableScale } from '../../ui/Touchable';
+import type { Theme } from '../../theme/tokens';
+import { useStyles, useTheme } from '../../theme/ThemeContext';
 
 /**
  * Search field plus category filters.
@@ -33,6 +35,8 @@ export const MovementSearchBar = memo(function MovementSearchBar({
   category,
   onCategoryChange,
 }: Props) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const handleCategory = useCallback(
     (next: MovementCategory) => onCategoryChange(category === next ? null : next),
     [category, onCategoryChange],
@@ -43,17 +47,17 @@ export const MovementSearchBar = memo(function MovementSearchBar({
   return (
     <View style={styles.wrap}>
       <View style={styles.searchRow}>
-        <Ionicons name="search" size={17} color={palette.textFaint} />
+        <Ionicons name="search" size={17} color={theme.textFaint} />
         <TextInput
           value={query}
           onChangeText={onQueryChange}
           placeholder="Search movements"
-          placeholderTextColor={palette.textFaint}
+          placeholderTextColor={theme.textFaint}
           style={styles.search}
           autoCorrect={false}
           autoCapitalize="none"
           returnKeyType="done"
-          selectionColor={palette.violet}
+          selectionColor={theme.accent.spirit}
           accessibilityLabel="Search movements"
         />
         {query ? (
@@ -64,7 +68,7 @@ export const MovementSearchBar = memo(function MovementSearchBar({
             hitSlop={12}
             accessibilityLabel="Clear search"
           >
-            <Ionicons name="close-circle" size={17} color={palette.textFaint} />
+            <Ionicons name="close-circle" size={17} color={theme.textFaint} />
           </PressableScale>
         ) : null}
       </View>
@@ -75,7 +79,7 @@ export const MovementSearchBar = memo(function MovementSearchBar({
             key={key}
             label={MOVEMENT_CATEGORY_LABEL[key]}
             active={category === key}
-            accent="cyan"
+            accent="mind"
             onPress={() => handleCategory(key)}
           />
         ))}
@@ -84,7 +88,7 @@ export const MovementSearchBar = memo(function MovementSearchBar({
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   wrap: {
     gap: 10,
   },
@@ -96,14 +100,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     borderRadius: radius.md,
     borderWidth: StyleSheet.hairlineWidth * 2,
-    borderColor: palette.hairline,
-    backgroundColor: palette.glassSunken,
+    borderColor: theme.border,
+    backgroundColor: theme.surfaceSunken,
   },
   search: {
     flex: 1,
     fontSize: 15,
     fontWeight: '600',
-    color: palette.text,
+    color: theme.text,
     padding: 0,
   },
   filters: {

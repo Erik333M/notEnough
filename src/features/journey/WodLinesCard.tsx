@@ -3,10 +3,12 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import type { JourneyState, WodLine } from '../../state/journey/types';
 import { movementLabel } from '../../state/journey/movements';
-import { palette, radius } from '../../theme/theme';
+import { radius } from '../../theme/theme';
 import { Button } from '../../ui/Button';
 import { GlassCard } from '../../ui/Glass';
 import { WodLineRow } from './WodLineRow';
+import type { Theme } from '../../theme/tokens';
+import { useStyles, useTheme } from '../../theme/ThemeContext';
 
 /**
  * The list of movement lines.
@@ -33,6 +35,8 @@ export const WodLinesCard = memo(function WodLinesCard({
   onChange,
   onRemove,
 }: Props) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   return (
     <GlassCard style={styles.card}>
       <Text style={styles.label}>MOVEMENTS</Text>
@@ -62,7 +66,7 @@ export const WodLinesCard = memo(function WodLinesCard({
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   card: {
     gap: 10,
     borderRadius: radius.lg,
@@ -71,13 +75,13 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '800',
     letterSpacing: 1.4,
-    color: palette.textMuted,
+    color: theme.textMuted,
   },
   hint: {
     fontSize: 12,
     lineHeight: 18,
     fontWeight: '600',
-    color: palette.textFaint,
+    color: theme.textFaint,
   },
   lines: {
     gap: 8,

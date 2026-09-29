@@ -1,7 +1,6 @@
 import { memo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { palette } from '../../theme/theme';
 import { Button } from '../../ui/Button';
 import { SectionHeader } from '../../ui/Controls';
 import { GlassCard } from '../../ui/Glass';
@@ -9,6 +8,8 @@ import { useToast } from '../../ui/Toast';
 import type { EventInput, EventSummary } from '../../api/events';
 import { EventCard } from './EventCard';
 import { EventForm } from './EventForm';
+import type { Theme } from '../../theme/tokens';
+import { useStyles, useTheme } from '../../theme/ThemeContext';
 
 /**
  * Events on the Teams tab.
@@ -31,6 +32,8 @@ export const EventsSection = memo(function EventsSection({
   onOpenEvent: (eventId: string) => void;
   onCreate: (input: EventInput) => Promise<{ ok: boolean; message?: string; id?: string }>;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const { notify } = useToast();
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -86,8 +89,8 @@ export const EventsSection = memo(function EventsSection({
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   wrap: { gap: 10 },
-  empty: { fontSize: 12.5, lineHeight: 18, fontWeight: '600', color: palette.textMuted },
+  empty: { fontSize: 12.5, lineHeight: 18, fontWeight: '600', color: theme.textMuted },
   form: { gap: 12, padding: 14 },
 });

@@ -48,7 +48,7 @@ export const OverTimeSection = memo(function OverTimeSection({
               ? `${habitCount} running`
               : 'One small thing, repeated daily'
           }
-          accent="lime"
+          accent="body"
           onPress={onOpenHabits}
         />
       </Appear>
@@ -62,7 +62,7 @@ export const OverTimeSection = memo(function OverTimeSection({
               ? `${benchmarksTested} tested`
               : 'Test something once, then beat it later'
           }
-          accent="cyan"
+          accent="mind"
           onPress={onOpenBenchmarks}
         />
       </Appear>
@@ -76,7 +76,7 @@ export const OverTimeSection = memo(function OverTimeSection({
               ? `${readings} ${readings === 1 ? 'reading' : 'readings'}`
               : 'Weight, or anything else you track'
           }
-          accent="rose"
+          accent="danger"
           onPress={onOpenMeasurements}
         />
       </Appear>
@@ -90,7 +90,7 @@ export const OverTimeSection = memo(function OverTimeSection({
               ? `${daysWritten} ${daysWritten === 1 ? 'day' : 'days'} written`
               : 'A quiet summary, once there is something to show'
           }
-          accent="amber"
+          accent="warning"
           onPress={onOpenProgress}
         />
       </Appear>

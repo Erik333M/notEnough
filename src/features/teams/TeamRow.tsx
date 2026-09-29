@@ -3,10 +3,12 @@ import { memo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import type { Team, TeamRole } from '../../api/teams';
-import { accentColor, palette, radius } from '../../theme/theme';
+import { radius } from '../../theme/theme';
 import { Pill } from '../../ui/Controls';
 import { GlassCard } from '../../ui/Glass';
 import { PressableScale } from '../../ui/Touchable';
+import type { Theme } from '../../theme/tokens';
+import { useStyles, useTheme } from '../../theme/ThemeContext';
 
 /**
  * One squad on the Teams tab.
@@ -24,6 +26,8 @@ export const TeamRow = memo(function TeamRow({
   role: TeamRole;
   onOpen: () => void;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const coach = role === 'coach';
 
   return (
@@ -33,7 +37,7 @@ export const TeamRow = memo(function TeamRow({
           <Ionicons
             name={coach ? 'clipboard' : 'barbell'}
             size={18}
-            color={coach ? accentColor.violet : accentColor.cyan}
+            color={coach ? theme.accent.spirit : theme.accent.mind}
           />
         </View>
         <View style={styles.body}>
@@ -46,14 +50,14 @@ export const TeamRow = memo(function TeamRow({
             </Text>
           ) : null}
         </View>
-        <Pill label={coach ? 'Coach' : 'Athlete'} accent={coach ? 'violet' : 'cyan'} />
-        <Ionicons name="chevron-forward" size={16} color={palette.textFaint} />
+        <Pill label={coach ? 'Coach' : 'Athlete'} accent={coach ? 'spirit' : 'mind'} />
+        <Ionicons name="chevron-forward" size={16} color={theme.textFaint} />
       </GlassCard>
     </PressableScale>
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 14 },
   icon: {
     width: 38,
@@ -61,9 +65,9 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(255,255,255,0.06)',
+    backgroundColor: theme.surface,
   },
   body: { flex: 1, gap: 2 },
-  title: { fontSize: 14.5, fontWeight: '800', color: palette.text },
-  copy: { fontSize: 12, fontWeight: '600', color: palette.textMuted },
+  title: { fontSize: 14.5, fontWeight: '800', color: theme.text },
+  copy: { fontSize: 12, fontWeight: '600', color: theme.textMuted },
 });

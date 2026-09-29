@@ -15,10 +15,12 @@ import { MOVEMENT_CATEGORY_LABEL } from '../../state/journey/movements';
 import { NO_MUSCLE_WORK, type MuscleWork } from '../../state/journey/muscles';
 import type { MovementCategory } from '../../state/journey/types';
 import { MusclePicker } from '../muscles/MusclePicker';
-import { palette, radius } from '../../theme/theme';
+import { radius } from '../../theme/theme';
 import { Button } from '../../ui/Button';
 import { Chip, RoundIconButton, SectionHeader } from '../../ui/Controls';
 import { Field } from '../../ui/Field';
+import type { Theme } from '../../theme/tokens';
+import { useStyles, useTheme } from '../../theme/ThemeContext';
 
 /**
  * Adds a movement to the user's own catalogue.
@@ -42,6 +44,8 @@ type Props = {
 const CATEGORIES = Object.keys(MOVEMENT_CATEGORY_LABEL) as MovementCategory[];
 
 export function NewMovementSheet({ visible, initialName = '', onClose, onCreate }: Props) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const insets = useSafeAreaInsets();
   const [name, setName] = useState('');
   const [category, setCategory] = useState<MovementCategory>('strength');
@@ -124,7 +128,7 @@ export function NewMovementSheet({ visible, initialName = '', onClose, onCreate 
                     key={key}
                     label={MOVEMENT_CATEGORY_LABEL[key]}
                     active={category === key}
-                    accent="cyan"
+                    accent="mind"
                     onPress={() => setCategory(key)}
                   />
                 ))}
@@ -144,21 +148,21 @@ export function NewMovementSheet({ visible, initialName = '', onClose, onCreate 
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   backdrop: {
     flex: 1,
     justifyContent: 'flex-end',
-    backgroundColor: 'rgba(2,3,10,0.72)',
+    backgroundColor: theme.scrim,
   },
   sheetWrap: {
     maxHeight: '92%',
   },
   sheet: {
-    backgroundColor: '#111634',
+    backgroundColor: theme.surfaceElevated,
     borderTopLeftRadius: radius.xl,
     borderTopRightRadius: radius.xl,
     borderTopWidth: StyleSheet.hairlineWidth * 2,
-    borderColor: palette.hairlineStrong,
+    borderColor: theme.borderStrong,
   },
   // Gap lives on the scrolling content now that the sheet is a ScrollView;
   // a gap on the scroller itself is ignored.
@@ -172,7 +176,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 4,
     borderRadius: 2,
-    backgroundColor: palette.hairlineStrong,
+    backgroundColor: theme.borderStrong,
   },
   group: {
     gap: 8,
@@ -180,7 +184,7 @@ const styles = StyleSheet.create({
   groupLabel: {
     fontSize: 12,
     fontWeight: '700',
-    color: palette.textMuted,
+    color: theme.textMuted,
     marginLeft: 2,
   },
   chips: {

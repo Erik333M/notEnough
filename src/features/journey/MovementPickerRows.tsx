@@ -4,8 +4,10 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { MOVEMENT_CATEGORY_LABEL } from '../../state/journey/movements';
 import type { Movement } from '../../state/journey/types';
-import { accentColor, palette, radius } from '../../theme/theme';
+import { radius } from '../../theme/theme';
 import { PressableScale } from '../../ui/Touchable';
+import type { Theme } from '../../theme/tokens';
+import { useStyles, useTheme } from '../../theme/ThemeContext';
 
 /** One catalogue result inside the picker sheet. */
 export const MovementResultRow = memo(function MovementResultRow({
@@ -15,6 +17,8 @@ export const MovementResultRow = memo(function MovementResultRow({
   movement: Movement;
   onPick: (movement: Movement) => void;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const handlePress = useCallback(() => onPick(movement), [movement, onPick]);
 
   return (
@@ -34,7 +38,7 @@ export const MovementResultRow = memo(function MovementResultRow({
           {movement.isCustom ? ' • yours' : ''}
         </Text>
       </View>
-      <Ionicons name="chevron-forward" size={16} color={palette.textFaint} />
+      <Ionicons name="chevron-forward" size={16} color={theme.textFaint} />
     </PressableScale>
   );
 });
@@ -55,6 +59,8 @@ export const NoMatchActions = memo(function NoMatchActions({
   onCreate: () => void;
   onUseOnce: () => void;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   return (
     <View style={styles.createRow}>
       <PressableScale
@@ -64,7 +70,7 @@ export const NoMatchActions = memo(function NoMatchActions({
         accessibilityLabel={`Add ${query} to your movements`}
         style={styles.create}
       >
-        <Ionicons name="add-circle" size={18} color={accentColor.lime} />
+        <Ionicons name="add-circle" size={18} color={theme.accent.body} />
         <Text style={styles.createText} numberOfLines={1}>
           Add “{query}” to your movements
         </Text>
@@ -85,6 +91,8 @@ export const NoMatchActions = memo(function NoMatchActions({
 
 /** Footer link out to the full library screen. */
 export const BrowseAllRow = memo(function BrowseAllRow({ onPress }: { onPress: () => void }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   return (
     <PressableScale
       onPress={onPress}
@@ -93,13 +101,13 @@ export const BrowseAllRow = memo(function BrowseAllRow({ onPress }: { onPress: (
       accessibilityLabel="Browse the full movements library"
       style={styles.browse}
     >
-      <Ionicons name="library-outline" size={16} color={palette.textMuted} />
+      <Ionicons name="library-outline" size={16} color={theme.textMuted} />
       <Text style={styles.browseText}>Browse the full library</Text>
     </PressableScale>
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -113,12 +121,12 @@ const styles = StyleSheet.create({
   rowTitle: {
     fontSize: 15,
     fontWeight: '700',
-    color: palette.text,
+    color: theme.text,
   },
   rowMeta: {
     fontSize: 11,
     fontWeight: '600',
-    color: palette.textFaint,
+    color: theme.textFaint,
     marginTop: 2,
   },
   createRow: {
@@ -139,7 +147,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 13,
     fontWeight: '700',
-    color: accentColor.lime,
+    color: theme.accent.body,
   },
   once: {
     minHeight: 44,
@@ -149,7 +157,7 @@ const styles = StyleSheet.create({
   onceText: {
     fontSize: 12,
     fontWeight: '700',
-    color: palette.textMuted,
+    color: theme.textMuted,
   },
   browse: {
     flexDirection: 'row',
@@ -159,11 +167,11 @@ const styles = StyleSheet.create({
     minHeight: 44,
     marginTop: 4,
     borderRadius: radius.md,
-    backgroundColor: palette.glassSunken,
+    backgroundColor: theme.surfaceSunken,
   },
   browseText: {
     fontSize: 13,
     fontWeight: '700',
-    color: palette.textMuted,
+    color: theme.textMuted,
   },
 });

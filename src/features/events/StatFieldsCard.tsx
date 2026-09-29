@@ -3,11 +3,13 @@ import { memo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import type { StatField } from '../../api/event-stats';
-import { accentColor, palette, radius } from '../../theme/theme';
+import { radius } from '../../theme/theme';
 import { Button } from '../../ui/Button';
 import { RoundIconButton, Segmented } from '../../ui/Controls';
 import { Field } from '../../ui/Field';
 import { GlassCard } from '../../ui/Glass';
+import type { Theme } from '../../theme/tokens';
+import { useStyles, useTheme } from '../../theme/ThemeContext';
 
 /**
  * What this event counts — and the screen where the organiser decides.
@@ -33,6 +35,8 @@ export const StatFieldsCard = memo(function StatFieldsCard({
   onRename: (fieldId: string, label: string) => void;
   onDrop: (fieldId: string) => void;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const [adding, setAdding] = useState(false);
   const [label, setLabel] = useState('');
   const [scope, setScope] = useState<'team' | 'player'>('player');
@@ -64,7 +68,7 @@ export const StatFieldsCard = memo(function StatFieldsCard({
             <Ionicons
               name={field.scope === 'team' ? 'people-outline' : 'person-outline'}
               size={15}
-              color={field.scope === 'team' ? accentColor.cyan : accentColor.violet}
+              color={field.scope === 'team' ? theme.accent.mind : theme.accent.spirit}
             />
             <View style={styles.body}>
               <Text style={styles.label} numberOfLines={1}>
@@ -143,14 +147,14 @@ export const StatFieldsCard = memo(function StatFieldsCard({
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   card: { gap: 10, padding: 14 },
   row: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   body: { flex: 1, gap: 1 },
-  label: { fontSize: 13.5, fontWeight: '800', color: palette.text },
-  scope: { fontSize: 11, fontWeight: '600', color: palette.textFaint },
-  editing: { gap: 10, padding: 10, borderRadius: radius.md, backgroundColor: palette.glass },
+  label: { fontSize: 13.5, fontWeight: '800', color: theme.text },
+  scope: { fontSize: 11, fontWeight: '600', color: theme.textFaint },
+  editing: { gap: 10, padding: 10, borderRadius: radius.md, backgroundColor: theme.surface },
   editRow: { flexDirection: 'row', gap: 8 },
   grow: { flex: 1 },
-  hint: { fontSize: 11, lineHeight: 16, fontWeight: '600', color: palette.textFaint },
+  hint: { fontSize: 11, lineHeight: 16, fontWeight: '600', color: theme.textFaint },
 });

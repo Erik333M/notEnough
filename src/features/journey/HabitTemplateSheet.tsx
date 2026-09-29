@@ -14,10 +14,12 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { templatesByGroup } from '../../state/journey/habits';
 import type { HabitGroup, HabitTemplate } from '../../state/journey/types';
-import { accentColor, palette, radius } from '../../theme/theme';
+import { radius } from '../../theme/theme';
 import { RoundIconButton, SectionHeader } from '../../ui/Controls';
 import { PressableScale } from '../../ui/Touchable';
 import { NewHabitForm } from './NewHabitForm';
+import type { Theme } from '../../theme/tokens';
+import { useStyles, useTheme } from '../../theme/ThemeContext';
 
 /**
  * Browse the starter habits, or write your own.
@@ -42,6 +44,8 @@ export function HabitTemplateSheet({
   onAdopt,
   onCreate,
 }: Props) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const insets = useSafeAreaInsets();
   const grouped = templatesByGroup(templates);
 
@@ -114,6 +118,8 @@ function TemplateRow({
   template: HabitTemplate;
   onAdopt: (template: HabitTemplate) => void;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const handlePress = useCallback(() => onAdopt(template), [template, onAdopt]);
 
   return (
@@ -124,7 +130,7 @@ function TemplateRow({
       accessibilityLabel={`Adopt: ${template.title}`}
       style={styles.templateRow}
     >
-      <Ionicons name="add-circle-outline" size={17} color={accentColor.lime} />
+      <Ionicons name="add-circle-outline" size={17} color={theme.accent.body} />
       <Text style={styles.templateText} numberOfLines={1}>
         {template.title}
       </Text>
@@ -132,22 +138,22 @@ function TemplateRow({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   backdrop: {
     flex: 1,
     justifyContent: 'flex-end',
-    backgroundColor: 'rgba(2,3,10,0.72)',
+    backgroundColor: theme.scrim,
   },
   sheetWrap: {
     height: '90%',
   },
   sheet: {
     flex: 1,
-    backgroundColor: '#111634',
+    backgroundColor: theme.surfaceElevated,
     borderTopLeftRadius: radius.xl,
     borderTopRightRadius: radius.xl,
     borderTopWidth: StyleSheet.hairlineWidth * 2,
-    borderColor: palette.hairlineStrong,
+    borderColor: theme.borderStrong,
     paddingHorizontal: 18,
     paddingTop: 10,
     gap: 14,
@@ -157,7 +163,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 4,
     borderRadius: 2,
-    backgroundColor: palette.hairlineStrong,
+    backgroundColor: theme.borderStrong,
   },
   content: {
     gap: 16,
@@ -167,13 +173,13 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '800',
     letterSpacing: 1.2,
-    color: palette.textFaint,
+    color: theme.textFaint,
     textAlign: 'center',
   },
   allAdopted: {
     fontSize: 12,
     fontWeight: '600',
-    color: palette.textFaint,
+    color: theme.textFaint,
     textAlign: 'center',
   },
   section: {
@@ -183,7 +189,7 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: '800',
     letterSpacing: 1.4,
-    color: palette.textMuted,
+    color: theme.textMuted,
     marginBottom: 4,
   },
   templateRow: {
@@ -193,13 +199,13 @@ const styles = StyleSheet.create({
     minHeight: 46,
     paddingHorizontal: 12,
     borderRadius: radius.md,
-    backgroundColor: palette.glassSunken,
+    backgroundColor: theme.surfaceSunken,
     marginBottom: 6,
   },
   templateText: {
     flex: 1,
     fontSize: 14,
     fontWeight: '700',
-    color: palette.text,
+    color: theme.text,
   },
 });

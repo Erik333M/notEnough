@@ -11,8 +11,10 @@ import type {
   BenchmarkResult,
   UnitSystem,
 } from '../../state/journey/types';
-import { accentColor, palette, radius } from '../../theme/theme';
+import { radius } from '../../theme/theme';
 import { PressableScale } from '../../ui/Touchable';
+import type { Theme } from '../../theme/tokens';
+import { useStyles, useTheme } from '../../theme/ThemeContext';
 
 /**
  * One benchmark in the list.
@@ -36,6 +38,8 @@ export const BenchmarkRow = memo(function BenchmarkRow({
   units,
   onOpen,
 }: Props) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const handlePress = useCallback(() => onOpen(definition.id), [definition.id, onOpen]);
 
   const value = best ? formatBenchmarkValue(best.value, definition.metric, units) : null;
@@ -74,12 +78,12 @@ export const BenchmarkRow = memo(function BenchmarkRow({
         <Text style={styles.untested}>Not tested</Text>
       )}
 
-      <Ionicons name="chevron-forward" size={16} color={palette.textFaint} />
+      <Ionicons name="chevron-forward" size={16} color={theme.textFaint} />
     </PressableScale>
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -87,7 +91,7 @@ const styles = StyleSheet.create({
     minHeight: 60,
     paddingVertical: 10,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: palette.hairline,
+    borderBottomColor: theme.border,
   },
   text: {
     flex: 1,
@@ -95,12 +99,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 15,
     fontWeight: '700',
-    color: palette.text,
+    color: theme.text,
   },
   meta: {
     fontSize: 11,
     fontWeight: '600',
-    color: palette.textFaint,
+    color: theme.textFaint,
     marginTop: 2,
   },
   valueBlock: {
@@ -109,21 +113,21 @@ const styles = StyleSheet.create({
   value: {
     fontSize: 15,
     fontWeight: '800',
-    color: accentColor.lime,
+    color: theme.accent.body,
   },
   valueLabel: {
     fontSize: 9,
     fontWeight: '700',
     letterSpacing: 0.6,
-    color: palette.textFaint,
+    color: theme.textFaint,
   },
   untested: {
     fontSize: 11,
     fontWeight: '700',
-    color: palette.textFaint,
+    color: theme.textFaint,
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: radius.sm,
-    backgroundColor: palette.glassSunken,
+    backgroundColor: theme.surfaceSunken,
   },
 });

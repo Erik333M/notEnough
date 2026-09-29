@@ -2,9 +2,11 @@ import { memo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import type { ChatMessage } from '../../api/chat';
-import { palette, radius } from '../../theme/theme';
+import { radius } from '../../theme/theme';
 import { Avatar } from '../../ui/Avatar';
 import { PressableScale } from '../../ui/Touchable';
+import type { Theme } from '../../theme/tokens';
+import { useStyles, useTheme } from '../../theme/ThemeContext';
 
 /**
  * One message.
@@ -31,6 +33,8 @@ export const ChatBubble = memo(function ChatBubble({
   canRemove: boolean;
   onRemove: () => void;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   return (
     <View style={[styles.row, mine ? styles.rowMine : styles.rowTheirs, grouped && styles.tight]}>
       {!mine ? (
@@ -60,18 +64,18 @@ function clockOf(iso: string): string {
   return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'flex-end', gap: 8, marginTop: 10 },
   tight: { marginTop: 3 },
   rowMine: { justifyContent: 'flex-end', paddingLeft: 48 },
   rowTheirs: { justifyContent: 'flex-start', paddingRight: 48 },
   gutter: { width: 28 },
   bubble: { paddingHorizontal: 12, paddingVertical: 8, borderRadius: radius.lg, gap: 2 },
-  theirs: { backgroundColor: palette.glassStrong, borderBottomLeftRadius: 4 },
-  mine: { backgroundColor: palette.violet, borderBottomRightRadius: 4 },
-  name: { fontSize: 11.5, fontWeight: '800', color: palette.violet },
-  body: { fontSize: 14.5, lineHeight: 20, fontWeight: '500', color: palette.text },
-  bodyMine: { color: palette.onAccent },
-  time: { alignSelf: 'flex-end', fontSize: 9.5, fontWeight: '700', color: palette.textFaint },
+  theirs: { backgroundColor: theme.surfaceElevated, borderBottomLeftRadius: 4 },
+  mine: { backgroundColor: theme.accent.spirit, borderBottomRightRadius: 4 },
+  name: { fontSize: 11.5, fontWeight: '800', color: theme.accent.spirit },
+  body: { fontSize: 14.5, lineHeight: 20, fontWeight: '500', color: theme.text },
+  bodyMine: { color: theme.onPrimary },
+  time: { alignSelf: 'flex-end', fontSize: 9.5, fontWeight: '700', color: theme.textFaint },
   timeMine: { color: 'rgba(255,255,255,0.72)' },
 });

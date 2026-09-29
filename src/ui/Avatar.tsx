@@ -3,7 +3,8 @@ import { memo, useEffect, useState } from 'react';
 import { Image, StyleSheet, Text, View, type ImageStyle } from 'react-native';
 
 import { avatarSource } from '../api/avatars';
-import { gradients, palette } from '../theme/theme';
+import type { Theme } from '../theme/tokens';
+import { useStyles, useTheme } from '../theme/ThemeContext';
 
 /**
  * Somebody's face, or their initials.
@@ -38,6 +39,8 @@ export const Avatar = memo(function Avatar({
   /** Layout only — the shape is this component's business. */
   style?: ImageStyle;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const source = avatarSource(uri);
   const [failed, setFailed] = useState(false);
 
@@ -79,7 +82,7 @@ export const Avatar = memo(function Avatar({
 
   return (
     <LinearGradient
-      colors={gradients.accent}
+      colors={theme.primaryGradient}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
       style={[styles.fallback, shape, style]}
@@ -98,10 +101,10 @@ export function initialsOf(name: string): string {
   return parts.map((part) => part[0]?.toUpperCase() ?? '').join('') || '?';
 }
 
-const styles = StyleSheet.create({
-  image: { backgroundColor: palette.violetSoft },
+const makeStyles = (theme: Theme) => StyleSheet.create({
+  image: { backgroundColor: theme.accentSoft.spirit },
   fallback: { alignItems: 'center', justifyContent: 'center' },
-  soft: { backgroundColor: palette.violetSoft },
-  initials: { fontWeight: '800', color: palette.onAccent },
-  initialsSoft: { color: palette.violet },
+  soft: { backgroundColor: theme.accentSoft.spirit },
+  initials: { fontWeight: '800', color: theme.onPrimary },
+  initialsSoft: { color: theme.accent.spirit },
 });

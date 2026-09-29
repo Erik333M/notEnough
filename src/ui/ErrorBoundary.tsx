@@ -1,7 +1,8 @@
 import { Component, type ReactNode } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import { palette, radius } from '../theme/theme';
+import { radius } from '../theme/theme';
+import { THEMES } from '../theme/tokens';
 
 /**
  * Catches a render-time crash and shows what happened.
@@ -72,10 +73,20 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 }
 
+/*
+ * The one screen that does not follow the theme.
+ *
+ * It is a class component, so it cannot call a hook — but the better reason is
+ * that this renders when something has already thrown, and the theme provider
+ * is as capable of throwing as anything else. A crash screen that depends on
+ * the thing that crashed is not a crash screen. Fixed dark, always readable.
+ */
+const crash = THEMES.dark;
+
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: palette.bg0,
+    backgroundColor: crash.bgDeep,
   },
   content: {
     padding: 22,
@@ -85,13 +96,13 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 22,
     fontWeight: '800',
-    color: palette.text,
+    color: crash.text,
   },
   copy: {
     fontSize: 13,
     lineHeight: 19,
     fontWeight: '600',
-    color: palette.textMuted,
+    color: crash.textMuted,
   },
   box: {
     gap: 6,
@@ -99,18 +110,18 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
     backgroundColor: 'rgba(255,255,255,0.06)',
     borderWidth: StyleSheet.hairlineWidth * 2,
-    borderColor: palette.hairline,
+    borderColor: crash.border,
   },
   label: {
     fontSize: 10,
     fontWeight: '800',
     letterSpacing: 1.2,
-    color: palette.textFaint,
+    color: crash.textFaint,
   },
   mono: {
     fontSize: 11,
     lineHeight: 16,
-    color: palette.text,
+    color: crash.text,
     fontFamily: 'Courier',
   },
 });

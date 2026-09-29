@@ -2,8 +2,10 @@ import { Ionicons } from '@expo/vector-icons';
 import { memo, useEffect, useState } from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 
-import { palette, radius } from '../../theme/theme';
+import { radius } from '../../theme/theme';
 import { PressableScale } from '../../ui/Touchable';
+import type { Theme } from '../../theme/tokens';
+import { useStyles, useTheme } from '../../theme/ThemeContext';
 
 /**
  * One number on an entry screen.
@@ -29,6 +31,8 @@ export const StatInput = memo(function StatInput({
   min?: number;
   max?: number;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const [text, setText] = useState(String(value));
 
   // Follows the value when it changes from outside — a reset, or a reload.
@@ -55,7 +59,7 @@ export const StatInput = memo(function StatInput({
 
       <PressableScale haptic="light" onPress={() => nudge(-1)} accessibilityLabel={`One fewer ${label}`}>
         <View style={styles.button}>
-          <Ionicons name="remove" size={15} color={palette.text} />
+          <Ionicons name="remove" size={15} color={theme.text} />
         </View>
       </PressableScale>
 
@@ -73,32 +77,32 @@ export const StatInput = memo(function StatInput({
 
       <PressableScale haptic="light" onPress={() => nudge(1)} accessibilityLabel={`One more ${label}`}>
         <View style={styles.button}>
-          <Ionicons name="add" size={15} color={palette.text} />
+          <Ionicons name="add" size={15} color={theme.text} />
         </View>
       </PressableScale>
     </View>
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  label: { flex: 1, fontSize: 12.5, fontWeight: '700', color: palette.textMuted },
+  label: { flex: 1, fontSize: 12.5, fontWeight: '700', color: theme.textMuted },
   button: {
     width: 32,
     height: 32,
     borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: palette.glassStrong,
+    backgroundColor: theme.surfaceElevated,
   },
   input: {
     width: 56,
     height: 34,
     borderRadius: radius.sm,
-    backgroundColor: palette.glass,
+    backgroundColor: theme.surface,
     textAlign: 'center',
     fontSize: 14,
     fontWeight: '800',
-    color: palette.text,
+    color: theme.text,
   },
 });

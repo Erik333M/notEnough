@@ -3,10 +3,12 @@ import { memo, useCallback, useState } from 'react';
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { palette, radius } from '../../theme/theme';
+import { radius } from '../../theme/theme';
 import { Button } from '../../ui/Button';
 import { PressableScale } from '../../ui/Touchable';
 import { EXPLAINERS, type ExplainerKey } from './journeyCopy';
+import type { Theme } from '../../theme/tokens';
+import { useStyles, useTheme } from '../../theme/ThemeContext';
 
 /**
  * The info affordance that sits beside a piece of jargon.
@@ -16,6 +18,8 @@ import { EXPLAINERS, type ExplainerKey } from './journeyCopy';
  * The touch area is padded out to 44pt while the glyph stays small.
  */
 export const InfoTip = memo(function InfoTip({ topic }: { topic: ExplainerKey }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const [open, setOpen] = useState(false);
   const insets = useSafeAreaInsets();
 
@@ -34,7 +38,7 @@ export const InfoTip = memo(function InfoTip({ topic }: { topic: ExplainerKey })
         accessibilityLabel={`What does ${explainer.term} mean?`}
         style={styles.trigger}
       >
-        <Ionicons name="information-circle-outline" size={17} color={palette.textFaint} />
+        <Ionicons name="information-circle-outline" size={17} color={theme.textFaint} />
       </PressableScale>
 
       <Modal visible={open} transparent animationType="fade" onRequestClose={hide} statusBarTranslucent>
@@ -53,7 +57,7 @@ export const InfoTip = memo(function InfoTip({ topic }: { topic: ExplainerKey })
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   trigger: {
     width: 30,
     height: 30,
@@ -63,14 +67,14 @@ const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
     justifyContent: 'flex-end',
-    backgroundColor: 'rgba(2,3,10,0.72)',
+    backgroundColor: theme.scrim,
   },
   sheet: {
-    backgroundColor: '#111634',
+    backgroundColor: theme.surfaceElevated,
     borderTopLeftRadius: radius.xl,
     borderTopRightRadius: radius.xl,
     borderTopWidth: StyleSheet.hairlineWidth * 2,
-    borderColor: palette.hairlineStrong,
+    borderColor: theme.borderStrong,
     paddingHorizontal: 20,
     paddingTop: 10,
     gap: 12,
@@ -80,24 +84,24 @@ const styles = StyleSheet.create({
     width: 40,
     height: 4,
     borderRadius: 2,
-    backgroundColor: palette.hairlineStrong,
+    backgroundColor: theme.borderStrong,
     marginBottom: 6,
   },
   term: {
     fontSize: 20,
     fontWeight: '800',
-    color: palette.text,
+    color: theme.text,
   },
   short: {
     fontSize: 15,
     lineHeight: 22,
     fontWeight: '700',
-    color: palette.text,
+    color: theme.text,
   },
   detail: {
     fontSize: 13,
     lineHeight: 20,
     fontWeight: '500',
-    color: palette.textMuted,
+    color: theme.textMuted,
   },
 });

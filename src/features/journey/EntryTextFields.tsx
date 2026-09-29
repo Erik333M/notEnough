@@ -4,11 +4,13 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import type { EntryTextField } from '../../state/journey/entryReducer';
 import type { DayKey } from '../../state/journey/types';
-import { palette } from '../../theme/theme';
+
 import { TextArea } from '../../ui/Field';
 import { InfoTip } from './InfoTip';
 import type { ExplainerKey } from './journeyCopy';
 import { useAutosaveText } from './useAutosaveText';
+import type { Theme } from '../../theme/tokens';
+import { useStyles, useTheme } from '../../theme/ThemeContext';
 
 /**
  * The free-text parts of a day: theme, skill and story.
@@ -45,6 +47,8 @@ export const EntryTextBlock = memo(function EntryTextBlock({
   icon,
   onCommit,
 }: FieldProps) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const commit = useCallback(
     (next: string) => onCommit(date, field, next),
     [date, field, onCommit],
@@ -55,7 +59,7 @@ export const EntryTextBlock = memo(function EntryTextBlock({
   return (
     <View style={styles.group}>
       <View style={styles.header}>
-        {icon ? <Ionicons name={icon} size={14} color={palette.textFaint} /> : null}
+        {icon ? <Ionicons name={icon} size={14} color={theme.textFaint} /> : null}
         <Text style={styles.label}>{label.toUpperCase()}</Text>
         <InfoTip topic={topic} />
       </View>
@@ -72,7 +76,7 @@ export const EntryTextBlock = memo(function EntryTextBlock({
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   group: {
     gap: 10,
   },
@@ -86,6 +90,6 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '800',
     letterSpacing: 1.4,
-    color: palette.textMuted,
+    color: theme.textMuted,
   },
 });

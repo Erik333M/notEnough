@@ -16,10 +16,12 @@ import type {
   BenchmarkGroup,
   BenchmarkMetric,
 } from '../state/journey/types';
-import { palette, radius } from '../theme/theme';
+import { radius } from '../theme/theme';
 import { RoundIconButton } from '../ui/Controls';
 import { EmptyState } from '../ui/Feedback';
 import { useToast } from '../ui/Toast';
+import type { Theme } from '../theme/tokens';
+import { useStyles } from '../theme/ThemeContext';
 
 /**
  * Every benchmark, grouped the way the workbook groups them.
@@ -43,6 +45,7 @@ export default function BenchmarksListScreen({
   onBack: () => void;
   onOpen: (id: string) => void;
 }) {
+  const styles = useStyles(makeStyles);
   const state = useAppState();
   const { journey } = useActions();
   const { notify } = useToast();
@@ -99,7 +102,7 @@ export default function BenchmarksListScreen({
           <RoundIconButton
             icon="add"
             size={44}
-            accent="lime"
+            accent="body"
             onPress={() => setCreating(true)}
             accessibilityLabel="Add a benchmark"
           />
@@ -155,7 +158,7 @@ export default function BenchmarksListScreen({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   flex: {
     flex: 1,
   },
@@ -166,19 +169,19 @@ const styles = StyleSheet.create({
     fontSize: 12,
     lineHeight: 18,
     fontWeight: '600',
-    color: palette.textMuted,
+    color: theme.textMuted,
     paddingBottom: 14,
   },
   sectionHeader: {
     paddingTop: 14,
     paddingBottom: 6,
-    backgroundColor: palette.bg0,
+    backgroundColor: theme.bgDeep,
     borderRadius: radius.sm,
   },
   sectionTitle: {
     fontSize: 11,
     fontWeight: '800',
     letterSpacing: 1.4,
-    color: palette.textMuted,
+    color: theme.textMuted,
   },
 });

@@ -58,7 +58,7 @@ export const NewHabitForm = memo(function NewHabitForm({
             key={key}
             label={HABIT_GROUP_LABEL[key]}
             active={group === key}
-            accent="lime"
+            accent="body"
             onPress={() => setGroup(key)}
           />
         ))}

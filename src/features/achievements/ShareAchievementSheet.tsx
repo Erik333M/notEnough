@@ -13,12 +13,14 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import type { Team, TeamRole } from '../../api/teams';
-import { accentColor, palette, radius } from '../../theme/theme';
+import { radius } from '../../theme/theme';
 import { Button } from '../../ui/Button';
 import { Chip, RoundIconButton, SectionHeader } from '../../ui/Controls';
 import { TextArea } from '../../ui/Field';
 import type { Achievement } from './derive';
 import type { Audience } from './useSharing';
+import type { Theme } from '../../theme/tokens';
+import { useStyles, useTheme } from '../../theme/ThemeContext';
 
 /**
  * Publish one achievement to one team.
@@ -57,6 +59,8 @@ export function ShareAchievementSheet({
   onClose: () => void;
   onShare: (audience: Audience, note: string) => Promise<boolean>;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const insets = useSafeAreaInsets();
   const [target, setTarget] = useState<Audience | null>(null);
   const [note, setNote] = useState('');
@@ -129,7 +133,7 @@ export function ShareAchievementSheet({
                   <Ionicons
                     name={achievement.icon}
                     size={18}
-                    color={accentColor[achievement.accent]}
+                    color={theme.accent[achievement.accent]}
                   />
                   <View style={styles.previewBody}>
                     <Text style={styles.previewTitle}>{achievement.title}</Text>
@@ -155,7 +159,7 @@ export function ShareAchievementSheet({
                         label={friendsTaken ? 'Friends · shared' : 'Your friends'}
                         active={target?.kind === 'friends'}
                         onPress={() => !friendsTaken && setTarget({ kind: 'friends' })}
-                        accent="violet"
+                        accent="spirit"
                       />
                     ) : null}
                     {teams.map(({ team }) => {
@@ -166,7 +170,7 @@ export function ShareAchievementSheet({
                           label={taken ? `${team.name} · shared` : team.name}
                           active={target?.kind === 'team' && target.id === team.id}
                           onPress={() => !taken && setTarget({ kind: 'team', id: team.id })}
-                          accent="cyan"
+                          accent="mind"
                         />
                       );
                     })}
@@ -199,13 +203,13 @@ export function ShareAchievementSheet({
   );
 }
 
-const styles = StyleSheet.create({
-  backdrop: { flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(2,3,10,0.72)' },
+const makeStyles = (theme: Theme) => StyleSheet.create({
+  backdrop: { flex: 1, justifyContent: 'flex-end', backgroundColor: theme.scrim },
   sheetWrap: { maxHeight: '92%' },
   sheet: {
     gap: 14,
     padding: 18,
-    backgroundColor: '#111634',
+    backgroundColor: theme.surfaceElevated,
     borderTopLeftRadius: radius.xl,
     borderTopRightRadius: radius.xl,
   },
@@ -214,7 +218,7 @@ const styles = StyleSheet.create({
     width: 38,
     height: 4,
     borderRadius: 2,
-    backgroundColor: palette.hairlineStrong,
+    backgroundColor: theme.borderStrong,
   },
   preview: {
     flexDirection: 'row',
@@ -222,14 +226,14 @@ const styles = StyleSheet.create({
     gap: 12,
     padding: 14,
     borderRadius: radius.md,
-    backgroundColor: 'rgba(255,255,255,0.06)',
+    backgroundColor: theme.surface,
   },
   previewBody: { flex: 1, gap: 2 },
-  previewTitle: { fontSize: 14.5, fontWeight: '800', color: palette.text },
-  previewDetail: { fontSize: 12.5, fontWeight: '600', color: palette.textMuted },
-  warning: { fontSize: 12.5, lineHeight: 18, fontWeight: '600', color: palette.textMuted },
+  previewTitle: { fontSize: 14.5, fontWeight: '800', color: theme.text },
+  previewDetail: { fontSize: 12.5, fontWeight: '600', color: theme.textMuted },
+  warning: { fontSize: 12.5, lineHeight: 18, fontWeight: '600', color: theme.textMuted },
   block: { gap: 8 },
-  label: { fontSize: 10, fontWeight: '800', letterSpacing: 1.3, color: palette.textFaint },
+  label: { fontSize: 10, fontWeight: '800', letterSpacing: 1.3, color: theme.textFaint },
   chips: { gap: 8, paddingRight: 8 },
-  note: { fontSize: 11.5, fontWeight: '600', color: palette.textFaint, textAlign: 'center' },
+  note: { fontSize: 11.5, fontWeight: '600', color: theme.textFaint, textAlign: 'center' },
 });

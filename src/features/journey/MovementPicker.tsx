@@ -13,9 +13,11 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { searchMovements } from '../../state/journey/movements';
 import type { Movement, MovementCategory } from '../../state/journey/types';
-import { palette, radius } from '../../theme/theme';
+import { radius } from '../../theme/theme';
 import { BrowseAllRow, MovementResultRow, NoMatchActions } from './MovementPickerRows';
 import { MovementSearchBar } from './MovementSearch';
+import type { Theme } from '../../theme/tokens';
+import { useStyles, useTheme } from '../../theme/ThemeContext';
 
 /**
  * Search-and-pick sheet for a WOD line.
@@ -48,6 +50,8 @@ export function MovementPicker({
   onPickFreeText,
   onBrowseAll,
 }: Props) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const insets = useSafeAreaInsets();
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState<MovementCategory | null>(null);
@@ -127,22 +131,22 @@ export function MovementPicker({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   backdrop: {
     flex: 1,
     justifyContent: 'flex-end',
-    backgroundColor: 'rgba(2,3,10,0.72)',
+    backgroundColor: theme.scrim,
   },
   sheetWrap: {
     height: '86%',
   },
   sheet: {
     flex: 1,
-    backgroundColor: '#111634',
+    backgroundColor: theme.surfaceElevated,
     borderTopLeftRadius: radius.xl,
     borderTopRightRadius: radius.xl,
     borderTopWidth: StyleSheet.hairlineWidth * 2,
-    borderColor: palette.hairlineStrong,
+    borderColor: theme.borderStrong,
     paddingHorizontal: 18,
     paddingTop: 10,
     gap: 12,
@@ -152,7 +156,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 4,
     borderRadius: 2,
-    backgroundColor: palette.hairlineStrong,
+    backgroundColor: theme.borderStrong,
   },
   list: {
     flex: 1,
@@ -163,7 +167,7 @@ const styles = StyleSheet.create({
   empty: {
     fontSize: 13,
     fontWeight: '600',
-    color: palette.textFaint,
+    color: theme.textFaint,
     paddingVertical: 18,
     textAlign: 'center',
   },

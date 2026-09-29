@@ -4,8 +4,10 @@ import { StyleSheet, Text, TextInput, View } from 'react-native';
 import type { MetricDescriptor } from '../../state/journey/measurements';
 import { metricUnit } from '../../state/journey/measurements';
 import type { UnitSystem } from '../../state/journey/types';
-import { palette, radius } from '../../theme/theme';
+import { radius } from '../../theme/theme';
 import { PressableScale } from '../../ui/Touchable';
+import type { Theme } from '../../theme/tokens';
+import { useStyles, useTheme } from '../../theme/ThemeContext';
 
 /**
  * One optional reading.
@@ -83,6 +85,8 @@ export const MeasurementField = memo(function MeasurementField({
   onRemove,
   showHint = false,
 }: Props) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const setAmount = useCallback(
     (text: string) => {
       const next = metric.decimals > 0 ? decimal(text) : digits(text);
@@ -123,11 +127,11 @@ export const MeasurementField = memo(function MeasurementField({
             value={draft.minutes}
             onChangeText={setMinutes}
             placeholder="0"
-            placeholderTextColor={palette.textFaint}
+            placeholderTextColor={theme.textFaint}
             style={[styles.box, styles.duration]}
             keyboardType="number-pad"
             returnKeyType="done"
-            selectionColor={palette.violet}
+            selectionColor={theme.accent.spirit}
             accessibilityLabel={`${metric.label}, minutes`}
           />
           <Text style={styles.suffix}>min</Text>
@@ -135,11 +139,11 @@ export const MeasurementField = memo(function MeasurementField({
             value={draft.amount}
             onChangeText={setAmount}
             placeholder="00"
-            placeholderTextColor={palette.textFaint}
+            placeholderTextColor={theme.textFaint}
             style={[styles.box, styles.duration]}
             keyboardType="number-pad"
             returnKeyType="done"
-            selectionColor={palette.violet}
+            selectionColor={theme.accent.spirit}
             accessibilityLabel={`${metric.label}, seconds`}
           />
           <Text style={styles.suffix}>sec</Text>
@@ -150,11 +154,11 @@ export const MeasurementField = memo(function MeasurementField({
             value={draft.amount}
             onChangeText={setAmount}
             placeholder="—"
-            placeholderTextColor={palette.textFaint}
+            placeholderTextColor={theme.textFaint}
             style={[styles.box, styles.single]}
             keyboardType={metric.decimals > 0 ? 'decimal-pad' : 'number-pad'}
             returnKeyType="done"
-            selectionColor={palette.violet}
+            selectionColor={theme.accent.spirit}
             accessibilityLabel={unit ? `${metric.label} in ${unit}` : metric.label}
           />
           {unit ? <Text style={styles.suffix}>{unit}</Text> : null}
@@ -166,7 +170,7 @@ export const MeasurementField = memo(function MeasurementField({
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   group: {
     gap: 7,
   },
@@ -179,7 +183,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 12,
     fontWeight: '700',
-    color: palette.textMuted,
+    color: theme.textMuted,
     marginLeft: 2,
   },
   remove: {
@@ -190,7 +194,7 @@ const styles = StyleSheet.create({
   removeText: {
     fontSize: 11,
     fontWeight: '700',
-    color: palette.textFaint,
+    color: theme.textFaint,
   },
   row: {
     flexDirection: 'row',
@@ -201,9 +205,9 @@ const styles = StyleSheet.create({
     height: 52,
     borderRadius: radius.md,
     borderWidth: StyleSheet.hairlineWidth * 2,
-    borderColor: palette.hairline,
-    backgroundColor: palette.glassSunken,
-    color: palette.text,
+    borderColor: theme.border,
+    backgroundColor: theme.surfaceSunken,
+    color: theme.text,
     fontSize: 17,
     fontWeight: '700',
     textAlign: 'center',
@@ -217,14 +221,14 @@ const styles = StyleSheet.create({
   suffix: {
     fontSize: 12,
     fontWeight: '700',
-    color: palette.textFaint,
+    color: theme.textFaint,
     minWidth: 26,
   },
   hint: {
     fontSize: 11,
     lineHeight: 16,
     fontWeight: '600',
-    color: palette.textFaint,
+    color: theme.textFaint,
     marginLeft: 2,
   },
 });

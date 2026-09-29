@@ -3,7 +3,9 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { memo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { gradients, palette, radius } from '../../theme/theme';
+import { radius } from '../../theme/theme';
+import type { Theme } from '../../theme/tokens';
+import { useStyles, useTheme } from '../../theme/ThemeContext';
 
 /**
  * How an athlete gets in.
@@ -16,16 +18,18 @@ import { gradients, palette, radius } from '../../theme/theme';
  * something a coach usually says out loud or types into their own group chat.
  */
 export const InviteCard = memo(function InviteCard({ code }: { code: string }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   return (
     <View style={styles.card}>
       <LinearGradient
-        colors={gradients.accent}
+        colors={theme.primaryGradient}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={[StyleSheet.absoluteFill, { pointerEvents: 'none', opacity: 0.16 }]}
       />
       <View style={styles.head}>
-        <Ionicons name="key-outline" size={15} color={palette.violet} />
+        <Ionicons name="key-outline" size={15} color={theme.accent.spirit} />
         <Text style={styles.label}>INVITE CODE</Text>
       </View>
 
@@ -41,23 +45,23 @@ export const InviteCard = memo(function InviteCard({ code }: { code: string }) {
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   card: {
     gap: 10,
     padding: 18,
     borderRadius: radius.lg,
     overflow: 'hidden',
-    backgroundColor: palette.glass,
+    backgroundColor: theme.surface,
     borderWidth: StyleSheet.hairlineWidth * 2,
-    borderColor: palette.hairline,
+    borderColor: theme.border,
   },
   head: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  label: { fontSize: 10, fontWeight: '800', letterSpacing: 1.4, color: palette.textFaint },
+  label: { fontSize: 10, fontWeight: '800', letterSpacing: 1.4, color: theme.textFaint },
   code: {
     fontSize: 34,
     fontWeight: '800',
     letterSpacing: 8,
-    color: palette.text,
+    color: theme.text,
   },
-  copy: { fontSize: 12.5, lineHeight: 18, fontWeight: '600', color: palette.textMuted },
+  copy: { fontSize: 12.5, lineHeight: 18, fontWeight: '600', color: theme.textMuted },
 });

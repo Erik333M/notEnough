@@ -10,12 +10,14 @@ import {
 import { API_BASE_URL } from '../api/client';
 import { useAuth } from '../state/AuthContext';
 import { useActions, useAppState, useSync } from '../state/DataContext';
-import { palette, radius } from '../theme/theme';
+import { radius } from '../theme/theme';
 import { Button } from '../ui/Button';
-import { Appear, Pill, SectionHeader } from '../ui/Controls';
+import { Appear, Pill, SectionHeader, Segmented } from '../ui/Controls';
 import { Field } from '../ui/Field';
 import { GlassCard } from '../ui/Glass';
 import { useToast } from '../ui/Toast';
+import type { Theme } from '../theme/tokens';
+import { useStyles, useTheme, useThemeSetting } from '../theme/ThemeContext';
 
 const SYNC_LABEL = {
   idle: 'Ready',
@@ -32,6 +34,9 @@ export default function SettingsScreen({
   bottomInset: number;
   onOpenPrivacy: () => void;
 }) {
+  const styles = useStyles(makeStyles);
+  const { setting, setSetting, systemIs } = useThemeSetting();
+  const theme = useTheme();
   const { user, rename, logout, deleteAccount, offline } = useAuth();
   const state = useAppState();
   const sync = useSync();
@@ -122,12 +127,40 @@ export default function SettingsScreen({
             onPress={handleRename}
           />
           <View style={styles.metaRow}>
-            <Ionicons name="calendar-outline" size={14} color={palette.textFaint} />
+            <Ionicons name="calendar-outline" size={14} color={theme.textFaint} />
             <Text style={styles.metaText}>
               Member since{' '}
               {user ? new Date(user.createdAt).toLocaleDateString() : '—'}
             </Text>
           </View>
+        </GlassCard>
+      </Appear>
+
+      <Appear delay={40}>
+        <GlassCard style={styles.stack}>
+          <SectionHeader
+            title="Appearance"
+            meta={setting === 'system' ? `Following your phone · ${systemIs}` : 'Your choice'}
+          />
+          {/*
+            Three options, not a switch. "System" is the default and the one
+            most people never touch — a phone that goes dark at sunset should
+            take the app with it — and the other two are for people who have
+            decided.
+          */}
+          <Segmented
+            value={setting}
+            onChange={setSetting}
+            options={[
+              { value: 'system', label: 'System' },
+              { value: 'light', label: 'Light' },
+              { value: 'dark', label: 'Dark' },
+            ]}
+          />
+          <Text style={styles.hint}>
+            Changes how the app looks on this device only. It is never sent anywhere and is not
+            part of your account.
+          </Text>
         </GlassCard>
       </Appear>
 
@@ -140,7 +173,9 @@ export default function SettingsScreen({
               <Pill
                 label={scheduled === null ? '—' : `${scheduled} live`}
                 icon="notifications"
-                accent={scheduled ? 'lime' : 'rose'}
+                // Neutral, not red. No reminders scheduled is a state, not a
+                // fault — somebody may simply not want any.
+                accent={scheduled ? 'body' : 'neutral'}
               />
             }
           />
@@ -167,7 +202,7 @@ export default function SettingsScreen({
               <Pill
                 label={offline ? 'Offline' : SYNC_LABEL[sync.status]}
                 icon={offline ? 'cloud-offline' : 'cloud-done'}
-                accent={offline || sync.status === 'error' ? 'amber' : 'lime'}
+                accent={offline || sync.status === 'error' ? 'warning' : 'body'}
               />
             }
           />
@@ -219,11 +254,12 @@ export default function SettingsScreen({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   content: {
     paddingHorizontal: 18,
     gap: 14,
   },
+  hint: { fontSize: 11.5, lineHeight: 16, fontWeight: '600', color: theme.textFaint },
   stack: {
     gap: 14,
   },
@@ -234,13 +270,13 @@ const styles = StyleSheet.create({
   },
   metaText: {
     fontSize: 12,
-    color: palette.textFaint,
+    color: theme.textFaint,
     fontWeight: '600',
   },
   copy: {
     fontSize: 13,
     lineHeight: 20,
-    color: palette.textMuted,
+    color: theme.textMuted,
   },
   kvRow: {
     flexDirection: 'row',
@@ -250,14 +286,14 @@ const styles = StyleSheet.create({
   kvKey: {
     fontSize: 12,
     fontWeight: '700',
-    color: palette.textFaint,
+    color: theme.textFaint,
     width: 78,
   },
   kvValue: {
     flex: 1,
     fontSize: 12,
     fontWeight: '700',
-    color: palette.text,
+    color: theme.text,
   },
   about: {
     gap: 8,
@@ -266,11 +302,11 @@ const styles = StyleSheet.create({
   aboutTitle: {
     fontSize: 17,
     fontWeight: '800',
-    color: palette.text,
+    color: theme.text,
   },
   version: {
     fontSize: 11,
-    color: palette.textFaint,
+    color: theme.textFaint,
     fontWeight: '700',
   },
 });

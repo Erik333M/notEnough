@@ -22,6 +22,8 @@ import { radius } from '../theme/theme';
 import { Appear } from '../ui/Controls';
 import { SkeletonCard } from '../ui/Feedback';
 import { GlassCard } from '../ui/Glass';
+import type { Theme } from '../theme/tokens';
+import { useStyles } from '../theme/ThemeContext';
 
 /**
  * The workout builder.
@@ -45,6 +47,7 @@ export default function WodBuilderScreen({
   onBack: () => void;
   onBrowseMovements: () => void;
 }) {
+  const styles = useStyles(makeStyles);
   const state = useAppState();
   const { journey } = useActions();
 
@@ -215,7 +218,7 @@ export default function WodBuilderScreen({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   flex: {
     flex: 1,
   },

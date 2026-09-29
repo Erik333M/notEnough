@@ -13,11 +13,13 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import type { ChallengeScope } from '../../api/teams';
 import { dayKey, longDateLabel } from '../../lib/time';
-import { palette, radius } from '../../theme/theme';
+import { radius } from '../../theme/theme';
 import { Button } from '../../ui/Button';
 import { RoundIconButton, SectionHeader, Segmented, Stepper } from '../../ui/Controls';
 import { Field } from '../../ui/Field';
 import { dayCount, fullScore, suggestPeriod } from './period';
+import type { Theme } from '../../theme/tokens';
+import { useStyles } from '../../theme/ThemeContext';
 
 /**
  * Set a challenge for the squad.
@@ -59,6 +61,7 @@ export function NewChallengeSheet({
     periodEnd: string;
   }) => Promise<boolean>;
 }) {
+  const styles = useStyles(makeStyles);
   const insets = useSafeAreaInsets();
   const [scope, setScope] = useState<ChallengeScope>('monthly');
   const [title, setTitle] = useState('');
@@ -181,13 +184,13 @@ export function NewChallengeSheet({
   );
 }
 
-const styles = StyleSheet.create({
-  backdrop: { flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(2,3,10,0.72)' },
+const makeStyles = (theme: Theme) => StyleSheet.create({
+  backdrop: { flex: 1, justifyContent: 'flex-end', backgroundColor: theme.scrim },
   sheetWrap: { maxHeight: '92%' },
   sheet: {
     gap: 14,
     padding: 18,
-    backgroundColor: '#111634',
+    backgroundColor: theme.surfaceElevated,
     borderTopLeftRadius: radius.xl,
     borderTopRightRadius: radius.xl,
   },
@@ -196,10 +199,10 @@ const styles = StyleSheet.create({
     width: 38,
     height: 4,
     borderRadius: 2,
-    backgroundColor: palette.hairlineStrong,
+    backgroundColor: theme.borderStrong,
   },
   block: { gap: 8 },
-  label: { fontSize: 10, fontWeight: '800', letterSpacing: 1.3, color: palette.textFaint },
-  window: { fontSize: 12, fontWeight: '700', color: palette.textMuted },
-  note: { fontSize: 11.5, lineHeight: 16.5, fontWeight: '600', color: palette.textFaint },
+  label: { fontSize: 10, fontWeight: '800', letterSpacing: 1.3, color: theme.textFaint },
+  window: { fontSize: 12, fontWeight: '700', color: theme.textMuted },
+  note: { fontSize: 11.5, lineHeight: 16.5, fontWeight: '600', color: theme.textFaint },
 });

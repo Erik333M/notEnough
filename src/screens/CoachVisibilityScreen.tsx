@@ -8,10 +8,12 @@ import {
   VISIBILITY_NOTES,
   type VisibilityLine,
 } from '../features/teams/visibilityCopy';
-import { accentColor, palette, radius } from '../theme/theme';
+import { radius } from '../theme/theme';
 import { Appear } from '../ui/Controls';
 import { GlassCard } from '../ui/Glass';
 import { StackHeaderBar } from '../ui/StackHeaderBar';
+import type { Theme } from '../theme/tokens';
+import { useStyles, useTheme } from '../theme/ThemeContext';
 
 /**
  * What your coach can see — the whole answer, on one screen.
@@ -33,6 +35,8 @@ export default function CoachVisibilityScreen({
   bottomInset: number;
   onBack: () => void;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   return (
     <ScrollView
       contentContainerStyle={[styles.content, { paddingBottom: bottomInset }]}
@@ -48,12 +52,12 @@ export default function CoachVisibilityScreen({
       <Appear>
         <GlassCard style={styles.card}>
           <View style={styles.head}>
-            <Ionicons name="eye-outline" size={17} color={accentColor.violet} />
+            <Ionicons name="eye-outline" size={17} color={theme.accent.spirit} />
             <Text style={styles.title}>They can see</Text>
           </View>
           <View style={styles.lines}>
             {CAN_SEE.map((line) => (
-              <Line key={line.text} line={line} tint={accentColor.violet} />
+              <Line key={line.text} line={line} tint={theme.accent.spirit} />
             ))}
           </View>
           <Text style={styles.footnote}>
@@ -65,12 +69,12 @@ export default function CoachVisibilityScreen({
       <Appear delay={70}>
         <GlassCard style={styles.card}>
           <View style={styles.head}>
-            <Ionicons name="lock-closed-outline" size={17} color={accentColor.lime} />
+            <Ionicons name="lock-closed-outline" size={17} color={theme.accent.body} />
             <Text style={styles.title}>They can never see</Text>
           </View>
           <View style={styles.lines}>
             {CANNOT_SEE.map((line) => (
-              <Line key={line.text} line={line} tint={accentColor.lime} />
+              <Line key={line.text} line={line} tint={theme.accent.body} />
             ))}
           </View>
         </GlassCard>
@@ -89,6 +93,8 @@ export default function CoachVisibilityScreen({
 }
 
 const Line = memo(function Line({ line, tint }: { line: VisibilityLine; tint: string }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   return (
     <View style={styles.line}>
       <View style={[styles.lineIcon, { backgroundColor: `${tint}1F` }]}>
@@ -99,11 +105,11 @@ const Line = memo(function Line({ line, tint }: { line: VisibilityLine; tint: st
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   content: { padding: 18, gap: 14 },
   card: { gap: 12 },
   head: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  title: { fontSize: 15.5, fontWeight: '800', color: palette.text },
+  title: { fontSize: 15.5, fontWeight: '800', color: theme.text },
   lines: { gap: 10 },
   line: { flexDirection: 'row', alignItems: 'flex-start', gap: 10 },
   lineIcon: {
@@ -113,9 +119,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  lineText: { flex: 1, fontSize: 13, lineHeight: 19, fontWeight: '600', color: palette.text },
-  footnote: { fontSize: 12, lineHeight: 17, fontWeight: '600', color: palette.textMuted },
+  lineText: { flex: 1, fontSize: 13, lineHeight: 19, fontWeight: '600', color: theme.text },
+  footnote: { fontSize: 12, lineHeight: 17, fontWeight: '600', color: theme.textMuted },
   note: { gap: 6 },
-  noteTitle: { fontSize: 13.5, fontWeight: '800', color: palette.text },
-  noteBody: { fontSize: 12.5, lineHeight: 18.5, fontWeight: '600', color: palette.textMuted },
+  noteTitle: { fontSize: 13.5, fontWeight: '800', color: theme.text },
+  noteBody: { fontSize: 12.5, lineHeight: 18.5, fontWeight: '600', color: theme.textMuted },
 });

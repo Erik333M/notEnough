@@ -3,11 +3,14 @@ import { memo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import type { EventSummary } from '../../api/events';
-import { accentColor, palette } from '../../theme/theme';
+
 import { Pill } from '../../ui/Controls';
 import { GlassCard } from '../../ui/Glass';
 import { PressableScale } from '../../ui/Touchable';
 import { ageLabel, formatRange, phaseLabel, phaseOf } from './eventCopy';
+import type { Theme } from '../../theme/tokens';
+import { useStyles, useTheme } from '../../theme/ThemeContext';
+import type { AccentName } from '../../theme/tokens';
 
 /**
  * One event on the list.
@@ -16,11 +19,12 @@ import { ageLabel, formatRange, phaseLabel, phaseOf } from './eventCopy';
  * camp on its fourth day want completely different attention, and the phase is
  * the fastest way to tell them apart at a glance.
  */
-const PHASE_ACCENT = {
-  upcoming: accentColor.cyan,
-  running: accentColor.lime,
-  finished: palette.textFaint,
-} as const;
+/** A role, not a colour — a module constant cannot read the theme. */
+const PHASE_ACCENT: Record<'upcoming' | 'running' | 'finished', AccentName | 'faint'> = {
+  upcoming: 'mind',
+  running: 'body',
+  finished: 'faint',
+};
 
 export const EventCard = memo(function EventCard({
   summary,
@@ -29,6 +33,8 @@ export const EventCard = memo(function EventCard({
   summary: EventSummary;
   onOpen: () => void;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const { event, team, counts, days, role } = summary;
   const phase = phaseOf(event.startDate, event.endDate);
   const ages = ageLabel(event.ageMin, event.ageMax);
@@ -40,10 +46,20 @@ export const EventCard = memo(function EventCard({
           <Text style={styles.name} numberOfLines={1}>
             {team.name}
           </Text>
-          {role === 'coach' ? <Pill label="Staff" icon="clipboard-outline" accent="violet" /> : null}
+          {role === 'coach' ? <Pill label="Staff" icon="clipboard-outline" accent="spirit" /> : null}
         </View>
 
-        <Text style={[styles.phase, { color: PHASE_ACCENT[phase] }]}>
+        <Text
+          style={[
+            styles.phase,
+            {
+              color:
+                PHASE_ACCENT[phase] === 'faint'
+                  ? theme.textFaint
+                  : theme.accent[PHASE_ACCENT[phase] as AccentName],
+            },
+          ]}
+        >
           {phaseLabel(event.startDate, event.endDate)}
         </Text>
 
@@ -75,7 +91,9 @@ const Fact = memo(function Fact({
   text: string;
   warn?: boolean;
 }) {
-  const tint = warn ? accentColor.amber : palette.textMuted;
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
+  const tint = warn ? theme.accent.warning : theme.textMuted;
   return (
     <View style={styles.fact}>
       <Ionicons name={icon} size={12} color={tint} />
@@ -84,10 +102,10 @@ const Fact = memo(function Fact({
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   card: { gap: 8, padding: 14 },
   top: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  name: { flex: 1, fontSize: 15.5, fontWeight: '800', color: palette.text },
+  name: { flex: 1, fontSize: 15.5, fontWeight: '800', color: theme.text },
   phase: { fontSize: 12, fontWeight: '800' },
   facts: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
   fact: { flexDirection: 'row', alignItems: 'center', gap: 4 },

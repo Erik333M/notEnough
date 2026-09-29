@@ -17,12 +17,14 @@ import {
   isChecked,
 } from '../state/journey/habits';
 import type { Habit, HabitGroup, HabitTemplate } from '../state/journey/types';
-import { palette, radius } from '../theme/theme';
+import { radius } from '../theme/theme';
 import { Button } from '../ui/Button';
 import { Appear, StatTile } from '../ui/Controls';
 import { EmptyState } from '../ui/Feedback';
 import { GlassCard } from '../ui/Glass';
 import { useToast } from '../ui/Toast';
+import type { Theme } from '../theme/tokens';
+import { useStyles } from '../theme/ThemeContext';
 
 /**
  * Standing habits: today's ticks, each one's streak, and the template browser.
@@ -38,6 +40,7 @@ export default function HabitsScreen({
   bottomInset: number;
   onBack: () => void;
 }) {
+  const styles = useStyles(makeStyles);
   const state = useAppState();
   const { journey } = useActions();
   const { notify } = useToast();
@@ -159,14 +162,14 @@ export default function HabitsScreen({
                   <StatTile
                     value={`${doneToday}/${habits.length}`}
                     label="Today"
-                    accent="lime"
+                    accent="body"
                   />
                   <StatTile
                     value={`${Math.round(consistency * 100)}%`}
                     label="Last 30 days"
-                    accent="cyan"
+                    accent="mind"
                   />
-                  <StatTile value={`${habits.length}`} label="Running" accent="violet" />
+                  <StatTile value={`${habits.length}`} label="Running" accent="spirit" />
                 </View>
                 <Text style={styles.summaryNote}>
                   Counted only from the day each habit was added.
@@ -220,7 +223,7 @@ export default function HabitsScreen({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   flex: {
     flex: 1,
   },
@@ -239,7 +242,7 @@ const styles = StyleSheet.create({
   summaryNote: {
     fontSize: 11,
     fontWeight: '600',
-    color: palette.textFaint,
+    color: theme.textFaint,
     textAlign: 'center',
   },
   list: {

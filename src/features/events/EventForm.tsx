@@ -3,11 +3,13 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import type { EventInput } from '../../api/events';
 import { addDays, dayKey } from '../../lib/time';
-import { palette } from '../../theme/theme';
+
 import { Button } from '../../ui/Button';
 import { Stepper } from '../../ui/Controls';
 import { Field } from '../../ui/Field';
 import { durationLabel, endDateFor, formatDay } from './eventCopy';
+import type { Theme } from '../../theme/tokens';
+import { useStyles, useTheme } from '../../theme/ThemeContext';
 
 /**
  * Setting up an event, and editing one — the same form both times.
@@ -29,6 +31,8 @@ export const EventForm = memo(function EventForm({
   busy: boolean;
   onSubmit: (input: EventInput) => void;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const today = dayKey();
   const [name, setName] = useState(initial?.name ?? '');
   const [offset, setOffset] = useState(() => daysBetween(today, initial?.startDate ?? today));
@@ -139,7 +143,7 @@ function daysBetween(from: string, to: string): number {
   return Math.max(0, Math.round(ms / 86400000));
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   wrap: { gap: 12 },
-  note: { fontSize: 11.5, lineHeight: 16, fontWeight: '600', color: palette.textFaint },
+  note: { fontSize: 11.5, lineHeight: 16, fontWeight: '600', color: theme.textFaint },
 });

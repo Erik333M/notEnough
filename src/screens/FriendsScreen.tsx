@@ -14,13 +14,15 @@ import { FriendRow } from '../features/friends/FriendRow';
 import { useFriends } from '../features/friends/useFriends';
 import { levelName } from '../features/friends/level';
 import { useAuth } from '../state/AuthContext';
-import { palette, radius } from '../theme/theme';
+import { radius } from '../theme/theme';
 import { Button } from '../ui/Button';
 import { Appear, SectionHeader } from '../ui/Controls';
 import { EmptyState, SkeletonCard } from '../ui/Feedback';
 import { Field } from '../ui/Field';
 import { GlassCard } from '../ui/Glass';
 import { useToast } from '../ui/Toast';
+import type { Theme } from '../theme/tokens';
+import { useStyles, useTheme } from '../theme/ThemeContext';
 
 /**
  * Friends: your code, the requests either way, and the people you train
@@ -42,6 +44,8 @@ export default function FriendsScreen({
   pendingCode?: string;
   onCodeUsed?: () => void;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const { user } = useAuth();
   const { notify } = useToast();
   const friends = useFriends();
@@ -86,7 +90,7 @@ export default function FriendsScreen({
               await friends.reload();
               setRefreshing(false);
             }}
-            tintColor={palette.textMuted}
+            tintColor={theme.textMuted}
           />
         }
       >
@@ -198,14 +202,14 @@ export default function FriendsScreen({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   flex: { flex: 1 },
   content: { padding: 18, gap: 16 },
   shared: { gap: 6 },
-  sharedTitle: { fontSize: 14, fontWeight: '800', color: palette.text },
-  sharedCopy: { fontSize: 12.5, lineHeight: 18, fontWeight: '600', color: palette.textMuted },
+  sharedTitle: { fontSize: 14, fontWeight: '800', color: theme.text },
+  sharedCopy: { fontSize: 12.5, lineHeight: 18, fontWeight: '600', color: theme.textMuted },
   add: { gap: 12 },
-  hint: { fontSize: 11.5, fontWeight: '600', color: palette.textFaint },
+  hint: { fontSize: 11.5, fontWeight: '600', color: theme.textFaint },
   list: { gap: 10 },
   emptyCard: { paddingVertical: 8, borderRadius: radius.lg },
 });

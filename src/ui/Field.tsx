@@ -17,8 +17,10 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-import { motion, palette, radius } from '../theme/theme';
+import { motion, radius } from '../theme/theme';
 import type { IconName } from '../state/types';
+import type { Theme } from '../theme/tokens';
+import { useStyles, useTheme } from '../theme/ThemeContext';
 
 type Props = {
   label: string;
@@ -56,6 +58,8 @@ export const Field = forwardRef<TextInput, Props>(function Field(
   },
   ref,
 ) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const [hidden, setHidden] = useState(secure);
   const focus = useSharedValue(0);
   const shake = useSharedValue(0);
@@ -86,11 +90,11 @@ export const Field = forwardRef<TextInput, Props>(function Field(
     transform: [{ translateX: shake.value }],
     borderColor: hasError
       ? 'rgba(255,122,143,0.65)'
-      : interpolateColor(focus.value, [0, 1], [palette.hairline, 'rgba(139,107,255,0.75)']),
+      : interpolateColor(focus.value, [0, 1], [theme.border, theme.accent.spirit]),
     backgroundColor: interpolateColor(
       focus.value,
       [0, 1],
-      [palette.glassSunken, 'rgba(255,255,255,0.08)'],
+      [theme.surfaceSunken, theme.surface],
     ),
   }));
 
@@ -98,13 +102,13 @@ export const Field = forwardRef<TextInput, Props>(function Field(
     <View style={styles.group}>
       <Text style={styles.label}>{label}</Text>
       <Animated.View style={[styles.wrap, wrapStyle]}>
-        {icon ? <Ionicons name={icon} size={17} color={palette.textFaint} /> : null}
+        {icon ? <Ionicons name={icon} size={17} color={theme.textFaint} /> : null}
         <TextInput
           ref={ref}
           value={value}
           onChangeText={onChangeText}
           placeholder={placeholder}
-          placeholderTextColor={palette.textFaint}
+          placeholderTextColor={theme.textFaint}
           style={styles.input}
           secureTextEntry={hidden}
           autoCapitalize={autoCapitalize}
@@ -115,13 +119,13 @@ export const Field = forwardRef<TextInput, Props>(function Field(
           onSubmitEditing={onSubmitEditing}
           onFocus={onFocus}
           onBlur={onBlur}
-          selectionColor={palette.violet}
+          selectionColor={theme.accent.spirit}
         />
         {secure ? (
           <Ionicons
             name={hidden ? 'eye-outline' : 'eye-off-outline'}
             size={18}
-            color={palette.textFaint}
+            color={theme.textFaint}
             onPress={() => setHidden((h) => !h)}
             suppressHighlighting
           />
@@ -162,6 +166,8 @@ export const TextArea = memo(function TextArea({
   maxLength,
   accessibilityHint,
 }: AreaProps) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const focus = useSharedValue(0);
 
   const handleFocus = useCallback(() => {
@@ -177,12 +183,12 @@ export const TextArea = memo(function TextArea({
     borderColor: interpolateColor(
       focus.value,
       [0, 1],
-      [palette.hairline, 'rgba(139,107,255,0.75)'],
+      [theme.border, theme.accent.spirit],
     ),
     backgroundColor: interpolateColor(
       focus.value,
       [0, 1],
-      [palette.glassSunken, 'rgba(255,255,255,0.08)'],
+      [theme.surfaceSunken, theme.surface],
     ),
   }));
 
@@ -194,7 +200,7 @@ export const TextArea = memo(function TextArea({
           value={value}
           onChangeText={onChangeText}
           placeholder={placeholder}
-          placeholderTextColor={palette.textFaint}
+          placeholderTextColor={theme.textFaint}
           style={styles.area}
           multiline
           textAlignVertical="top"
@@ -202,7 +208,7 @@ export const TextArea = memo(function TextArea({
           autoCapitalize="sentences"
           onFocus={handleFocus}
           onBlur={handleBlur}
-          selectionColor={palette.violet}
+          selectionColor={theme.accent.spirit}
           accessibilityLabel={label}
           accessibilityHint={accessibilityHint}
         />
@@ -212,22 +218,24 @@ export const TextArea = memo(function TextArea({
 });
 
 const ErrorText = memo(function ErrorText({ text }: { text: string }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   return (
     <View style={styles.errorRow}>
-      <Ionicons name="alert-circle" size={13} color={palette.rose} />
+      <Ionicons name="alert-circle" size={13} color={theme.error} />
       <Text style={styles.errorText}>{text}</Text>
     </View>
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   group: {
     gap: 7,
   },
   label: {
     fontSize: 12,
     fontWeight: '700',
-    color: palette.textMuted,
+    color: theme.textMuted,
     marginLeft: 2,
   },
   wrap: {
@@ -243,7 +251,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 15,
     fontWeight: '600',
-    color: palette.text,
+    color: theme.text,
     padding: 0,
   },
   areaWrap: {
@@ -256,7 +264,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     lineHeight: 22,
     fontWeight: '600',
-    color: palette.text,
+    color: theme.text,
     padding: 0,
     margin: 0,
   },
@@ -268,7 +276,7 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: 12,
-    color: palette.rose,
+    color: theme.error,
     fontWeight: '600',
     flex: 1,
   },

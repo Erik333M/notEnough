@@ -3,9 +3,11 @@ import { memo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import type { RosterEntry } from '../../api/teams';
-import { accentColor, palette, radius } from '../../theme/theme';
+import { radius } from '../../theme/theme';
 import { Avatar } from '../../ui/Avatar';
 import { Pill, RoundIconButton } from '../../ui/Controls';
+import type { Theme } from '../../theme/tokens';
+import { useStyles, useTheme } from '../../theme/ThemeContext';
 
 /**
  * One person on the roster.
@@ -26,6 +28,8 @@ export const RosterRow = memo(function RosterRow({
   friendState?: 'none' | 'pending' | 'friends';
   onAddFriend?: () => void;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const coach = entry.role === 'coach';
 
   return (
@@ -54,27 +58,27 @@ export const RosterRow = memo(function RosterRow({
         />
       ) : null}
       {!isYou && friendState === 'pending' ? (
-        <Ionicons name="hourglass-outline" size={15} color={palette.textFaint} />
+        <Ionicons name="hourglass-outline" size={15} color={theme.textFaint} />
       ) : null}
       {!isYou && friendState === 'friends' ? (
         <Ionicons
           name="people"
           size={15}
-          color={accentColor.lime}
+          color={theme.accent.body}
           accessibilityLabel="Already a friend"
         />
       ) : null}
 
       {coach ? (
-        <Pill label="Coach" icon="clipboard-outline" accent="violet" />
+        <Pill label="Coach" icon="clipboard-outline" accent="spirit" />
       ) : (
-        <Ionicons name="barbell-outline" size={15} color={accentColor.cyan} />
+        <Ionicons name="barbell-outline" size={15} color={theme.accent.mind} />
       )}
     </View>
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -82,10 +86,10 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 14,
     borderRadius: radius.md,
-    backgroundColor: palette.glass,
+    backgroundColor: theme.surface,
   },
   body: { flex: 1, gap: 2 },
-  name: { fontSize: 14, fontWeight: '700', color: palette.text },
-  you: { fontSize: 11, fontWeight: '700', color: palette.textFaint },
-  pending: { fontSize: 11, fontWeight: '600', color: palette.amber },
+  name: { fontSize: 14, fontWeight: '700', color: theme.text },
+  you: { fontSize: 11, fontWeight: '700', color: theme.textFaint },
+  pending: { fontSize: 11, fontWeight: '600', color: theme.warning },
 });

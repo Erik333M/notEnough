@@ -4,7 +4,7 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import type { RosterEntry } from '../../api/teams';
 import { addDays, dayKey } from '../../lib/time';
-import { accentColor, palette, radius } from '../../theme/theme';
+import { radius } from '../../theme/theme';
 import { Avatar } from '../../ui/Avatar';
 import { Button } from '../../ui/Button';
 import { Chip, RoundIconButton, SectionHeader, Stepper } from '../../ui/Controls';
@@ -14,6 +14,8 @@ import { useToast } from '../../ui/Toast';
 import { PressableScale } from '../../ui/Touchable';
 import { formatDay } from './eventCopy';
 import { useStaffRota } from './useStaffRota';
+import type { Theme } from '../../theme/tokens';
+import { useStyles, useTheme } from '../../theme/ThemeContext';
 
 /**
  * Who is doing what, among the people running the event.
@@ -33,6 +35,8 @@ export const StaffRotaSection = memo(function StaffRotaSection({
   teamId: string;
   roster: RosterEntry[];
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const rota = useStaffRota(teamId, roster);
   const { notify } = useToast();
   const [giving, setGiving] = useState(false);
@@ -80,12 +84,12 @@ export const StaffRotaSection = memo(function StaffRotaSection({
                 accessibilityLabel={done ? `Mark ${job.title} not done` : `Mark ${job.title} done`}
               >
                 <View style={[styles.box, done && styles.boxDone]}>
-                  {done ? <Ionicons name="checkmark" size={15} color={palette.onAccent} /> : null}
+                  {done ? <Ionicons name="checkmark" size={15} color={theme.onPrimary} /> : null}
                 </View>
               </PressableScale>
             ) : (
               <View style={[styles.box, styles.boxQuiet, done && styles.boxDone]}>
-                {done ? <Ionicons name="checkmark" size={15} color={palette.onAccent} /> : null}
+                {done ? <Ionicons name="checkmark" size={15} color={theme.onPrimary} /> : null}
               </View>
             )}
 
@@ -174,9 +178,9 @@ export const StaffRotaSection = memo(function StaffRotaSection({
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   wrap: { gap: 10 },
-  blurb: { fontSize: 12.5, lineHeight: 18, fontWeight: '600', color: palette.textMuted },
+  blurb: { fontSize: 12.5, lineHeight: 18, fontWeight: '600', color: theme.textMuted },
   job: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 14 },
   box: {
     width: 26,
@@ -185,17 +189,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1.5,
-    borderColor: 'rgba(255,255,255,0.22)',
+    borderColor: theme.borderStrong,
   },
-  boxQuiet: { borderColor: 'rgba(255,255,255,0.10)' },
-  boxDone: { backgroundColor: accentColor.lime, borderColor: accentColor.lime },
+  boxQuiet: { borderColor: theme.surfaceElevated },
+  boxDone: { backgroundColor: theme.accent.body, borderColor: theme.accent.body },
   body: { flex: 1, gap: 4 },
-  title: { fontSize: 14, fontWeight: '700', color: palette.text },
-  struck: { color: palette.textFaint, textDecorationLine: 'line-through' },
+  title: { fontSize: 14, fontWeight: '700', color: theme.text },
+  struck: { color: theme.textFaint, textDecorationLine: 'line-through' },
   meta: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  who: { flex: 1, fontSize: 11.5, fontWeight: '600', color: palette.textMuted },
+  who: { flex: 1, fontSize: 11.5, fontWeight: '600', color: theme.textMuted },
   form: { gap: 12, padding: 14, borderRadius: radius.md },
-  label: { fontSize: 11.5, fontWeight: '800', color: palette.textFaint, textTransform: 'uppercase' },
+  label: { fontSize: 11.5, fontWeight: '800', color: theme.textFaint, textTransform: 'uppercase' },
   choices: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   formRow: { flexDirection: 'row', gap: 8 },
   grow: { flex: 1 },

@@ -14,7 +14,7 @@ import { dayKey } from '../../lib/time';
 import { BENCHMARK_METRIC_LABEL, lowerIsBetter } from '../../state/journey/benchmarks';
 import type { BenchmarkDefinition, DayKey, UnitSystem } from '../../state/journey/types';
 import { storeWeight } from '../../state/journey/units';
-import { palette, radius } from '../../theme/theme';
+import { radius } from '../../theme/theme';
 import { Button } from '../../ui/Button';
 import { RoundIconButton, SectionHeader } from '../../ui/Controls';
 import { Field } from '../../ui/Field';
@@ -26,6 +26,8 @@ import {
   valueFromDraft,
   type ValueDraft,
 } from './ValueInput';
+import type { Theme } from '../../theme/tokens';
+import { useStyles } from '../../theme/ThemeContext';
 
 /**
  * Records one benchmark result.
@@ -54,6 +56,7 @@ export function LogResultSheet({
   onSave,
   onDelete,
 }: Props) {
+  const styles = useStyles(makeStyles);
   const insets = useSafeAreaInsets();
   const [draft, setDraft] = useState<ValueDraft>(emptyValueDraft());
   const [date, setDate] = useState<DayKey>(dayKey());
@@ -172,21 +175,21 @@ export function LogResultSheet({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   backdrop: {
     flex: 1,
     justifyContent: 'flex-end',
-    backgroundColor: 'rgba(2,3,10,0.72)',
+    backgroundColor: theme.scrim,
   },
   sheetWrap: {
     maxHeight: '92%',
   },
   sheet: {
-    backgroundColor: '#111634',
+    backgroundColor: theme.surfaceElevated,
     borderTopLeftRadius: radius.xl,
     borderTopRightRadius: radius.xl,
     borderTopWidth: StyleSheet.hairlineWidth * 2,
-    borderColor: palette.hairlineStrong,
+    borderColor: theme.borderStrong,
     paddingHorizontal: 18,
     paddingTop: 10,
     gap: 16,
@@ -196,7 +199,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 4,
     borderRadius: 2,
-    backgroundColor: palette.hairlineStrong,
+    backgroundColor: theme.borderStrong,
   },
   valueBlock: {
     alignItems: 'center',
@@ -205,6 +208,6 @@ const styles = StyleSheet.create({
   error: {
     fontSize: 12,
     fontWeight: '700',
-    color: palette.rose,
+    color: theme.error,
   },
 });

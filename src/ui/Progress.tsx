@@ -17,7 +17,10 @@ import Svg, {
   Stop,
 } from 'react-native-svg';
 
-import { accentColor, motion, palette, radius, type AccentName } from '../theme/theme';
+import { motion, radius } from '../theme/theme';
+import type { AccentName } from '../theme/tokens';
+import type { Theme } from '../theme/tokens';
+import { useStyles, useTheme } from '../theme/ThemeContext';
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
@@ -39,10 +42,12 @@ export const ProgressRing = memo(function ProgressRing({
   progress,
   size = 96,
   stroke = 9,
-  accent = 'violet',
+  accent = 'spirit',
   children,
   delay = 0,
 }: RingProps) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const r = (size - stroke) / 2;
   const circumference = 2 * Math.PI * r;
   const value = useSharedValue(0);
@@ -63,8 +68,8 @@ export const ProgressRing = memo(function ProgressRing({
       <Svg width={size} height={size}>
         <Defs>
           <SvgGradient id={gradientId} x1="0" y1="0" x2="1" y2="1">
-            <Stop offset="0" stopColor={accentColor[accent]} />
-            <Stop offset="1" stopColor={palette.cyan} />
+            <Stop offset="0" stopColor={theme.accent[accent]} />
+            <Stop offset="1" stopColor={theme.accent.mind} />
           </SvgGradient>
         </Defs>
         <Circle
@@ -101,7 +106,7 @@ export const LiveProgressRing = memo(function LiveProgressRing({
   progress,
   size = 240,
   stroke = 14,
-  accent = 'cyan',
+  accent = 'mind',
   children,
 }: {
   progress: SharedValue<number>;
@@ -110,6 +115,8 @@ export const LiveProgressRing = memo(function LiveProgressRing({
   accent?: AccentName;
   children?: React.ReactNode;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const r = (size - stroke) / 2;
   const circumference = 2 * Math.PI * r;
   const gradientId = `live-ring-${accent}-${size}`;
@@ -124,8 +131,8 @@ export const LiveProgressRing = memo(function LiveProgressRing({
       <Svg width={size} height={size}>
         <Defs>
           <SvgGradient id={gradientId} x1="0" y1="0" x2="1" y2="1">
-            <Stop offset="0" stopColor={accentColor[accent]} />
-            <Stop offset="1" stopColor={palette.violet} />
+            <Stop offset="0" stopColor={theme.accent[accent]} />
+            <Stop offset="1" stopColor={theme.accent.spirit} />
           </SvgGradient>
         </Defs>
         <Circle
@@ -163,10 +170,12 @@ type BarProps = {
 
 export const ProgressBar = memo(function ProgressBar({
   progress,
-  accent = 'violet',
+  accent = 'spirit',
   height = 8,
   delay = 0,
 }: BarProps) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const value = useSharedValue(0);
 
   useEffect(() => {
@@ -183,7 +192,7 @@ export const ProgressBar = memo(function ProgressBar({
       <Animated.View
         style={[
           styles.barFill,
-          { backgroundColor: accentColor[accent], borderRadius: height },
+          { backgroundColor: theme.accent[accent], borderRadius: height },
           fill,
         ]}
       />
@@ -200,12 +209,14 @@ export type BarDatum = { key: string; label: string; value: number; highlight?: 
 export const ColumnChart = memo(function ColumnChart({
   data,
   height = 118,
-  accent = 'violet',
+  accent = 'spirit',
 }: {
   data: BarDatum[];
   height?: number;
   accent?: AccentName;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const max = useMemo(() => Math.max(1, ...data.map((d) => d.value)), [data]);
 
   return (
@@ -240,6 +251,8 @@ const Column = memo(function Column({
   delay: number;
   maxHeight: number;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const h = useSharedValue(0);
 
   useEffect(() => {
@@ -255,13 +268,13 @@ const Column = memo(function Column({
           style={[
             styles.columnFill,
             {
-              backgroundColor: highlight ? accentColor[accent] : 'rgba(255,255,255,0.22)',
+              backgroundColor: highlight ? theme.accent[accent] : theme.borderStrong,
             },
             style,
           ]}
         />
       </View>
-      <Text style={[styles.columnLabel, highlight && { color: palette.text }]} numberOfLines={1}>
+      <Text style={[styles.columnLabel, highlight && { color: theme.text }]} numberOfLines={1}>
         {label}
       </Text>
     </View>
@@ -291,7 +304,7 @@ export type LinePoint = { value: number };
  */
 export const LineChart = memo(function LineChart({
   points,
-  accent = 'violet',
+  accent = 'spirit',
   height = 150,
   formatValue = (value: number) => `${value}`,
 }: {
@@ -300,6 +313,8 @@ export const LineChart = memo(function LineChart({
   height?: number;
   formatValue?: (value: number) => string;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const [width, setWidth] = useState(0);
   const onLayout = useCallback(
     (event: LayoutChangeEvent) => setWidth(event.nativeEvent.layout.width),
@@ -341,7 +356,7 @@ export const LineChart = memo(function LineChart({
           <Svg width={width} height={height}>
             <Path
               d={plot.d}
-              stroke={accentColor[accent]}
+              stroke={theme.accent[accent]}
               strokeWidth={2}
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -357,9 +372,9 @@ export const LineChart = memo(function LineChart({
                 // The most recent reading is the one people look for.
                 r={i === plot.coords.length - 1 ? 4.5 : 2.5}
                 fill={
-                  i === plot.coords.length - 1 ? accentColor[accent] : palette.bg1
+                  i === plot.coords.length - 1 ? theme.accent[accent] : theme.bg
                 }
-                stroke={accentColor[accent]}
+                stroke={theme.accent[accent]}
                 strokeWidth={1.5}
               />
             ))}
@@ -381,7 +396,7 @@ export const LineChart = memo(function LineChart({
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   lineWrap: {
     width: '100%',
     justifyContent: 'center',
@@ -391,8 +406,8 @@ const styles = StyleSheet.create({
     right: 0,
     fontSize: 10,
     fontWeight: '700',
-    color: palette.textFaint,
-    backgroundColor: palette.bg1,
+    color: theme.textFaint,
+    backgroundColor: theme.bg,
     paddingHorizontal: 3,
     borderRadius: 3,
     overflow: 'hidden',
@@ -409,7 +424,7 @@ const styles = StyleSheet.create({
   },
   barTrack: {
     width: '100%',
-    backgroundColor: 'rgba(255,255,255,0.10)',
+    backgroundColor: theme.surfaceElevated,
     overflow: 'hidden',
   },
   barFill: {
@@ -441,6 +456,6 @@ const styles = StyleSheet.create({
   columnLabel: {
     fontSize: 11,
     fontWeight: '700',
-    color: palette.textFaint,
+    color: theme.textFaint,
   },
 });

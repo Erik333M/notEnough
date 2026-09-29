@@ -12,9 +12,11 @@ import Animated, {
 
 import type { VictoryDay } from '../../state/types';
 import { TOTAL_VICTORY_GOALS, VICTORIES, isVictoryWon } from '../../state/victories';
-import { accentColor, motion, palette, radius } from '../../theme/theme';
+import { motion, radius } from '../../theme/theme';
 import { GlassCard } from '../../ui/Glass';
 import { ProgressBar, ProgressRing } from '../../ui/Progress';
+import type { Theme } from '../../theme/tokens';
+import { useStyles, useTheme } from '../../theme/ThemeContext';
 
 type Props = {
   day: VictoryDay;
@@ -36,6 +38,8 @@ export const VictoryProgress = memo(function VictoryProgress({
   victoriesWon,
   streak,
 }: Props) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const complete = score === TOTAL_VICTORY_GOALS;
   const ratio = score / TOTAL_VICTORY_GOALS;
 
@@ -81,13 +85,13 @@ export const VictoryProgress = memo(function VictoryProgress({
           </Text>
         </View>
 
-        <ProgressRing progress={ratio} size={92} stroke={9} accent="violet">
+        <ProgressRing progress={ratio} size={92} stroke={9} accent="spirit">
           <Text style={styles.ringValue}>{score}</Text>
           <Text style={styles.ringLabel}>of {TOTAL_VICTORY_GOALS}</Text>
         </ProgressRing>
       </View>
 
-      <ProgressBar progress={ratio} accent={complete ? 'lime' : 'violet'} height={8} />
+      <ProgressBar progress={ratio} accent={complete ? 'body' : 'spirit'} height={8} />
 
       <View style={styles.marks}>
         {VICTORIES.map((victory) => {
@@ -98,14 +102,14 @@ export const VictoryProgress = memo(function VictoryProgress({
               style={[
                 styles.mark,
                 won && {
-                  borderColor: accentColor[victory.accent],
-                  backgroundColor: 'rgba(255,255,255,0.06)',
+                  borderColor: theme.accent[victory.accent],
+                  backgroundColor: theme.surface,
                 },
               ]}
             >
               <Text style={styles.markGlyph}>{victory.mark}</Text>
               <Text
-                style={[styles.markLabel, won && { color: accentColor[victory.accent] }]}
+                style={[styles.markLabel, won && { color: theme.accent[victory.accent] }]}
                 numberOfLines={1}
               >
                 {victory.label}
@@ -122,6 +126,8 @@ export const VictoryProgress = memo(function VictoryProgress({
 
 /** The 9 / 9 payoff. Strong, but it holds still once it has landed. */
 const DayWonBanner = memo(function DayWonBanner() {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const enter = useSharedValue(0);
 
   useEffect(() => {
@@ -135,7 +141,7 @@ const DayWonBanner = memo(function DayWonBanner() {
 
   return (
     <Animated.View style={[styles.banner, style]}>
-      <Ionicons name="flame" size={17} color={palette.lime} />
+      <Ionicons name="flame" size={17} color={theme.primary} />
       <View style={{ flex: 1 }}>
         <Text style={styles.bannerTitle}>3 VICTORIES WON</Text>
         <Text style={styles.bannerCopy}>Body, mind and spirit. One stronger day.</Text>
@@ -144,7 +150,7 @@ const DayWonBanner = memo(function DayWonBanner() {
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   card: {
     gap: 14,
     overflow: 'hidden',
@@ -159,7 +165,7 @@ const styles = StyleSheet.create({
     right: -40,
     height: 200,
     borderRadius: 200,
-    backgroundColor: 'rgba(184,242,124,0.16)',
+    backgroundColor: theme.primarySoft,
   },
   top: {
     flexDirection: 'row',
@@ -174,34 +180,34 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '800',
     letterSpacing: 1.6,
-    color: palette.textFaint,
+    color: theme.textFaint,
   },
   score: {
     fontSize: 38,
     lineHeight: 44,
     fontWeight: '800',
-    color: palette.text,
+    color: theme.text,
     fontVariant: ['tabular-nums'],
   },
   scoreTotal: {
     fontSize: 20,
     fontWeight: '800',
-    color: palette.textFaint,
+    color: theme.textFaint,
   },
   sub: {
     fontSize: 12,
     fontWeight: '600',
-    color: palette.textMuted,
+    color: theme.textMuted,
   },
   ringValue: {
     fontSize: 22,
     fontWeight: '800',
-    color: palette.text,
+    color: theme.text,
   },
   ringLabel: {
     fontSize: 10,
     fontWeight: '700',
-    color: palette.textFaint,
+    color: theme.textFaint,
   },
   marks: {
     flexDirection: 'row',
@@ -214,8 +220,8 @@ const styles = StyleSheet.create({
     paddingVertical: 9,
     borderRadius: radius.md,
     borderWidth: StyleSheet.hairlineWidth * 2,
-    borderColor: palette.hairline,
-    backgroundColor: palette.glassSunken,
+    borderColor: theme.border,
+    backgroundColor: theme.surfaceSunken,
   },
   markGlyph: {
     fontSize: 15,
@@ -224,7 +230,7 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: '800',
     letterSpacing: 0.9,
-    color: palette.textFaint,
+    color: theme.textFaint,
   },
   banner: {
     flexDirection: 'row',
@@ -240,12 +246,12 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '800',
     letterSpacing: 1.3,
-    color: palette.lime,
+    color: theme.primary,
   },
   bannerCopy: {
     fontSize: 11,
     fontWeight: '600',
-    color: palette.textMuted,
+    color: theme.textMuted,
     marginTop: 2,
   },
 });

@@ -11,13 +11,15 @@ import { TaskRow } from '../features/teams/TaskRow';
 import { nameFor, useSessionDetail } from '../features/teams/useTeamData';
 import { longDateLabel } from '../lib/time';
 import { useAuth } from '../state/AuthContext';
-import { palette, radius } from '../theme/theme';
+import { radius } from '../theme/theme';
 import { Button } from '../ui/Button';
 import { Appear, SectionHeader } from '../ui/Controls';
 import { EmptyState, SkeletonCard } from '../ui/Feedback';
 import { GlassCard } from '../ui/Glass';
 import { StackHeaderBar } from '../ui/StackHeaderBar';
 import { useToast } from '../ui/Toast';
+import type { Theme } from '../theme/tokens';
+import { useStyles, useTheme } from '../theme/ThemeContext';
 
 /**
  * One session: what is in it, who has it, and how it is going.
@@ -39,6 +41,8 @@ export default function SessionScreen({
   bottomInset: number;
   onBack: () => void;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const { token, user } = useAuth();
   const { data, loading, error, reload } = useSessionDetail(teamId, sessionId);
   const { notify } = useToast();
@@ -79,7 +83,7 @@ export default function SessionScreen({
       contentContainerStyle={[styles.content, { paddingBottom: bottomInset }]}
       showsVerticalScrollIndicator={false}
       refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={palette.textMuted} />
+        <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={theme.textMuted} />
       }
     >
       <StackHeaderBar
@@ -92,7 +96,7 @@ export default function SessionScreen({
       {loading ? <SkeletonCard /> : null}
       {error ? (
         <View style={styles.notice}>
-          <Ionicons name="cloud-offline-outline" size={15} color={palette.amber} />
+          <Ionicons name="cloud-offline-outline" size={15} color={theme.warning} />
           <Text style={styles.noticeText}>{error}</Text>
         </View>
       ) : null}
@@ -205,7 +209,7 @@ export default function SessionScreen({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   content: { padding: 18, gap: 16 },
   notice: {
     flexDirection: 'row',
@@ -213,11 +217,11 @@ const styles = StyleSheet.create({
     gap: 8,
     padding: 12,
     borderRadius: radius.md,
-    backgroundColor: 'rgba(255,183,77,0.10)',
+    backgroundColor: theme.warningSoft,
   },
-  noticeText: { flex: 1, fontSize: 12, fontWeight: '600', color: palette.amber },
+  noticeText: { flex: 1, fontSize: 12, fontWeight: '600', color: theme.warning },
   list: { gap: 10 },
   actions: { marginTop: 10, gap: 10 },
-  hint: { fontSize: 11.5, lineHeight: 16.5, fontWeight: '600', color: palette.textFaint },
+  hint: { fontSize: 11.5, lineHeight: 16.5, fontWeight: '600', color: theme.textFaint },
   emptyCard: { paddingVertical: 8 },
 });

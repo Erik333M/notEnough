@@ -14,11 +14,13 @@ import {
 import type { Movement, MovementCategory } from '../state/journey/types';
 import { muscleSummary, type MuscleWork } from '../state/journey/muscles';
 import { MuscleSheet } from '../features/muscles/MuscleSheet';
-import { accentColor, palette } from '../theme/theme';
+
 import { Appear, RoundIconButton } from '../ui/Controls';
 import { EmptyState } from '../ui/Feedback';
 import { PressableScale } from '../ui/Touchable';
 import { useToast } from '../ui/Toast';
+import type { Theme } from '../theme/tokens';
+import { useStyles, useTheme } from '../theme/ThemeContext';
 
 /**
  * The movements catalogue.
@@ -40,6 +42,8 @@ const Row = memo(function Row({
   onDelete: (movement: Movement) => void;
   onShowMuscles: (movement: Movement) => void;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const handleDelete = useCallback(() => onDelete(movement), [movement, onDelete]);
   const tagged = movement.muscles.primary.length > 0;
 
@@ -76,7 +80,7 @@ const Row = memo(function Row({
         <Ionicons
           name={tagged ? 'body' : 'body-outline'}
           size={16}
-          color={tagged ? accentColor.rose : palette.textFaint}
+          color={tagged ? theme.accent.danger : theme.textFaint}
         />
       </PressableScale>
 
@@ -89,7 +93,7 @@ const Row = memo(function Row({
           accessibilityLabel={`Delete ${movement.name}`}
           style={styles.delete}
         >
-          <Ionicons name="trash-outline" size={15} color={palette.textFaint} />
+          <Ionicons name="trash-outline" size={15} color={theme.textFaint} />
         </PressableScale>
       ) : null}
     </View>
@@ -103,6 +107,7 @@ export default function MovementsLibraryScreen({
   bottomInset: number;
   onBack: () => void;
 }) {
+  const styles = useStyles(makeStyles);
   const state = useAppState();
   const { journey } = useActions();
   const { notify } = useToast();
@@ -150,7 +155,7 @@ export default function MovementsLibraryScreen({
           <RoundIconButton
             icon="add"
             size={44}
-            accent="lime"
+            accent="body"
             onPress={() => setCreating(true)}
             accessibilityLabel="Add a movement"
           />
@@ -218,7 +223,7 @@ export default function MovementsLibraryScreen({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   flex: {
     flex: 1,
   },
@@ -235,7 +240,7 @@ const styles = StyleSheet.create({
     gap: 10,
     minHeight: 56,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: palette.hairline,
+    borderBottomColor: theme.border,
   },
   rowText: {
     flex: 1,
@@ -244,12 +249,12 @@ const styles = StyleSheet.create({
   rowTitle: {
     fontSize: 15,
     fontWeight: '700',
-    color: palette.text,
+    color: theme.text,
   },
   rowMeta: {
     fontSize: 11,
     fontWeight: '600',
-    color: palette.textFaint,
+    color: theme.textFaint,
     marginTop: 2,
   },
   delete: {

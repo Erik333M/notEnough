@@ -12,12 +12,14 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import type { DayKey, MeasurementEntry, UnitSystem } from '../../state/journey/types';
-import { palette, radius } from '../../theme/theme';
+import { radius } from '../../theme/theme';
 import { Button } from '../../ui/Button';
 import { Chip, RoundIconButton, SectionHeader } from '../../ui/Controls';
 import { DatePickRow } from './DatePickRow';
 import { MeasurementField } from './MeasurementField';
 import { ALWAYS_SHOWN, useMeasurementDrafts } from './useMeasurementDrafts';
+import type { Theme } from '../../theme/tokens';
+import { useStyles } from '../../theme/ThemeContext';
 
 /**
  * Records one dated set of readings.
@@ -46,6 +48,7 @@ export function LogMeasurementSheet({
   onSave,
   onDelete,
 }: Props) {
+  const styles = useStyles(makeStyles);
   const insets = useSafeAreaInsets();
   const [error, setError] = useState<string | null>(null);
 
@@ -141,7 +144,7 @@ export function LogMeasurementSheet({
                         key={metric.key}
                         label={metric.label}
                         active={false}
-                        accent="cyan"
+                        accent="mind"
                         onPress={() => addField(metric.key)}
                       />
                     ))}
@@ -173,22 +176,22 @@ export function LogMeasurementSheet({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   backdrop: {
     flex: 1,
     justifyContent: 'flex-end',
-    backgroundColor: 'rgba(2,3,10,0.72)',
+    backgroundColor: theme.scrim,
   },
   sheetWrap: {
     height: '90%',
   },
   sheet: {
     flex: 1,
-    backgroundColor: '#111634',
+    backgroundColor: theme.surfaceElevated,
     borderTopLeftRadius: radius.xl,
     borderTopRightRadius: radius.xl,
     borderTopWidth: StyleSheet.hairlineWidth * 2,
-    borderColor: palette.hairlineStrong,
+    borderColor: theme.borderStrong,
     paddingHorizontal: 18,
     paddingTop: 10,
     gap: 14,
@@ -198,7 +201,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 4,
     borderRadius: 2,
-    backgroundColor: palette.hairlineStrong,
+    backgroundColor: theme.borderStrong,
   },
   content: {
     gap: 16,
@@ -210,7 +213,7 @@ const styles = StyleSheet.create({
   addLabel: {
     fontSize: 12,
     fontWeight: '700',
-    color: palette.textMuted,
+    color: theme.textMuted,
     marginLeft: 2,
   },
   chips: {
@@ -221,7 +224,7 @@ const styles = StyleSheet.create({
   error: {
     fontSize: 12,
     fontWeight: '700',
-    color: palette.rose,
+    color: theme.error,
     marginLeft: 2,
   },
 });

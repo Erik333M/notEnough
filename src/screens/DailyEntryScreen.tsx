@@ -18,6 +18,8 @@ import { Appear } from '../ui/Controls';
 import { SkeletonCard } from '../ui/Feedback';
 import { GlassCard } from '../ui/Glass';
 import { useToast } from '../ui/Toast';
+import type { Theme } from '../theme/tokens';
+import { useStyles } from '../theme/ThemeContext';
 
 /**
  * The full page for one date — today or any day in the past.
@@ -38,6 +40,7 @@ export default function DailyEntryScreen({
   onBack: () => void;
   onOpenWod: (date: DayKey) => void;
 }) {
+  const styles = useStyles(makeStyles);
   const state = useAppState();
   const { journey } = useActions();
   const { notify } = useToast();
@@ -127,7 +130,7 @@ export default function DailyEntryScreen({
             slot="decision"
             title="DECISION"
             intention={entry.decision}
-            accent="amber"
+            accent="warning"
             onChangeText={handleIntentionText}
             onCycleDone={handleIntentionDone}
           />
@@ -138,7 +141,7 @@ export default function DailyEntryScreen({
             slot="habit"
             title="HABIT"
             intention={entry.habit}
-            accent="lime"
+            accent="body"
             onChangeText={handleIntentionText}
             onCycleDone={handleIntentionDone}
             suggestions={habitTitles}
@@ -198,7 +201,7 @@ export default function DailyEntryScreen({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   flex: {
     flex: 1,
   },

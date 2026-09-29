@@ -6,13 +6,15 @@ import { EventsSection } from '../features/events/EventsSection';
 import { TeamRow } from '../features/teams/TeamRow';
 import { useEvents } from '../features/events/useEvents';
 import { useTeams } from '../state/TeamsContext';
-import { palette, radius } from '../theme/theme';
+import { radius } from '../theme/theme';
 import { Appear, SectionHeader } from '../ui/Controls';
 import { EmptyState } from '../ui/Feedback';
 import { Button } from '../ui/Button';
 import { Field } from '../ui/Field';
 import { GlassCard } from '../ui/Glass';
 import { useToast } from '../ui/Toast';
+import type { Theme } from '../theme/tokens';
+import { useStyles, useTheme } from '../theme/ThemeContext';
 
 /**
  * The root of the Teams tab: every team you are in, whichever side of the
@@ -36,6 +38,8 @@ export default function TeamsListScreen({
   onOpenTeam: (teamId: string) => void;
   onOpenEvent: (eventId: string) => void;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const { capabilities, memberships, error, refresh, createTeam, joinTeam } = useTeams();
   const events = useEvents();
   const { notify } = useToast();
@@ -93,12 +97,12 @@ export default function TeamsListScreen({
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={palette.textMuted} />
+          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={theme.textMuted} />
         }
       >
         {error ? (
           <View style={styles.notice}>
-            <Ionicons name="cloud-offline-outline" size={15} color={palette.amber} />
+            <Ionicons name="cloud-offline-outline" size={15} color={theme.warning} />
             <Text style={styles.noticeText}>{error}</Text>
           </View>
         ) : null}
@@ -208,7 +212,7 @@ export default function TeamsListScreen({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   flex: { flex: 1 },
   content: { padding: 18, gap: 16 },
   notice: {
@@ -217,12 +221,12 @@ const styles = StyleSheet.create({
     gap: 8,
     padding: 12,
     borderRadius: radius.md,
-    backgroundColor: 'rgba(255,183,77,0.10)',
+    backgroundColor: theme.warningSoft,
   },
-  noticeText: { flex: 1, fontSize: 12, fontWeight: '600', color: palette.amber },
+  noticeText: { flex: 1, fontSize: 12, fontWeight: '600', color: theme.warning },
   list: { gap: 10 },
   actions: { gap: 10 },
   form: { gap: 12, padding: 16 },
-  formTitle: { fontSize: 16, fontWeight: '800', color: palette.text },
-  formCopy: { fontSize: 12.5, lineHeight: 18, fontWeight: '600', color: palette.textMuted },
+  formTitle: { fontSize: 16, fontWeight: '800', color: theme.text },
+  formCopy: { fontSize: 12.5, lineHeight: 18, fontWeight: '600', color: theme.textMuted },
 });

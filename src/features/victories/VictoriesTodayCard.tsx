@@ -5,9 +5,11 @@ import { StyleSheet, Text, View } from 'react-native';
 import { dayKey } from '../../lib/time';
 import { useAppState } from '../../state/DataContext';
 import { VICTORIES, dayScore, isVictoryWon, victoryDay } from '../../state/victories';
-import { accentColor, palette, radius } from '../../theme/theme';
+import { radius } from '../../theme/theme';
 import { GlassCard } from '../../ui/Glass';
 import { PressableScale } from '../../ui/Touchable';
+import type { Theme } from '../../theme/tokens';
+import { useStyles, useTheme } from '../../theme/ThemeContext';
 
 /**
  * Today's three victories, small enough to live under the hero.
@@ -22,6 +24,8 @@ export const VictoriesTodayCard = memo(function VictoriesTodayCard({
 }: {
   onOpen: () => void;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const state = useAppState();
   if (!state) return null;
 
@@ -34,7 +38,7 @@ export const VictoriesTodayCard = memo(function VictoriesTodayCard({
       <GlassCard style={styles.card}>
         <View style={styles.head}>
           <View style={styles.icon}>
-            <Ionicons name="shield-half-outline" size={15} color={accentColor.violet} />
+            <Ionicons name="shield-half-outline" size={15} color={theme.accent.spirit} />
           </View>
           <View style={styles.headBody}>
             <Text style={styles.title}>3 Victories</Text>
@@ -46,7 +50,7 @@ export const VictoriesTodayCard = memo(function VictoriesTodayCard({
                   : `${won} of 3 won · ${score} of 9 goals`}
             </Text>
           </View>
-          <Ionicons name="chevron-forward" size={15} color={palette.textFaint} />
+          <Ionicons name="chevron-forward" size={15} color={theme.textFaint} />
         </View>
 
         <View style={styles.marks}>
@@ -57,15 +61,15 @@ export const VictoriesTodayCard = memo(function VictoriesTodayCard({
                 key={victory.key}
                 style={[
                   styles.mark,
-                  done && { backgroundColor: `${accentColor[victory.accent]}26` },
+                  done && { backgroundColor: `${theme.accent[victory.accent]}26` },
                 ]}
               >
                 <Ionicons
                   name={done ? 'checkmark-circle' : victory.icon}
                   size={14}
-                  color={done ? accentColor[victory.accent] : palette.textFaint}
+                  color={done ? theme.accent[victory.accent] : theme.textFaint}
                 />
-                <Text style={[styles.markText, done && { color: accentColor[victory.accent] }]}>
+                <Text style={[styles.markText, done && { color: theme.accent[victory.accent] }]}>
                   {victory.label}
                 </Text>
               </View>
@@ -77,7 +81,7 @@ export const VictoriesTodayCard = memo(function VictoriesTodayCard({
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   card: { gap: 12 },
   head: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   icon: {
@@ -86,11 +90,11 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: palette.violetSoft,
+    backgroundColor: theme.accentSoft.spirit,
   },
   headBody: { flex: 1, gap: 1 },
-  title: { fontSize: 14.5, fontWeight: '800', color: palette.text },
-  meta: { fontSize: 12, fontWeight: '600', color: palette.textMuted },
+  title: { fontSize: 14.5, fontWeight: '800', color: theme.text },
+  meta: { fontSize: 12, fontWeight: '600', color: theme.textMuted },
   marks: { flexDirection: 'row', gap: 8 },
   mark: {
     flex: 1,
@@ -100,7 +104,7 @@ const styles = StyleSheet.create({
     gap: 5,
     paddingVertical: 8,
     borderRadius: radius.md,
-    backgroundColor: 'rgba(255,255,255,0.05)',
+    backgroundColor: theme.surface,
   },
-  markText: { fontSize: 10.5, fontWeight: '800', letterSpacing: 0.4, color: palette.textMuted },
+  markText: { fontSize: 10.5, fontWeight: '800', letterSpacing: 0.4, color: theme.textMuted },
 });

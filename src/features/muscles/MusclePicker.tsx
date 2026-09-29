@@ -7,8 +7,10 @@ import {
   type MuscleGroup,
   type MuscleWork,
 } from '../../state/journey/muscles';
-import { accentColor, palette, radius } from '../../theme/theme';
+import { radius } from '../../theme/theme';
 import { PressableScale } from '../../ui/Touchable';
+import type { Theme } from '../../theme/tokens';
+import { useStyles, useTheme } from '../../theme/ThemeContext';
 
 /**
  * Saying what a movement works.
@@ -35,6 +37,8 @@ export const MusclePicker = memo(function MusclePicker({
   work: MuscleWork;
   onChange: (next: MuscleWork) => void;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const stateOf = useCallback(
     (group: MuscleGroup): 'none' | 'primary' | 'secondary' =>
       work.primary.includes(group) ? 'primary' : work.secondary.includes(group) ? 'secondary' : 'none',
@@ -108,9 +112,9 @@ export const MusclePicker = memo(function MusclePicker({
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   wrap: { gap: 10 },
-  hint: { fontSize: 11.5, lineHeight: 16, fontWeight: '600', color: palette.textFaint },
+  hint: { fontSize: 11.5, lineHeight: 16, fontWeight: '600', color: theme.textFaint },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   chip: {
     flexDirection: 'row',
@@ -120,14 +124,14 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: radius.pill,
     borderWidth: 1,
-    borderColor: palette.hairline,
-    backgroundColor: palette.glass,
+    borderColor: theme.border,
+    backgroundColor: theme.surface,
   },
-  chipPrimary: { backgroundColor: accentColor.rose, borderColor: accentColor.rose },
-  chipSecondary: { borderColor: accentColor.rose, backgroundColor: 'rgba(255,122,143,0.18)' },
-  label: { fontSize: 12.5, fontWeight: '700', color: palette.textMuted },
-  labelPrimary: { color: palette.onAccent, fontWeight: '800' },
-  labelSecondary: { color: palette.text },
-  tag: { fontSize: 9.5, fontWeight: '800', color: palette.text, textTransform: 'uppercase' },
-  tagPrimary: { color: palette.onAccent },
+  chipPrimary: { backgroundColor: theme.accent.danger, borderColor: theme.accent.danger },
+  chipSecondary: { borderColor: theme.accent.danger, backgroundColor: 'rgba(255,122,143,0.18)' },
+  label: { fontSize: 12.5, fontWeight: '700', color: theme.textMuted },
+  labelPrimary: { color: theme.onPrimary, fontWeight: '800' },
+  labelSecondary: { color: theme.text },
+  tag: { fontSize: 9.5, fontWeight: '800', color: theme.text, textTransform: 'uppercase' },
+  tagPrimary: { color: theme.onPrimary },
 });

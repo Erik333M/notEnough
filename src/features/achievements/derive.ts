@@ -78,7 +78,7 @@ export function deriveAchievements(input: AchievementInput): Achievement[] {
       value: streak,
       achievedAt: input.today,
       icon: 'flame',
-      accent: 'amber',
+      accent: 'warning',
     });
   }
 
@@ -93,7 +93,7 @@ export function deriveAchievements(input: AchievementInput): Achievement[] {
       value: best.value,
       achievedAt: best.date,
       icon: 'trophy',
-      accent: 'violet',
+      accent: 'spirit',
     });
   }
 
@@ -108,7 +108,7 @@ export function deriveAchievements(input: AchievementInput): Achievement[] {
       value: habitStep,
       achievedAt: habit.date,
       icon: 'repeat',
-      accent: 'lime',
+      accent: 'body',
     });
   }
 
@@ -122,7 +122,7 @@ export function deriveAchievements(input: AchievementInput): Achievement[] {
       value: work,
       achievedAt: input.today,
       icon: 'checkmark-done',
-      accent: 'cyan',
+      accent: 'mind',
     });
   }
 

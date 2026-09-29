@@ -8,15 +8,18 @@ import { dayKey } from '../lib/time';
 import { GOAL_TEMPLATES } from '../state/defaults';
 import { useActions, useAppState, type GoalDraft } from '../state/DataContext';
 import type { Goal } from '../state/types';
-import { accentColor, accentSoft, palette, radius } from '../theme/theme';
+import { radius } from '../theme/theme';
 import { PressableScale } from '../ui/Touchable';
 import { Button } from '../ui/Button';
 import { Appear, Pill, SectionHeader, StatTile } from '../ui/Controls';
 import { EmptyState, SkeletonCard } from '../ui/Feedback';
 import { GlassCard } from '../ui/Glass';
 import { useToast } from '../ui/Toast';
+import type { Theme } from '../theme/tokens';
+import { useStyles, useTheme } from '../theme/ThemeContext';
 
 export default function GoalsScreen({ bottomInset }: { bottomInset: number }) {
+  const styles = useStyles(makeStyles);
   const state = useAppState();
   const { addGoal, updateGoal, deleteGoal, setReminder, addProgress, completeGoal } = useActions();
   const { notify } = useToast();
@@ -119,7 +122,7 @@ export default function GoalsScreen({ bottomInset }: { bottomInset: number }) {
           <GlassCard style={styles.summary} elevated>
             <View style={styles.summaryTop}>
               <View style={{ flex: 1, gap: 6 }}>
-                <Pill label="Goal board" icon="flag" accent="violet" />
+                <Pill label="Goal board" icon="flag" accent="spirit" />
                 <Text style={styles.summaryTitle}>
                   {goals.length === 0
                     ? 'Nothing tracked yet'
@@ -134,12 +137,12 @@ export default function GoalsScreen({ bottomInset }: { bottomInset: number }) {
             </View>
 
             <View style={styles.statRow}>
-              <StatTile value={`${goals.length}`} label="Goals" accent="violet" />
-              <StatTile value={`${reminderCount}`} label="Reminders" accent="cyan" />
+              <StatTile value={`${goals.length}`} label="Goals" accent="spirit" />
+              <StatTile value={`${reminderCount}`} label="Reminders" accent="mind" />
               <StatTile
                 value={`${goals.filter((g) => (todayLog?.[g.id] ?? 0) >= g.target).length}`}
                 label="Closed today"
-                accent="lime"
+                accent="body"
               />
             </View>
 
@@ -221,22 +224,24 @@ const TemplateChip = memo(function TemplateChip({
   accent: Goal['accent'];
   onPress: (index: number) => void;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   return (
     <PressableScale onPress={() => onPress(index)} haptic="medium" scaleTo={0.93}>
-      <View style={[styles.template, { borderColor: `${accentColor[accent]}44` }]}>
-        <View style={[styles.templateIcon, { backgroundColor: accentSoft[accent] }]}>
-          <Ionicons name={icon} size={15} color={accentColor[accent]} />
+      <View style={[styles.template, { borderColor: `${theme.accent[accent]}44` }]}>
+        <View style={[styles.templateIcon, { backgroundColor: theme.accentSoft[accent] }]}>
+          <Ionicons name={icon} size={15} color={theme.accent[accent]} />
         </View>
         <Text style={styles.templateText} numberOfLines={1}>
           {title}
         </Text>
-        <Ionicons name="add" size={14} color={palette.textFaint} />
+        <Ionicons name="add" size={14} color={theme.textFaint} />
       </View>
     </PressableScale>
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   content: {
     paddingHorizontal: 18,
     gap: 14,
@@ -256,7 +261,7 @@ const styles = StyleSheet.create({
     paddingRight: 12,
     paddingVertical: 8,
     borderRadius: radius.pill,
-    backgroundColor: palette.glassSunken,
+    backgroundColor: theme.surfaceSunken,
     borderWidth: StyleSheet.hairlineWidth * 2,
   },
   templateIcon: {
@@ -269,7 +274,7 @@ const styles = StyleSheet.create({
   templateText: {
     fontSize: 13,
     fontWeight: '800',
-    color: palette.text,
+    color: theme.text,
   },
   summary: {
     gap: 16,
@@ -281,12 +286,12 @@ const styles = StyleSheet.create({
   summaryTitle: {
     fontSize: 19,
     fontWeight: '800',
-    color: palette.text,
+    color: theme.text,
   },
   summaryCopy: {
     fontSize: 12,
     lineHeight: 18,
-    color: palette.textFaint,
+    color: theme.textFaint,
     fontWeight: '600',
   },
   statRow: {

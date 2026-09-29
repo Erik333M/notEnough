@@ -2,11 +2,13 @@ import { memo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import type { ChallengeSummary } from '../../api/teams';
-import { palette } from '../../theme/theme';
+
 import { Button } from '../../ui/Button';
 import { SectionHeader } from '../../ui/Controls';
 import { GlassCard } from '../../ui/Glass';
 import { ChallengeRow } from './ChallengeRow';
+import type { Theme } from '../../theme/tokens';
+import { useStyles, useTheme } from '../../theme/ThemeContext';
 
 /**
  * The challenges running for one team.
@@ -31,6 +33,8 @@ export const TeamChallengesSection = memo(function TeamChallengesSection({
   onOpen: (challengeId: string) => void;
   onCreate: () => void;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   return (
     <>
       <SectionHeader
@@ -75,9 +79,9 @@ export const TeamChallengesSection = memo(function TeamChallengesSection({
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   empty: { paddingVertical: 14 },
-  copy: { fontSize: 12.5, lineHeight: 18, fontWeight: '600', color: palette.textMuted },
+  copy: { fontSize: 12.5, lineHeight: 18, fontWeight: '600', color: theme.textMuted },
   list: { gap: 10 },
   actions: { marginTop: 10 },
 });

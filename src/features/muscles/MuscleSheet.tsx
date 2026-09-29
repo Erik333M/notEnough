@@ -8,11 +8,13 @@ import {
   worksView,
 } from '../../state/journey/muscles';
 import type { BodyForm } from '../../state/journey/types';
-import { accentColor, palette, radius } from '../../theme/theme';
+import { radius } from '../../theme/theme';
 import { RoundIconButton, SectionHeader, Segmented } from '../../ui/Controls';
 import { BodyMap } from './BodyMap';
 import { MusclePicker } from './MusclePicker';
 import { Button } from '../../ui/Button';
+import type { Theme } from '../../theme/tokens';
+import { useStyles } from '../../theme/ThemeContext';
 
 /**
  * What a movement works, on a figure.
@@ -47,6 +49,7 @@ export function MuscleSheet({
   onChangeWork?: (work: MuscleWork) => void;
   onClose: () => void;
 }) {
+  const styles = useStyles(makeStyles);
   const insets = useSafeAreaInsets();
   const [editing, setEditing] = useState(false);
 
@@ -171,13 +174,13 @@ export function MuscleSheet({
   );
 }
 
-const styles = StyleSheet.create({
-  backdrop: { flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(2,3,10,0.72)' },
+const makeStyles = (theme: Theme) => StyleSheet.create({
+  backdrop: { flex: 1, justifyContent: 'flex-end', backgroundColor: theme.scrim },
   sheet: {
     maxHeight: '92%',
     gap: 12,
     padding: 18,
-    backgroundColor: '#111634',
+    backgroundColor: theme.surfaceElevated,
     borderTopLeftRadius: radius.xl,
     borderTopRightRadius: radius.xl,
   },
@@ -186,21 +189,21 @@ const styles = StyleSheet.create({
     width: 38,
     height: 4,
     borderRadius: 2,
-    backgroundColor: palette.hairlineStrong,
+    backgroundColor: theme.borderStrong,
   },
   body: { gap: 14, paddingBottom: 8 },
   figures: { flexDirection: 'row', justifyContent: 'center', gap: 18 },
-  copy: { fontSize: 12.5, lineHeight: 18, fontWeight: '600', color: palette.textMuted },
+  copy: { fontSize: 12.5, lineHeight: 18, fontWeight: '600', color: theme.textMuted },
   legendRow: { flexDirection: 'row', alignItems: 'center', gap: 7, justifyContent: 'center' },
   dot: { width: 9, height: 9, borderRadius: 5 },
-  legend: { fontSize: 11, fontWeight: '700', color: palette.textMuted, marginRight: 8 },
+  legend: { fontSize: 11, fontWeight: '700', color: theme.textMuted, marginRight: 8 },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 7 },
   chip: { paddingHorizontal: 10, paddingVertical: 6, borderRadius: radius.pill },
   chipPrimary: { backgroundColor: 'rgba(255,90,95,0.18)' },
-  chipSecondary: { backgroundColor: 'rgba(255,255,255,0.06)' },
-  chipText: { fontSize: 12, fontWeight: '700', color: palette.textMuted },
-  chipTextPrimary: { color: accentColor.rose },
-  note: { fontSize: 11.5, lineHeight: 16.5, fontWeight: '600', color: palette.textFaint },
+  chipSecondary: { backgroundColor: theme.surface },
+  chipText: { fontSize: 12, fontWeight: '700', color: theme.textMuted },
+  chipTextPrimary: { color: theme.accent.danger },
+  note: { fontSize: 11.5, lineHeight: 16.5, fontWeight: '600', color: theme.textFaint },
   formBlock: { gap: 8, marginTop: 4 },
-  formLabel: { fontSize: 10, fontWeight: '800', letterSpacing: 1.3, color: palette.textFaint },
+  formLabel: { fontSize: 10, fontWeight: '800', letterSpacing: 1.3, color: theme.textFaint },
 });

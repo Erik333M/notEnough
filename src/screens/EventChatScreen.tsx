@@ -15,10 +15,12 @@ import { ChatBubble } from '../features/events/ChatBubble';
 import { formatDay } from '../features/events/eventCopy';
 import { useChat } from '../features/events/useChat';
 import { dayKey } from '../lib/time';
-import { accentColor, palette, radius } from '../theme/theme';
+import { radius } from '../theme/theme';
 import { RoundIconButton } from '../ui/Controls';
 import { StackHeaderBar } from '../ui/StackHeaderBar';
 import { useToast } from '../ui/Toast';
+import type { Theme } from '../theme/tokens';
+import { useStyles, useTheme } from '../theme/ThemeContext';
 
 /**
  * The event's channel.
@@ -41,6 +43,8 @@ export default function EventChatScreen({
   bottomInset: number;
   onBack: () => void;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const chat = useChat(eventId);
   const { notify } = useToast();
   const [draft, setDraft] = useState('');
@@ -121,7 +125,7 @@ export default function EventChatScreen({
         ListEmptyComponent={
           chat.loading ? null : (
             <View style={styles.empty}>
-              <Ionicons name="chatbubbles-outline" size={22} color={palette.textFaint} />
+              <Ionicons name="chatbubbles-outline" size={22} color={theme.textFaint} />
               <Text style={styles.emptyText}>
                 Nothing posted yet. {chat.canPost ? 'Say something.' : 'Staff will post here.'}
               </Text>
@@ -161,7 +165,7 @@ export default function EventChatScreen({
               }
             }}
             placeholder="Message the camp"
-            placeholderTextColor={palette.textFaint}
+            placeholderTextColor={theme.textFaint}
             multiline
             maxLength={2000}
             accessibilityLabel="Message"
@@ -175,7 +179,7 @@ export default function EventChatScreen({
         </View>
       ) : (
         <View style={[styles.readOnly, { paddingBottom: bottomInset || 12 }]}>
-          <Ionicons name="lock-closed-outline" size={13} color={palette.textFaint} />
+          <Ionicons name="lock-closed-outline" size={13} color={theme.textFaint} />
           <Text style={styles.readOnlyText}>Only the event staff post here.</Text>
         </View>
       )}
@@ -192,7 +196,7 @@ function labelFor(day: string): string {
   return formatDay(day);
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   screen: { flex: 1 },
   list: { paddingHorizontal: 14, paddingTop: 8, paddingBottom: 14, flexGrow: 1 },
   dayWrap: { alignItems: 'center', marginVertical: 12 },
@@ -200,14 +204,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: radius.sm,
-    backgroundColor: palette.glass,
+    backgroundColor: theme.surface,
     fontSize: 10.5,
     fontWeight: '800',
-    color: palette.textFaint,
+    color: theme.textFaint,
     textTransform: 'uppercase',
   },
   empty: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 8, transform: [{ scaleY: -1 }] },
-  emptyText: { fontSize: 12.5, fontWeight: '600', color: palette.textMuted },
+  emptyText: { fontSize: 12.5, fontWeight: '600', color: theme.textMuted },
   bar: {
     flexDirection: 'row',
     alignItems: 'flex-end',
@@ -215,7 +219,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingTop: 8,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(255,255,255,0.07)',
+    borderTopColor: theme.surface,
   },
   input: {
     flex: 1,
@@ -225,10 +229,10 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     paddingBottom: 10,
     borderRadius: 20,
-    backgroundColor: palette.glass,
+    backgroundColor: theme.surface,
     fontSize: 14.5,
     fontWeight: '500',
-    color: palette.text,
+    color: theme.text,
   },
   readOnly: {
     flexDirection: 'row',
@@ -237,9 +241,9 @@ const styles = StyleSheet.create({
     gap: 6,
     paddingTop: 12,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(255,255,255,0.07)',
+    borderTopColor: theme.surface,
   },
-  readOnlyText: { fontSize: 11.5, fontWeight: '600', color: palette.textFaint },
-  dot: { width: 8, height: 8, borderRadius: 4, backgroundColor: palette.textFaint },
-  dotLive: { backgroundColor: accentColor.lime },
+  readOnlyText: { fontSize: 11.5, fontWeight: '600', color: theme.textFaint },
+  dot: { width: 8, height: 8, borderRadius: 4, backgroundColor: theme.textFaint },
+  dotLive: { backgroundColor: theme.accent.body },
 });

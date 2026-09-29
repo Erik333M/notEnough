@@ -1,10 +1,11 @@
 import { memo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { palette } from '../../theme/theme';
 import { Pill, StatTile } from '../../ui/Controls';
 import { GlassCard } from '../../ui/Glass';
 import { ProgressRing } from '../../ui/Progress';
+import type { Theme } from '../../theme/tokens';
+import { useStyles, useTheme } from '../../theme/ThemeContext';
 
 /**
  * The first thing on the first screen: where today stands.
@@ -28,13 +29,15 @@ export const TodayHero = memo(function TodayHero({
   streak: number;
   completion: number;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const percent = Math.round(completion * 100);
 
   return (
     <GlassCard style={styles.hero} elevated>
       <View style={styles.heroTop}>
         <View style={{ flex: 1, gap: 6 }}>
-          <Pill label={greeting()} icon="sunny-outline" accent="amber" />
+          <Pill label={greeting()} icon="sunny-outline" accent="warning" />
           <Text style={styles.heroTitle} numberOfLines={2}>
             {firstName(name)}, today is {percent >= 100 ? 'closed out' : 'still open'}.
           </Text>
@@ -43,16 +46,16 @@ export const TodayHero = memo(function TodayHero({
           </Text>
         </View>
 
-        <ProgressRing progress={completion} size={96} accent="violet">
+        <ProgressRing progress={completion} size={96} accent="spirit">
           <Text style={styles.ringValue}>{percent}%</Text>
           <Text style={styles.ringLabel}>today</Text>
         </ProgressRing>
       </View>
 
       <View style={styles.statRow}>
-        <StatTile value={`${closed}`} label="Closed" accent="lime" />
+        <StatTile value={`${closed}`} label="Closed" accent="body" />
         <StatTile value={`${goalCount - closed}`} label="Open" />
-        <StatTile value={`${streak}d`} label="Streak" accent="amber" />
+        <StatTile value={`${streak}d`} label="Streak" accent="warning" />
       </View>
     </GlassCard>
   );
@@ -70,12 +73,12 @@ function firstName(name: string | undefined): string {
   return name.trim().split(/\s+/)[0];
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   hero: { gap: 16 },
   heroTop: { flexDirection: 'row', alignItems: 'center', gap: 14 },
-  heroTitle: { fontSize: 21, lineHeight: 26, fontWeight: '800', color: palette.text },
-  heroCopy: { fontSize: 12.5, fontWeight: '600', color: palette.textMuted },
-  ringValue: { fontSize: 20, fontWeight: '800', color: palette.text },
-  ringLabel: { fontSize: 10, fontWeight: '700', color: palette.textMuted },
+  heroTitle: { fontSize: 21, lineHeight: 26, fontWeight: '800', color: theme.text },
+  heroCopy: { fontSize: 12.5, fontWeight: '600', color: theme.textMuted },
+  ringValue: { fontSize: 20, fontWeight: '800', color: theme.text },
+  ringLabel: { fontSize: 10, fontWeight: '700', color: theme.textMuted },
   statRow: { flexDirection: 'row', gap: 10 },
 });

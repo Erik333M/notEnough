@@ -9,9 +9,11 @@ import {
   roundTo,
   weightUnit,
 } from '../../state/journey/units';
-import { palette, radius } from '../../theme/theme';
+import { radius } from '../../theme/theme';
 import { GlassCard } from '../../ui/Glass';
 import { PressableScale } from '../../ui/Touchable';
+import type { Theme } from '../../theme/tokens';
+import { useStyles, useTheme } from '../../theme/ThemeContext';
 
 /**
  * The baseline, summarised.
@@ -27,6 +29,8 @@ type Props = {
 };
 
 export const BaselineCard = memo(function BaselineCard({ baseline, units, onEdit }: Props) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const rows: Array<{ label: string; value: string }> = [];
 
   if (baseline.heightCm !== null) {
@@ -88,7 +92,7 @@ export const BaselineCard = memo(function BaselineCard({ baseline, units, onEdit
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   card: {
     gap: 10,
     borderRadius: radius.lg,
@@ -102,7 +106,7 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '800',
     letterSpacing: 1.4,
-    color: palette.textMuted,
+    color: theme.textMuted,
   },
   body: {
     minHeight: 44,
@@ -111,7 +115,7 @@ const styles = StyleSheet.create({
   empty: {
     fontSize: 13,
     fontWeight: '600',
-    color: palette.textMuted,
+    color: theme.textMuted,
   },
   rows: {
     gap: 7,
@@ -125,11 +129,11 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 12,
     fontWeight: '600',
-    color: palette.textFaint,
+    color: theme.textFaint,
   },
   rowValue: {
     fontSize: 14,
     fontWeight: '800',
-    color: palette.text,
+    color: theme.text,
   },
 });

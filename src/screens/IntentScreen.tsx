@@ -14,9 +14,11 @@ import Animated, {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { INTENT_CHOICES, type Intent, type IntentChoice } from '../features/teams/intentChoices';
-import { gradients, palette, radius, shadow } from '../theme/theme';
+import { radius, shadow } from '../theme/theme';
 import { Button } from '../ui/Button';
 import { PressableScale } from '../ui/Touchable';
+import type { Theme } from '../theme/tokens';
+import { useStyles, useTheme } from '../theme/ThemeContext';
 
 export type { Intent };
 
@@ -43,6 +45,8 @@ export default function IntentScreen({
   onChoose: (intent: Intent) => void;
   onSkip: () => void;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const insets = useSafeAreaInsets();
 
   // One slow breath behind the mark. Driven on the UI thread by a shared
@@ -77,12 +81,12 @@ export default function IntentScreen({
           <View style={styles.markWrap}>
             <Animated.View style={[styles.glow, glowStyle]} />
             <LinearGradient
-              colors={gradients.accent}
+              colors={theme.primaryGradient}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
               style={styles.mark}
             >
-              <Ionicons name="flash" size={22} color={palette.onAccent} />
+              <Ionicons name="flash" size={22} color={theme.onPrimary} />
             </LinearGradient>
           </View>
           <Text style={styles.kicker}>WELCOME, {firstName.toUpperCase()}</Text>
@@ -125,31 +129,35 @@ const ChoiceCard = memo(function ChoiceCard({
   choice: IntentChoice;
   onPress: () => void;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   return (
     <PressableScale haptic="light" scaleTo={0.97} onPress={onPress} accessibilityLabel={choice.title}>
       <View style={[styles.card, shadow.card]}>
         {/* Accent wash, strongest at the icon and gone by the chevron. */}
         <LinearGradient
-          colors={[`${choice.tint}26`, `${choice.tint}00`]}
+          colors={[theme.accentSoft[choice.accent], 'transparent']}
           start={{ x: 0, y: 0.5 }}
           end={{ x: 1, y: 0.5 }}
           style={[StyleSheet.absoluteFill, { pointerEvents: 'none', borderRadius: radius.lg }]}
         />
         <LinearGradient
-          colors={choice.gradient}
+          colors={[theme.accent[choice.accent], theme.accent[choice.accent]]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={styles.cardIcon}
         >
-          <Ionicons name={choice.icon} size={19} color={palette.onAccent} />
+          <Ionicons name={choice.icon} size={19} color={theme.onPrimary} />
         </LinearGradient>
 
         <View style={styles.cardBody}>
           <Text style={styles.cardTitle}>{choice.title}</Text>
           <Text style={styles.cardCopy}>{choice.copy}</Text>
           <View style={styles.nextRow}>
-            <Ionicons name="arrow-forward" size={11} color={choice.tint} />
-            <Text style={[styles.nextText, { color: choice.tint }]}>{choice.next}</Text>
+            <Ionicons name="arrow-forward" size={11} color={theme.accent[choice.accent]} />
+            <Text style={[styles.nextText, { color: theme.accent[choice.accent] }]}>
+              {choice.next}
+            </Text>
           </View>
         </View>
       </View>
@@ -157,7 +165,7 @@ const ChoiceCard = memo(function ChoiceCard({
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   root: { flex: 1 },
   content: { paddingHorizontal: 20, gap: 22 },
   hero: { alignItems: 'center', gap: 14 },
@@ -167,7 +175,7 @@ const styles = StyleSheet.create({
     width: 96,
     height: 96,
     borderRadius: 48,
-    backgroundColor: palette.violetSoft,
+    backgroundColor: theme.accentSoft.spirit,
   },
   mark: {
     width: 54,
@@ -180,13 +188,13 @@ const styles = StyleSheet.create({
     fontSize: 10.5,
     fontWeight: '800',
     letterSpacing: 1.6,
-    color: palette.textFaint,
+    color: theme.textFaint,
   },
   title: {
     fontSize: 27,
     lineHeight: 33,
     fontWeight: '800',
-    color: palette.text,
+    color: theme.text,
     textAlign: 'center',
   },
   copy: {
@@ -194,7 +202,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
     lineHeight: 19,
     fontWeight: '600',
-    color: palette.textMuted,
+    color: theme.textMuted,
     textAlign: 'center',
   },
   list: { gap: 12 },
@@ -205,9 +213,9 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: radius.lg,
     overflow: 'hidden',
-    backgroundColor: palette.glass,
+    backgroundColor: theme.surface,
     borderWidth: StyleSheet.hairlineWidth * 2,
-    borderColor: palette.hairline,
+    borderColor: theme.border,
   },
   cardIcon: {
     width: 42,
@@ -217,8 +225,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   cardBody: { flex: 1, gap: 4 },
-  cardTitle: { fontSize: 16, fontWeight: '800', color: palette.text },
-  cardCopy: { fontSize: 12.5, lineHeight: 17.5, fontWeight: '600', color: palette.textMuted },
+  cardTitle: { fontSize: 16, fontWeight: '800', color: theme.text },
+  cardCopy: { fontSize: 12.5, lineHeight: 17.5, fontWeight: '600', color: theme.textMuted },
   nextRow: { flexDirection: 'row', alignItems: 'center', gap: 5, marginTop: 2 },
   nextText: { fontSize: 11, fontWeight: '800', letterSpacing: 0.2 },
 });

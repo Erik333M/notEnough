@@ -2,10 +2,12 @@ import { memo } from 'react';
 import { StyleSheet, Text } from 'react-native';
 
 import type { Share } from '../../api/teams';
-import { palette } from '../../theme/theme';
+
 import { SectionHeader } from '../../ui/Controls';
 import { GlassCard } from '../../ui/Glass';
 import { TeamFeed } from './TeamFeed';
+import type { Theme } from '../../theme/tokens';
+import { useStyles, useTheme } from '../../theme/ThemeContext';
 
 /**
  * The team's wall, and the sentence that explains it.
@@ -25,6 +27,8 @@ export const TeamWallSection = memo(function TeamWallSection({
   isCoach: boolean;
   onRemove: (share: Share) => void;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   return (
     <>
       <SectionHeader
@@ -51,7 +55,7 @@ export const TeamWallSection = memo(function TeamWallSection({
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   empty: { paddingVertical: 14 },
-  copy: { fontSize: 12.5, lineHeight: 18, fontWeight: '600', color: palette.textMuted },
+  copy: { fontSize: 12.5, lineHeight: 18, fontWeight: '600', color: theme.textMuted },
 });

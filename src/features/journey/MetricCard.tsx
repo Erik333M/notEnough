@@ -5,9 +5,11 @@ import type { MetricDescriptor, MetricPoint } from '../../state/journey/measurem
 import { metricChange, metricUnit } from '../../state/journey/measurements';
 import type { UnitSystem } from '../../state/journey/types';
 import { formatSeconds, roundTo } from '../../state/journey/units';
-import { accentColor, palette, radius } from '../../theme/theme';
+import { radius } from '../../theme/theme';
 import { GlassCard } from '../../ui/Glass';
 import { LineChart } from '../../ui/Progress';
+import type { Theme } from '../../theme/tokens';
+import { useStyles, useTheme } from '../../theme/ThemeContext';
 
 /**
  * One tracked metric: its latest value, its movement, and a trend if there is
@@ -32,6 +34,8 @@ function formatValue(metric: MetricDescriptor, value: number, units: UnitSystem)
 }
 
 export const MetricCard = memo(function MetricCard({ metric, points, units }: Props) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   if (points.length === 0) return null;
 
   const latest = points[points.length - 1].value;
@@ -63,7 +67,7 @@ export const MetricCard = memo(function MetricCard({ metric, points, units }: Pr
       {canChart ? (
         <LineChart
           points={points.map((p) => ({ value: p.value }))}
-          accent="cyan"
+          accent="mind"
           height={120}
           formatValue={(value) => formatValue(metric, value, units)}
         />
@@ -74,7 +78,7 @@ export const MetricCard = memo(function MetricCard({ metric, points, units }: Pr
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   card: {
     gap: 10,
     borderRadius: radius.lg,
@@ -89,12 +93,12 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '800',
     letterSpacing: 1.4,
-    color: palette.textMuted,
+    color: theme.textMuted,
   },
   count: {
     fontSize: 10,
     fontWeight: '700',
-    color: palette.textFaint,
+    color: theme.textFaint,
   },
   valueRow: {
     flexDirection: 'row',
@@ -104,17 +108,17 @@ const styles = StyleSheet.create({
   value: {
     fontSize: 24,
     fontWeight: '800',
-    color: palette.text,
+    color: theme.text,
   },
   change: {
     flex: 1,
     fontSize: 11,
     fontWeight: '700',
-    color: accentColor.cyan,
+    color: theme.accent.mind,
   },
   hint: {
     fontSize: 11,
     fontWeight: '600',
-    color: palette.textFaint,
+    color: theme.textFaint,
   },
 });

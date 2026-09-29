@@ -5,12 +5,14 @@ import { formatMinutes } from '../lib/time';
 import { useActions, useAppState } from '../state/DataContext';
 import { projectPlan } from '../state/selectors';
 import type { GoalLevel, SkillLevel } from '../state/types';
-import { palette, radius } from '../theme/theme';
+import { radius } from '../theme/theme';
 import { Appear, Chip, Pill, SectionHeader, StatTile, Stepper } from '../ui/Controls';
 import { SkeletonCard } from '../ui/Feedback';
 import { GlassCard } from '../ui/Glass';
 import { ProgressRing } from '../ui/Progress';
 import { PressableScale } from '../ui/Touchable';
+import type { Theme } from '../theme/tokens';
+import { useStyles, useTheme } from '../theme/ThemeContext';
 
 const LEVELS: SkillLevel[] = ['Starter', 'Developing', 'Advanced'];
 const GOALS: GoalLevel[] = [
@@ -43,6 +45,7 @@ const WEEK = [
 ];
 
 export default function PlanScreen({ bottomInset }: { bottomInset: number }) {
+  const styles = useStyles(makeStyles);
   const state = useAppState();
   const { updatePlan } = useActions();
 
@@ -76,11 +79,11 @@ export default function PlanScreen({ bottomInset }: { bottomInset: number }) {
         <GlassCard style={styles.hero} elevated>
           <View style={styles.heroTop}>
             <View style={{ flex: 1, gap: 6 }}>
-              <Pill label="Projected path" icon="sparkles" accent="violet" />
+              <Pill label="Projected path" icon="sparkles" accent="spirit" />
               <Text style={styles.heroTitle}>{projection.weeks} weeks</Text>
               <Text style={styles.heroCopy}>{projection.readiness} • {projection.totalHours}h total</Text>
             </View>
-            <ProgressRing progress={projection.completionRate / 100} size={92} accent="violet">
+            <ProgressRing progress={projection.completionRate / 100} size={92} accent="spirit">
               <Text style={styles.ringValue}>{projection.completionRate}%</Text>
               <Text style={styles.ringLabel}>fit</Text>
             </ProgressRing>
@@ -89,7 +92,7 @@ export default function PlanScreen({ bottomInset }: { bottomInset: number }) {
           <View style={styles.statRow}>
             <StatTile value={`${plan.hoursPerDay}h`} label="Daily" />
             <StatTile value={`${plan.daysPerWeek}x`} label="Weekly" />
-            <StatTile value={formatMinutes(dailyMinutes)} label="Session" accent="cyan" />
+            <StatTile value={formatMinutes(dailyMinutes)} label="Session" accent="mind" />
           </View>
         </GlassCard>
       </Appear>
@@ -206,11 +209,13 @@ const GoalOption = memo(function GoalOption({
   active: boolean;
   onPress: (goal: GoalLevel) => void;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   return (
     <PressableScale onPress={() => onPress(goal)} haptic="selection" scaleTo={0.98}>
       <View style={[styles.goalOption, active && styles.goalOptionActive]}>
         <View style={styles.goalOptionTop}>
-          <Text style={[styles.goalOptionTitle, active && { color: palette.violet }]}>{goal}</Text>
+          <Text style={[styles.goalOptionTitle, active && { color: theme.accent.spirit }]}>{goal}</Text>
           {active ? <View style={styles.goalCheck} /> : null}
         </View>
         <Text style={styles.goalOptionCopy}>{GOAL_COPY[goal]}</Text>
@@ -219,7 +224,7 @@ const GoalOption = memo(function GoalOption({
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   content: {
     paddingHorizontal: 18,
     gap: 14,
@@ -238,22 +243,22 @@ const styles = StyleSheet.create({
   heroTitle: {
     fontSize: 28,
     fontWeight: '800',
-    color: palette.text,
+    color: theme.text,
   },
   heroCopy: {
     fontSize: 12,
-    color: palette.textFaint,
+    color: theme.textFaint,
     fontWeight: '600',
   },
   ringValue: {
     fontSize: 18,
     fontWeight: '800',
-    color: palette.text,
+    color: theme.text,
   },
   ringLabel: {
     fontSize: 10,
     fontWeight: '700',
-    color: palette.textFaint,
+    color: theme.textFaint,
   },
   statRow: {
     flexDirection: 'row',
@@ -265,7 +270,7 @@ const styles = StyleSheet.create({
   groupLabel: {
     fontSize: 12,
     fontWeight: '700',
-    color: palette.textMuted,
+    color: theme.textMuted,
     marginLeft: 2,
   },
   chipRow: {
@@ -275,9 +280,9 @@ const styles = StyleSheet.create({
   goalOption: {
     padding: 14,
     borderRadius: radius.md,
-    backgroundColor: palette.glassSunken,
+    backgroundColor: theme.surfaceSunken,
     borderWidth: StyleSheet.hairlineWidth * 2,
-    borderColor: palette.hairline,
+    borderColor: theme.border,
     gap: 6,
   },
   goalOptionActive: {
@@ -293,38 +298,38 @@ const styles = StyleSheet.create({
   goalOptionTitle: {
     fontSize: 15,
     fontWeight: '800',
-    color: palette.text,
+    color: theme.text,
     flex: 1,
   },
   goalCheck: {
     width: 10,
     height: 10,
     borderRadius: 5,
-    backgroundColor: palette.violet,
+    backgroundColor: theme.accent.spirit,
   },
   goalOptionCopy: {
     fontSize: 12,
     lineHeight: 18,
-    color: palette.textFaint,
+    color: theme.textFaint,
   },
   stretch: {
     gap: 8,
-    backgroundColor: 'rgba(255,182,92,0.10)',
-    borderColor: 'rgba(255,182,92,0.28)',
+    backgroundColor: theme.warningSoft,
+    borderColor: theme.warningSoft,
   },
   stretchTitle: {
     fontSize: 13,
     fontWeight: '800',
-    color: palette.amber,
+    color: theme.warning,
   },
   stretchCopy: {
     fontSize: 13,
     lineHeight: 20,
-    color: palette.textMuted,
+    color: theme.textMuted,
   },
   stretchAccent: {
     fontWeight: '800',
-    color: palette.amber,
+    color: theme.warning,
   },
   blockRow: {
     flexDirection: 'row',
@@ -337,13 +342,13 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: palette.glassStrong,
+    backgroundColor: theme.surfaceElevated,
     marginTop: 2,
   },
   blockStepText: {
     fontSize: 12,
     fontWeight: '800',
-    color: palette.text,
+    color: theme.text,
   },
   blockHeader: {
     flexDirection: 'row',
@@ -354,18 +359,18 @@ const styles = StyleSheet.create({
   blockTitle: {
     fontSize: 14,
     fontWeight: '800',
-    color: palette.text,
+    color: theme.text,
     flex: 1,
   },
   blockMinutes: {
     fontSize: 12,
     fontWeight: '800',
-    color: palette.cyan,
+    color: theme.accent.mind,
   },
   blockFocus: {
     fontSize: 12,
     lineHeight: 18,
-    color: palette.textFaint,
+    color: theme.textFaint,
     marginTop: 3,
   },
   weekRow: {
@@ -379,26 +384,26 @@ const styles = StyleSheet.create({
     borderRadius: radius.sm,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: palette.glassStrong,
+    backgroundColor: theme.surfaceElevated,
   },
   weekDayText: {
     fontSize: 13,
     fontWeight: '800',
-    color: palette.text,
+    color: theme.text,
   },
   weekTitle: {
     fontSize: 14,
     fontWeight: '700',
-    color: palette.text,
+    color: theme.text,
   },
   weekMeta: {
     fontSize: 12,
-    color: palette.textFaint,
+    color: theme.textFaint,
     marginTop: 2,
   },
   weekEnergy: {
     fontSize: 11,
     fontWeight: '800',
-    color: palette.textFaint,
+    color: theme.textFaint,
   },
 });

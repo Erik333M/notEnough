@@ -5,11 +5,13 @@ import { StyleSheet, Text, View } from 'react-native';
 import { longDateLabel } from '../../lib/time';
 import { lowerIsBetter } from '../../state/journey/benchmarks';
 import type { BenchmarkMetric, BenchmarkResult } from '../../state/journey/types';
-import { accentColor, palette, radius } from '../../theme/theme';
+import { radius } from '../../theme/theme';
 import { StatTile } from '../../ui/Controls';
 import { GlassCard } from '../../ui/Glass';
 import { LineChart } from '../../ui/Progress';
 import { PressableScale } from '../../ui/Touchable';
+import type { Theme } from '../../theme/tokens';
+import { useStyles, useTheme } from '../../theme/ThemeContext';
 
 /**
  * The summary above a benchmark's history: best, latest, count and a trend.
@@ -33,19 +35,21 @@ export const BenchmarkSummary = memo(function BenchmarkSummary({
   series: number[];
   format: (value: number) => string;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   return (
     <GlassCard style={styles.card}>
       <View style={styles.statRow}>
-        <StatTile value={bestLabel} label="Best" accent="lime" />
-        <StatTile value={latestLabel} label="Latest" accent="cyan" />
-        <StatTile value={`${count}`} label="Logged" accent="violet" />
+        <StatTile value={bestLabel} label="Best" accent="body" />
+        <StatTile value={latestLabel} label="Latest" accent="mind" />
+        <StatTile value={`${count}`} label="Logged" accent="spirit" />
       </View>
 
       {series.length >= 2 ? (
         <View style={styles.chartBlock}>
           <LineChart
             points={series.map((value) => ({ value }))}
-            accent="cyan"
+            accent="mind"
             height={140}
             formatValue={format}
           />
@@ -72,6 +76,8 @@ export const ResultRow = memo(function ResultRow({
   isPb: boolean;
   onPress: (result: BenchmarkResult) => void;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const handlePress = useCallback(() => onPress(result), [result, onPress]);
 
   return (
@@ -89,7 +95,7 @@ export const ResultRow = memo(function ResultRow({
           <Text style={styles.rowValue}>{label}</Text>
           {isPb ? (
             <View style={styles.pb}>
-              <Ionicons name="trophy" size={10} color={palette.onAccent} />
+              <Ionicons name="trophy" size={10} color={theme.onPrimary} />
               <Text style={styles.pbText}>PB</Text>
             </View>
           ) : null}
@@ -99,12 +105,12 @@ export const ResultRow = memo(function ResultRow({
           {result.notes ? ` • ${result.notes}` : ''}
         </Text>
       </View>
-      <Ionicons name="chevron-forward" size={15} color={palette.textFaint} />
+      <Ionicons name="chevron-forward" size={15} color={theme.textFaint} />
     </PressableScale>
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   card: {
     gap: 14,
     borderRadius: radius.lg,
@@ -119,7 +125,7 @@ const styles = StyleSheet.create({
   caption: {
     fontSize: 11,
     fontWeight: '600',
-    color: palette.textFaint,
+    color: theme.textFaint,
     textAlign: 'center',
   },
   row: {
@@ -129,7 +135,7 @@ const styles = StyleSheet.create({
     minHeight: 58,
     paddingVertical: 9,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: palette.hairline,
+    borderBottomColor: theme.border,
   },
   rowText: {
     flex: 1,
@@ -142,7 +148,7 @@ const styles = StyleSheet.create({
   rowValue: {
     fontSize: 16,
     fontWeight: '800',
-    color: palette.text,
+    color: theme.text,
   },
   pb: {
     flexDirection: 'row',
@@ -151,18 +157,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: radius.sm,
-    backgroundColor: accentColor.lime,
+    backgroundColor: theme.accent.body,
   },
   pbText: {
     fontSize: 9,
     fontWeight: '800',
     letterSpacing: 0.5,
-    color: palette.onAccent,
+    color: theme.onPrimary,
   },
   rowDate: {
     fontSize: 11,
     fontWeight: '600',
-    color: palette.textFaint,
+    color: theme.textFaint,
     marginTop: 2,
   },
 });
