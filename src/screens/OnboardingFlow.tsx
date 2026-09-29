@@ -4,10 +4,12 @@ import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } fr
 
 import { IntakeForm } from '../features/journey/IntakeForm';
 import type { Intake } from '../state/journey/types';
-import { accentColor, palette, radius } from '../theme/theme';
+import { radius } from '../theme/theme';
 import { Button } from '../ui/Button';
 import { Appear } from '../ui/Controls';
 import { GlassCard } from '../ui/Glass';
+import type { Theme } from '../theme/tokens';
+import { useStyles, useTheme } from '../theme/ThemeContext';
 
 /**
  * Three screens, every one skippable.
@@ -34,6 +36,8 @@ export default function OnboardingFlow({
   onSave: (next: Intake) => void;
   onSkip: () => void;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const [step, setStep] = useState<Step>('welcome');
   const [draft, setDraft] = useState<Intake>(intake);
 
@@ -58,7 +62,7 @@ export default function OnboardingFlow({
         {step === 'welcome' ? (
           <Appear>
             <GlassCard style={styles.card} elevated>
-              <Ionicons name="book-outline" size={26} color={accentColor.violet} />
+              <Ionicons name="book-outline" size={26} color={theme.accent.spirit} />
               <Text style={styles.title}>One page a day.</Text>
               <Text style={styles.copy}>
                 Write as little as you like — a single ticked box is a finished day. Nothing
@@ -71,7 +75,7 @@ export default function OnboardingFlow({
         {step === 'why' ? (
           <Appear>
             <GlassCard style={styles.card} elevated>
-              <Ionicons name="lock-closed-outline" size={26} color={accentColor.cyan} />
+              <Ionicons name="lock-closed-outline" size={26} color={theme.accent.mind} />
               <Text style={styles.title}>Why we ask</Text>
               <Text style={styles.copy}>
                 A few optional questions about your training, any injuries, and who to call if
@@ -128,15 +132,17 @@ export default function OnboardingFlow({
 }
 
 function Point({ text }: { text: string }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   return (
     <View style={styles.point}>
-      <Ionicons name="checkmark-circle" size={15} color={accentColor.lime} />
+      <Ionicons name="checkmark-circle" size={15} color={theme.accent.body} />
       <Text style={styles.pointText}>{text}</Text>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   flex: {
     flex: 1,
   },
@@ -154,10 +160,10 @@ const styles = StyleSheet.create({
     width: 22,
     height: 4,
     borderRadius: 2,
-    backgroundColor: 'rgba(255,255,255,0.14)',
+    backgroundColor: theme.surfaceElevated,
   },
   dotActive: {
-    backgroundColor: accentColor.violet,
+    backgroundColor: theme.accent.spirit,
   },
   card: {
     gap: 12,
@@ -167,13 +173,13 @@ const styles = StyleSheet.create({
     fontSize: 22,
     lineHeight: 28,
     fontWeight: '800',
-    color: palette.text,
+    color: theme.text,
   },
   copy: {
     fontSize: 14,
     lineHeight: 21,
     fontWeight: '600',
-    color: palette.textMuted,
+    color: theme.textMuted,
   },
   points: {
     gap: 9,
@@ -188,7 +194,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
     lineHeight: 19,
     fontWeight: '600',
-    color: palette.text,
+    color: theme.text,
   },
   actions: {
     gap: 10,

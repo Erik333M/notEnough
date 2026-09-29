@@ -3,8 +3,10 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { memo, useCallback } from 'react';
 import { Share, StyleSheet, Text, View } from 'react-native';
 
-import { gradients, palette, radius } from '../../theme/theme';
+import { radius } from '../../theme/theme';
 import { Button } from '../../ui/Button';
+import type { Theme } from '../../theme/tokens';
+import { useStyles, useTheme } from '../../theme/ThemeContext';
 
 /**
  * Your code, and the one-tap way to send it.
@@ -27,6 +29,8 @@ export const FriendCodeCard = memo(function FriendCodeCard({
   code: string | null;
   name: string;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const share = useCallback(async () => {
     if (!code) return;
     try {
@@ -41,14 +45,14 @@ export const FriendCodeCard = memo(function FriendCodeCard({
   return (
     <View style={styles.card}>
       <LinearGradient
-        colors={gradients.accent}
+        colors={theme.primaryGradient}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={[StyleSheet.absoluteFill, { pointerEvents: 'none', opacity: 0.16 }]}
       />
 
       <View style={styles.head}>
-        <Ionicons name="person-add-outline" size={15} color={palette.violet} />
+        <Ionicons name="person-add-outline" size={15} color={theme.accent.spirit} />
         <Text style={styles.label}>YOUR FRIEND CODE</Text>
       </View>
 
@@ -75,18 +79,18 @@ export const FriendCodeCard = memo(function FriendCodeCard({
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   card: {
     gap: 10,
     padding: 18,
     borderRadius: radius.lg,
     overflow: 'hidden',
-    backgroundColor: palette.glass,
+    backgroundColor: theme.surface,
     borderWidth: StyleSheet.hairlineWidth * 2,
-    borderColor: palette.hairline,
+    borderColor: theme.border,
   },
   head: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  label: { fontSize: 10, fontWeight: '800', letterSpacing: 1.4, color: palette.textFaint },
-  code: { fontSize: 34, fontWeight: '800', letterSpacing: 8, color: palette.text },
-  copy: { fontSize: 12.5, lineHeight: 18, fontWeight: '600', color: palette.textMuted },
+  label: { fontSize: 10, fontWeight: '800', letterSpacing: 1.4, color: theme.textFaint },
+  code: { fontSize: 34, fontWeight: '800', letterSpacing: 8, color: theme.text },
+  copy: { fontSize: 12.5, lineHeight: 18, fontWeight: '600', color: theme.textMuted },
 });

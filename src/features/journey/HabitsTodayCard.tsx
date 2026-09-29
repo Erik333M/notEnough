@@ -4,10 +4,12 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import type { Habit, HabitChecks } from '../../state/journey/types';
 import { habitHistory, habitStreak, isChecked } from '../../state/journey/habits';
-import { accentColor, palette } from '../../theme/theme';
+
 import { GlassCard } from '../../ui/Glass';
 import { PressableScale } from '../../ui/Touchable';
 import { HabitRow } from './HabitRow';
+import type { Theme } from '../../theme/tokens';
+import { useStyles, useTheme } from '../../theme/ThemeContext';
 
 /**
  * Today's habits, tickable without leaving home.
@@ -36,6 +38,8 @@ export const HabitsTodayCard = memo(function HabitsTodayCard({
   onToggle,
   onOpenAll,
 }: Props) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const shown = habits.slice(0, MAX_ROWS);
   const overflow = habits.length - shown.length;
   const done = habits.filter((h) => isChecked(checks, today, h.id)).length;
@@ -74,13 +78,13 @@ export const HabitsTodayCard = memo(function HabitsTodayCard({
         <Text style={styles.moreText}>
           {overflow > 0 ? `${overflow} more` : 'Manage habits'}
         </Text>
-        <Ionicons name="chevron-forward" size={14} color={palette.textFaint} />
+        <Ionicons name="chevron-forward" size={14} color={theme.textFaint} />
       </PressableScale>
     </GlassCard>
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   card: {
     gap: 8,
   },
@@ -94,12 +98,12 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '800',
     letterSpacing: 1.4,
-    color: accentColor.lime,
+    color: theme.accent.body,
   },
   count: {
     fontSize: 11,
     fontWeight: '700',
-    color: palette.textFaint,
+    color: theme.textFaint,
   },
   list: {
     gap: 2,
@@ -114,6 +118,6 @@ const styles = StyleSheet.create({
   moreText: {
     fontSize: 12,
     fontWeight: '700',
-    color: palette.textFaint,
+    color: theme.textFaint,
   },
 });

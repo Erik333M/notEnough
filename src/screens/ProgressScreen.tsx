@@ -21,17 +21,21 @@ import {
   totalRunTime,
 } from '../state/selectors';
 import type { RunSession } from '../state/types';
-import { palette, radius } from '../theme/theme';
+import { radius } from '../theme/theme';
 import { Appear, Pill, SectionHeader, StatTile } from '../ui/Controls';
 import { EmptyState, SkeletonCard } from '../ui/Feedback';
 import { GlassCard } from '../ui/Glass';
 import { ColumnChart, ProgressRing } from '../ui/Progress';
 import { useToast } from '../ui/Toast';
 import { PressableScale } from '../ui/Touchable';
+import type { Theme } from '../theme/tokens';
+import { useStyles, useTheme } from '../theme/ThemeContext';
 
 const HEAT_DAYS = 28;
 
 export default function ProgressScreen({ bottomInset }: { bottomInset: number }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const state = useAppState();
   const shared = useStats();
   const { deleteRun } = useActions();
@@ -99,22 +103,22 @@ export default function ProgressScreen({ bottomInset }: { bottomInset: number })
         <GlassCard style={styles.hero} elevated>
           <View style={styles.heroTop}>
             <View style={{ flex: 1, gap: 6 }}>
-              <Pill label="Consistency" icon="flame" accent="amber" />
+              <Pill label="Consistency" icon="flame" accent="warning" />
               <Text style={styles.heroTitle}>{shared.streak} day streak</Text>
               <Text style={styles.heroCopy}>
                 Best run so far: {stats.best} days • {stats.activeDays} active days logged
               </Text>
             </View>
-            <ProgressRing progress={stats.weekAverage / 100} size={92} accent="amber">
+            <ProgressRing progress={stats.weekAverage / 100} size={92} accent="warning">
               <Text style={styles.ringValue}>{Math.round(stats.weekAverage)}%</Text>
               <Text style={styles.ringLabel}>7d avg</Text>
             </ProgressRing>
           </View>
 
           <View style={styles.statRow}>
-            <StatTile value={`${(stats.distance / 1000).toFixed(1)} km`} label="Total distance" accent="cyan" />
-            <StatTile value={formatMinutes(stats.time / 60000)} label="Time moving" accent="violet" />
-            <StatTile value={`${state.runs.length}`} label="Sessions" accent="lime" />
+            <StatTile value={`${(stats.distance / 1000).toFixed(1)} km`} label="Total distance" accent="mind" />
+            <StatTile value={formatMinutes(stats.time / 60000)} label="Time moving" accent="spirit" />
+            <StatTile value={`${state.runs.length}`} label="Sessions" accent="body" />
           </View>
         </GlassCard>
       </Appear>
@@ -122,7 +126,7 @@ export default function ProgressScreen({ bottomInset }: { bottomInset: number })
       <Appear delay={60}>
         <GlassCard style={styles.stack}>
           <SectionHeader title="Last 7 days" meta="Average goal completion" />
-          <ColumnChart data={stats.series} accent="violet" />
+          <ColumnChart data={stats.series} accent="spirit" />
         </GlassCard>
       </Appear>
 
@@ -137,7 +141,7 @@ export default function ProgressScreen({ bottomInset }: { bottomInset: number })
           <View style={styles.legend}>
             <Text style={styles.legendText}>Less</Text>
             {[0.05, 0.35, 0.6, 0.85, 1].map((v) => (
-              <View key={v} style={[styles.legendDot, { backgroundColor: heatColor(v) }]} />
+              <View key={v} style={[styles.legendDot, { backgroundColor: heatColor(v, theme) }]} />
             ))}
             <Text style={styles.legendText}>More</Text>
           </View>
@@ -228,16 +232,18 @@ const HeatCell = memo(function HeatCell({
   value: number;
   today: boolean;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   return (
     <Animated.View
       entering={FadeIn.duration(220)}
       style={[
         styles.heatCell,
-        { backgroundColor: heatColor(value) },
+        { backgroundColor: heatColor(value, theme) },
         today && styles.heatCellToday,
       ]}
     >
-      <Text style={[styles.heatText, value > 0.5 && { color: palette.onAccent }]}>{dayLabel}</Text>
+      <Text style={[styles.heatText, value > 0.5 && { color: theme.onPrimary }]}>{dayLabel}</Text>
     </Animated.View>
   );
 });
@@ -249,6 +255,8 @@ const RunRow = memo(function RunRow({
   run: RunSession;
   onDelete: (id: string) => void;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const date = new Date(run.startedAt);
   const label = `${date.getDate()}/${date.getMonth() + 1}`;
 
@@ -264,7 +272,7 @@ const RunRow = memo(function RunRow({
           <Ionicons
             name={run.mode === 'interval' ? 'repeat' : 'walk'}
             size={16}
-            color={palette.cyan}
+            color={theme.accent.mind}
           />
         </View>
         <View style={{ flex: 1 }}>
@@ -288,15 +296,25 @@ const RunRow = memo(function RunRow({
   );
 });
 
-function heatColor(value: number): string {
-  if (value <= 0.02) return 'rgba(255,255,255,0.06)';
-  if (value < 0.3) return 'rgba(139,107,255,0.28)';
-  if (value < 0.6) return 'rgba(139,107,255,0.5)';
-  if (value < 0.85) return 'rgba(139,107,255,0.75)';
-  return '#8B6BFF';
+/**
+ * How full a day was, as five steps of the primary.
+ *
+ * Takes the theme rather than reading one, because it is a plain function and
+ * the calendar calls it once per square — a hook per cell would be absurd.
+ *
+ * Colour is not the only signal. Each square carries an accessibility label
+ * saying the day and how much of it was done, so the grid is readable by
+ * somebody who cannot separate five tints of green.
+ */
+function heatColor(value: number, theme: Theme): string {
+  if (value <= 0.02) return theme.surfaceSunken;
+  if (value < 0.3) return theme.primarySoft;
+  if (value < 0.6) return theme.accentSoft.body;
+  if (value < 0.85) return theme.success;
+  return theme.primary;
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   achievements: { gap: 10 },
   content: {
     paddingHorizontal: 18,
@@ -316,23 +334,23 @@ const styles = StyleSheet.create({
   heroTitle: {
     fontSize: 24,
     fontWeight: '800',
-    color: palette.text,
+    color: theme.text,
   },
   heroCopy: {
     fontSize: 12,
     lineHeight: 18,
-    color: palette.textFaint,
+    color: theme.textFaint,
     fontWeight: '600',
   },
   ringValue: {
     fontSize: 18,
     fontWeight: '800',
-    color: palette.text,
+    color: theme.text,
   },
   ringLabel: {
     fontSize: 10,
     fontWeight: '700',
-    color: palette.textFaint,
+    color: theme.textFaint,
   },
   statRow: {
     flexDirection: 'row',
@@ -352,12 +370,12 @@ const styles = StyleSheet.create({
   },
   heatCellToday: {
     borderWidth: 1.5,
-    borderColor: palette.cyan,
+    borderColor: theme.accent.mind,
   },
   heatText: {
     fontSize: 10,
     fontWeight: '700',
-    color: palette.textFaint,
+    color: theme.textFaint,
   },
   legend: {
     flexDirection: 'row',
@@ -366,7 +384,7 @@ const styles = StyleSheet.create({
   },
   legendText: {
     fontSize: 11,
-    color: palette.textFaint,
+    color: theme.textFaint,
     fontWeight: '600',
   },
   legendDot: {
@@ -380,7 +398,7 @@ const styles = StyleSheet.create({
     gap: 12,
     paddingVertical: 10,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: palette.hairline,
+    borderBottomColor: theme.border,
   },
   runIcon: {
     width: 36,
@@ -388,16 +406,16 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: palette.cyanSoft,
+    backgroundColor: theme.accentSoft.mind,
   },
   runTitle: {
     fontSize: 14,
     fontWeight: '800',
-    color: palette.text,
+    color: theme.text,
   },
   runMeta: {
     fontSize: 12,
-    color: palette.textFaint,
+    color: theme.textFaint,
     marginTop: 2,
     fontWeight: '600',
   },
@@ -406,17 +424,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: radius.sm,
-    backgroundColor: palette.glassSunken,
+    backgroundColor: theme.surfaceSunken,
   },
   paceValue: {
     fontSize: 14,
     fontWeight: '800',
-    color: palette.text,
+    color: theme.text,
     fontVariant: ['tabular-nums'],
   },
   paceLabel: {
     fontSize: 10,
-    color: palette.textFaint,
+    color: theme.textFaint,
     fontWeight: '700',
   },
 });

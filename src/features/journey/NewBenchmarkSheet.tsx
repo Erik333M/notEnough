@@ -16,10 +16,12 @@ import {
   lowerIsBetter,
 } from '../../state/journey/benchmarks';
 import type { BenchmarkGroup, BenchmarkMetric } from '../../state/journey/types';
-import { palette, radius } from '../../theme/theme';
+import { radius } from '../../theme/theme';
 import { Button } from '../../ui/Button';
 import { Chip, RoundIconButton, SectionHeader } from '../../ui/Controls';
 import { Field } from '../../ui/Field';
+import type { Theme } from '../../theme/tokens';
+import { useStyles, useTheme } from '../../theme/ThemeContext';
 
 /**
  * Adds a benchmark of the user's own.
@@ -47,6 +49,7 @@ const METRIC_HINT: Record<BenchmarkMetric, string> = {
 };
 
 export function NewBenchmarkSheet({ visible, onClose, onCreate }: Props) {
+  const styles = useStyles(makeStyles);
   const insets = useSafeAreaInsets();
   const [name, setName] = useState('');
   const [group, setGroup] = useState<BenchmarkGroup>('weightlifting');
@@ -123,7 +126,7 @@ export function NewBenchmarkSheet({ visible, onClose, onCreate }: Props) {
                     key={key}
                     label={BENCHMARK_METRIC_LABEL[key]}
                     active={metric === key}
-                    accent="cyan"
+                    accent="mind"
                     onPress={() => setMetric(key)}
                   />
                 ))}
@@ -142,7 +145,7 @@ export function NewBenchmarkSheet({ visible, onClose, onCreate }: Props) {
                     key={key}
                     label={BENCHMARK_GROUP_LABEL[key]}
                     active={group === key}
-                    accent="violet"
+                    accent="spirit"
                     onPress={() => setGroup(key)}
                   />
                 ))}
@@ -157,21 +160,21 @@ export function NewBenchmarkSheet({ visible, onClose, onCreate }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   backdrop: {
     flex: 1,
     justifyContent: 'flex-end',
-    backgroundColor: 'rgba(2,3,10,0.72)',
+    backgroundColor: theme.scrim,
   },
   sheetWrap: {
     maxHeight: '92%',
   },
   sheet: {
-    backgroundColor: '#111634',
+    backgroundColor: theme.surfaceElevated,
     borderTopLeftRadius: radius.xl,
     borderTopRightRadius: radius.xl,
     borderTopWidth: StyleSheet.hairlineWidth * 2,
-    borderColor: palette.hairlineStrong,
+    borderColor: theme.borderStrong,
     paddingHorizontal: 18,
     paddingTop: 10,
     gap: 16,
@@ -181,7 +184,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 4,
     borderRadius: 2,
-    backgroundColor: palette.hairlineStrong,
+    backgroundColor: theme.borderStrong,
   },
   group: {
     gap: 8,
@@ -189,7 +192,7 @@ const styles = StyleSheet.create({
   groupLabel: {
     fontSize: 12,
     fontWeight: '700',
-    color: palette.textMuted,
+    color: theme.textMuted,
     marginLeft: 2,
   },
   chips: {
@@ -201,7 +204,7 @@ const styles = StyleSheet.create({
     fontSize: 11,
     lineHeight: 16,
     fontWeight: '600',
-    color: palette.textFaint,
+    color: theme.textFaint,
     marginLeft: 2,
   },
 });

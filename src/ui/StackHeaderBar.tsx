@@ -1,8 +1,9 @@
 import { memo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { palette } from '../theme/theme';
 import { RoundIconButton } from './Controls';
+import type { Theme } from '../theme/tokens';
+import { useStyles, useTheme } from '../theme/ThemeContext';
 
 /**
  * The bar at the top of a drill-down inside a feature that owns its own stack.
@@ -31,6 +32,8 @@ export const StackHeaderBar = memo(function StackHeaderBar({
   action,
   below,
 }: StackHeaderProps) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   return (
     <View style={styles.wrap}>
       <View style={styles.bar}>
@@ -52,10 +55,10 @@ export const StackHeaderBar = memo(function StackHeaderBar({
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   wrap: { gap: 10 },
   bar: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   titles: { flex: 1, gap: 2 },
-  title: { fontSize: 18, fontWeight: '800', color: palette.text },
-  meta: { fontSize: 12, fontWeight: '600', color: palette.textMuted },
+  title: { fontSize: 18, fontWeight: '800', color: theme.text },
+  meta: { fontSize: 12, fontWeight: '600', color: theme.textMuted },
 });

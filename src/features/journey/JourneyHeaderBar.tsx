@@ -1,10 +1,11 @@
 import { memo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { palette } from '../../theme/theme';
 import { RoundIconButton } from '../../ui/Controls';
 import { InfoTip } from './InfoTip';
 import type { ExplainerKey } from './journeyCopy';
+import type { Theme } from '../../theme/tokens';
+import { useStyles, useTheme } from '../../theme/ThemeContext';
 
 /**
  * The bar at the top of every drill-down inside the Journey tab.
@@ -34,6 +35,8 @@ export const JourneyHeaderBar = memo(function JourneyHeaderBar({
   topic,
   action,
 }: Props) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   return (
     <View style={styles.bar}>
       <RoundIconButton
@@ -58,7 +61,7 @@ export const JourneyHeaderBar = memo(function JourneyHeaderBar({
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   bar: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -77,12 +80,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 17,
     fontWeight: '800',
-    color: palette.text,
+    color: theme.text,
   },
   meta: {
     fontSize: 12,
     fontWeight: '600',
-    color: palette.textFaint,
+    color: theme.textFaint,
     marginTop: 1,
   },
 });

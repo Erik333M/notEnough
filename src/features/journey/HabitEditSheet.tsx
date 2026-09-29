@@ -12,10 +12,12 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { HABIT_GROUP_LABEL } from '../../state/journey/habits';
 import type { Habit } from '../../state/journey/types';
-import { palette, radius } from '../../theme/theme';
+import { radius } from '../../theme/theme';
 import { Button } from '../../ui/Button';
 import { RoundIconButton, SectionHeader } from '../../ui/Controls';
 import { Field } from '../../ui/Field';
+import type { Theme } from '../../theme/tokens';
+import { useStyles, useTheme } from '../../theme/ThemeContext';
 
 /**
  * Rename or drop a habit.
@@ -33,6 +35,8 @@ type Props = {
 };
 
 export function HabitEditSheet({ habit, onClose, onRename, onArchive }: Props) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const insets = useSafeAreaInsets();
   const [title, setTitle] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -125,21 +129,21 @@ export function HabitEditSheet({ habit, onClose, onRename, onArchive }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   backdrop: {
     flex: 1,
     justifyContent: 'flex-end',
-    backgroundColor: 'rgba(2,3,10,0.72)',
+    backgroundColor: theme.scrim,
   },
   sheetWrap: {
     maxHeight: '92%',
   },
   sheet: {
-    backgroundColor: '#111634',
+    backgroundColor: theme.surfaceElevated,
     borderTopLeftRadius: radius.xl,
     borderTopRightRadius: radius.xl,
     borderTopWidth: StyleSheet.hairlineWidth * 2,
-    borderColor: palette.hairlineStrong,
+    borderColor: theme.borderStrong,
     paddingHorizontal: 18,
     paddingTop: 10,
     gap: 14,
@@ -149,13 +153,13 @@ const styles = StyleSheet.create({
     width: 40,
     height: 4,
     borderRadius: 2,
-    backgroundColor: palette.hairlineStrong,
+    backgroundColor: theme.borderStrong,
   },
   note: {
     fontSize: 11,
     lineHeight: 16,
     fontWeight: '600',
-    color: palette.textFaint,
+    color: theme.textFaint,
     textAlign: 'center',
   },
 });

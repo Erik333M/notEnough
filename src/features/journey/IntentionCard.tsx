@@ -4,12 +4,15 @@ import { StyleSheet, Text, TextInput, View } from 'react-native';
 
 import type { IntentionSlot } from '../../state/journey/entryReducer';
 import type { Intention } from '../../state/journey/types';
-import { accentColor, palette, radius, type AccentName } from '../../theme/theme';
+import { radius } from '../../theme/theme';
 import { Chip } from '../../ui/Controls';
 import { GlassCard } from '../../ui/Glass';
 import { PressableScale } from '../../ui/Touchable';
 import { InfoTip } from './InfoTip';
 import { useAutosaveText } from './useAutosaveText';
+import type { AccentName } from '../../theme/tokens';
+import type { Theme } from '../../theme/tokens';
+import { useStyles, useTheme } from '../../theme/ThemeContext';
 
 /**
  * One "I will…" line with its Done answer.
@@ -54,8 +57,10 @@ const DoneToggle = memo(function DoneToggle({
   label: string;
   onPress: () => void;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const state = done === null ? 'not answered' : done ? 'yes' : 'no';
-  const tint = done === null ? palette.textFaint : done ? accentColor.lime : accentColor.rose;
+  const tint = done === null ? theme.textFaint : done ? theme.accent.body : theme.accent.danger;
 
   return (
     <PressableScale
@@ -89,6 +94,8 @@ export const IntentionCard = memo(function IntentionCard({
   onCycleDone,
   suggestions,
 }: Props) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const commit = useCallback(
     (text: string) => onChangeText(slot, text),
     [onChangeText, slot],
@@ -108,7 +115,7 @@ export const IntentionCard = memo(function IntentionCard({
   return (
     <GlassCard style={styles.card}>
       <View style={styles.header}>
-        <Text style={[styles.title, { color: accentColor[accent] }]}>{title}</Text>
+        <Text style={[styles.title, { color: theme.accent[accent] }]}>{title}</Text>
         <InfoTip topic={slot} />
       </View>
 
@@ -120,12 +127,12 @@ export const IntentionCard = memo(function IntentionCard({
             onChangeText={onType}
             onBlur={flush}
             placeholder="Leave blank if today has no one thing"
-            placeholderTextColor={palette.textFaint}
+            placeholderTextColor={theme.textFaint}
             style={styles.input}
             maxLength={MAX}
             autoCapitalize="sentences"
             returnKeyType="done"
-            selectionColor={palette.violet}
+            selectionColor={theme.accent.spirit}
             accessibilityLabel={`${title}: what will you do?`}
             multiline
           />
@@ -151,7 +158,7 @@ export const IntentionCard = memo(function IntentionCard({
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   card: {
     gap: 12,
   },
@@ -178,13 +185,13 @@ const styles = StyleSheet.create({
   prefix: {
     fontSize: 11,
     fontWeight: '700',
-    color: palette.textFaint,
+    color: theme.textFaint,
   },
   input: {
     fontSize: 15,
     lineHeight: 21,
     fontWeight: '600',
-    color: palette.text,
+    color: theme.text,
     padding: 0,
     minHeight: 42,
   },
@@ -201,7 +208,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: StyleSheet.hairlineWidth * 2,
-    backgroundColor: palette.glassSunken,
+    backgroundColor: theme.surfaceSunken,
   },
   doneLabel: {
     fontSize: 10,

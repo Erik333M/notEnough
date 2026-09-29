@@ -9,13 +9,15 @@ import { scoreFor } from '../features/challenges/useChallenges';
 import { dayKey, longDateLabel } from '../lib/time';
 import { useAppState } from '../state/DataContext';
 import { useAuth } from '../state/AuthContext';
-import { palette } from '../theme/theme';
+
 import { Button } from '../ui/Button';
 import { Appear, SectionHeader } from '../ui/Controls';
 import { SkeletonCard } from '../ui/Feedback';
 import { GlassCard } from '../ui/Glass';
 import { StackHeaderBar } from '../ui/StackHeaderBar';
 import { useToast } from '../ui/Toast';
+import type { Theme } from '../theme/tokens';
+import { useStyles, useTheme } from '../theme/ThemeContext';
 
 /**
  * One challenge, and where everyone stands in it.
@@ -34,6 +36,8 @@ export default function ChallengeScreen({
   bottomInset: number;
   onBack: () => void;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const { token, user } = useAuth();
   const state = useAppState();
   const { notify } = useToast();
@@ -113,7 +117,7 @@ export default function ChallengeScreen({
             await load();
             setRefreshing(false);
           }}
-          tintColor={palette.textMuted}
+          tintColor={theme.textMuted}
         />
       }
     >
@@ -147,7 +151,7 @@ export default function ChallengeScreen({
 
               {challenge.reward ? (
                 <View style={styles.rewardRow}>
-                  <Ionicons name="gift-outline" size={15} color={palette.amber} />
+                  <Ionicons name="gift-outline" size={15} color={theme.warning} />
                   <Text style={styles.reward}>{challenge.reward}</Text>
                 </View>
               ) : null}
@@ -200,15 +204,15 @@ export default function ChallengeScreen({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   content: { padding: 18, gap: 16 },
   hero: { gap: 10 },
-  heroLabel: { fontSize: 10.5, fontWeight: '800', letterSpacing: 1.2, color: palette.textFaint },
-  heroTitle: { fontSize: 22, fontWeight: '800', color: palette.text },
-  heroCopy: { fontSize: 12.5, lineHeight: 18, fontWeight: '600', color: palette.textMuted },
+  heroLabel: { fontSize: 10.5, fontWeight: '800', letterSpacing: 1.2, color: theme.textFaint },
+  heroTitle: { fontSize: 22, fontWeight: '800', color: theme.text },
+  heroCopy: { fontSize: 12.5, lineHeight: 18, fontWeight: '600', color: theme.textMuted },
   rewardRow: { flexDirection: 'row', alignItems: 'center', gap: 7 },
-  reward: { flex: 1, fontSize: 13, fontWeight: '700', color: palette.amber },
+  reward: { flex: 1, fontSize: 13, fontWeight: '700', color: theme.warning },
   coachCard: { gap: 10 },
-  coachTitle: { fontSize: 14, fontWeight: '800', color: palette.text },
-  coachCopy: { fontSize: 12.5, lineHeight: 18, fontWeight: '600', color: palette.textMuted },
+  coachTitle: { fontSize: 14, fontWeight: '800', color: theme.text },
+  coachCopy: { fontSize: 12.5, lineHeight: 18, fontWeight: '600', color: theme.textMuted },
 });

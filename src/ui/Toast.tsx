@@ -4,8 +4,11 @@ import { StyleSheet, Text, View } from 'react-native';
 import Animated, { SlideInUp, SlideOutUp } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { accentColor, palette, radius, shadow, type AccentName } from '../theme/theme';
+import { radius, shadow } from '../theme/theme';
 import type { IconName } from '../state/types';
+import type { AccentName } from '../theme/tokens';
+import type { Theme } from '../theme/tokens';
+import { useStyles, useTheme } from '../theme/ThemeContext';
 
 type ToastKind = 'success' | 'info' | 'error';
 
@@ -22,12 +25,14 @@ const KIND_ICON: Record<ToastKind, IconName> = {
 };
 
 const KIND_ACCENT: Record<ToastKind, AccentName> = {
-  success: 'lime',
-  info: 'cyan',
-  error: 'rose',
+  success: 'body',
+  info: 'mind',
+  error: 'danger',
 };
 
 export function ToastProvider({ children }: { children: React.ReactNode }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const [toast, setToast] = useState<Toast | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const counter = useRef(0);
@@ -65,7 +70,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
             <Ionicons
               name={KIND_ICON[toast.kind]}
               size={18}
-              color={accentColor[KIND_ACCENT[toast.kind]]}
+              color={theme.accent[KIND_ACCENT[toast.kind]]}
             />
             <Text style={styles.text} numberOfLines={2}>
               {toast.message}
@@ -83,7 +88,7 @@ export function useToast(): ToastContextValue {
   return ctx;
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   wrap: {
     position: 'absolute',
     left: 16,
@@ -100,7 +105,7 @@ const styles = StyleSheet.create({
     borderRadius: radius.pill,
     backgroundColor: 'rgba(20,24,48,0.94)',
     borderWidth: StyleSheet.hairlineWidth * 2,
-    borderColor: palette.hairlineStrong,
+    borderColor: theme.borderStrong,
     maxWidth: '100%',
     ...(shadow.float as object),
   },
@@ -108,6 +113,6 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 13,
     fontWeight: '700',
-    color: palette.text,
+    color: theme.text,
   },
 });

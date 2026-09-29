@@ -47,6 +47,8 @@
     "e2e:shell": "node e2e/shell.mjs",
     "test:journey": "bash scripts/journey-domain.sh",
     "count": "bash scripts/count-checks.sh",
+    "test:contrast": "node --experimental-strip-types scripts/contrast.test.mjs",
+    "shots": "node e2e/theme-shots.mjs",
     "e2e:catalogue": "node e2e/catalogue.mjs",
     "e2e:friends": "node e2e/friends.mjs",
     "e2e:muscles": "node e2e/muscles.mjs",

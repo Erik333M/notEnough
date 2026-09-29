@@ -39,7 +39,7 @@ export const POLICY_SECTIONS: PolicySection[] = [
     id: 'device',
     title: 'Kept on your device',
     icon: 'phone-portrait-outline',
-    accent: 'violet',
+    accent: 'spirit',
     body: [
       'The app stores its working copy locally, which is why every screen keeps working with no network at all.',
     ],
@@ -67,7 +67,7 @@ export const POLICY_SECTIONS: PolicySection[] = [
     id: 'server',
     title: 'Sent to the server',
     icon: 'cloud-upload-outline',
-    accent: 'cyan',
+    accent: 'mind',
     body: [
       'Only if you create an account, and only when the server is reachable. The server is the small service that ships with this project — run by you or by whoever operates the app, with no external database and no third-party processor.',
     ],
@@ -109,7 +109,7 @@ export const POLICY_SECTIONS: PolicySection[] = [
     id: 'health',
     title: 'Health information stays here',
     icon: 'lock-closed-outline',
-    accent: 'lime',
+    accent: 'body',
     body: [
       'The starting questions cover injuries, medical conditions and who to contact in an emergency. Those answers are treated differently from everything else.',
       'They are written to the secure keystore under their own key, entirely outside the structure that gets synced — there is no code path that can upload them. Nothing about them is written to logs, and every question is optional.',
@@ -120,7 +120,7 @@ export const POLICY_SECTIONS: PolicySection[] = [
     id: 'teams',
     title: 'If you join a team',
     icon: 'people-outline',
-    accent: 'violet',
+    accent: 'spirit',
     body: [
       'Teams are optional and off until you join or create one. If you never do, nothing in this section applies to you and nobody can see anything of yours.',
       'When a coach sets you work, that assignment and the result you log against it are visible to them. That is the whole of what they see. Your own training — your journal, goals, habits, measurements and your answers to the starting questions — is never visible to a coach, in any team, at any time.',
@@ -165,7 +165,7 @@ export const POLICY_SECTIONS: PolicySection[] = [
     id: 'events',
     title: 'If you join an event',
     icon: 'calendar-outline',
-    accent: 'cyan',
+    accent: 'mind',
     body: [
       'A camp or a training week is a team with dates on it, so everything in "If you join a team" applies to it too. Three things are particular to events.',
       'The age group on an event is a label, not a check. The app holds no birthdates and never asks your age — it is there so somebody reading the event knows who it is meant for.',
@@ -177,7 +177,7 @@ export const POLICY_SECTIONS: PolicySection[] = [
     id: 'never',
     title: 'What the app never does',
     icon: 'close-circle-outline',
-    accent: 'rose',
+    accent: 'danger',
     body: [],
     rows: [
       { term: 'No analytics', detail: 'There is no analytics or telemetry SDK in the project.' },
@@ -209,7 +209,7 @@ export const POLICY_SECTIONS: PolicySection[] = [
     id: 'controls',
     title: 'What you can delete',
     icon: 'options-outline',
-    accent: 'amber',
+    accent: 'warning',
     body: [],
     rows: [
       {
@@ -251,7 +251,7 @@ export const POLICY_SECTIONS: PolicySection[] = [
     id: 'security',
     title: 'Security and retention',
     icon: 'shield-checkmark-outline',
-    accent: 'cyan',
+    accent: 'mind',
     body: [
       'Passwords are hashed with scrypt and a per-account salt on the server. Tokens and health answers live in the device keystore rather than ordinary storage.',
       'Your journal stays on the server while the account exists; deleting the account removes it. If you run the server yourself, serve it over HTTPS and set a real signing secret — over plain HTTP on an untrusted network, traffic between the app and the server can be read by others.',

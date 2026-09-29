@@ -3,12 +3,15 @@ import { memo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import type { ChallengeScope, ChallengeSummary } from '../../api/teams';
-import { accentColor, palette, radius, type AccentName } from '../../theme/theme';
+import { radius } from '../../theme/theme';
 import { Pill } from '../../ui/Controls';
 import { GlassCard } from '../../ui/Glass';
 import { ProgressBar } from '../../ui/Progress';
 import { PressableScale } from '../../ui/Touchable';
 import { elapsedFraction, isRunning } from './period';
+import type { AccentName } from '../../theme/tokens';
+import type { Theme } from '../../theme/tokens';
+import { useStyles, useTheme } from '../../theme/ThemeContext';
 
 /**
  * One challenge in a team's list.
@@ -18,9 +21,9 @@ import { elapsedFraction, isRunning } from './period';
  * and the row should not imply otherwise.
  */
 const SCOPE: Record<ChallengeScope, { label: string; accent: AccentName }> = {
-  daily: { label: 'Today', accent: 'lime' },
-  weekly: { label: 'This week', accent: 'cyan' },
-  monthly: { label: 'This month', accent: 'violet' },
+  daily: { label: 'Today', accent: 'body' },
+  weekly: { label: 'This week', accent: 'mind' },
+  monthly: { label: 'This month', accent: 'spirit' },
 };
 
 export const ChallengeRow = memo(function ChallengeRow({
@@ -35,9 +38,11 @@ export const ChallengeRow = memo(function ChallengeRow({
   today: string;
   onPress: () => void;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const { challenge, joined, entrants } = summary;
   const scope = SCOPE[challenge.scope] ?? SCOPE.monthly;
-  const tint = accentColor[scope.accent];
+  const tint = theme.accent[scope.accent];
 
   const score = joined ? Math.max(localScore, summary.myScore) : 0;
   const progress = challenge.target > 0 ? score / challenge.target : 0;
@@ -58,7 +63,7 @@ export const ChallengeRow = memo(function ChallengeRow({
           <Text style={styles.entrants}>
             {entrants === 0 ? 'Nobody yet' : `${entrants} in`}
           </Text>
-          <Ionicons name="chevron-forward" size={15} color={palette.textFaint} />
+          <Ionicons name="chevron-forward" size={15} color={theme.textFaint} />
         </View>
 
         <Text style={styles.title} numberOfLines={2}>
@@ -82,7 +87,7 @@ export const ChallengeRow = memo(function ChallengeRow({
 
         {challenge.reward ? (
           <View style={styles.rewardRow}>
-            <Ionicons name="gift-outline" size={13} color={palette.amber} />
+            <Ionicons name="gift-outline" size={13} color={theme.warning} />
             <Text style={styles.reward} numberOfLines={1}>
               {challenge.reward}
             </Text>
@@ -93,18 +98,18 @@ export const ChallengeRow = memo(function ChallengeRow({
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   card: { gap: 9, padding: 15 },
   head: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   spacer: { flex: 1 },
-  closed: { fontSize: 11, fontWeight: '800', color: palette.textFaint },
-  entrants: { fontSize: 11.5, fontWeight: '700', color: palette.textMuted },
-  title: { fontSize: 15, fontWeight: '800', color: palette.text },
+  closed: { fontSize: 11, fontWeight: '800', color: theme.textFaint },
+  entrants: { fontSize: 11.5, fontWeight: '700', color: theme.textMuted },
+  title: { fontSize: 15, fontWeight: '800', color: theme.text },
   scoreRow: { flexDirection: 'row', alignItems: 'baseline', gap: 6 },
   score: { fontSize: 22, fontWeight: '800' },
-  target: { fontSize: 12.5, fontWeight: '700', color: palette.textMuted },
-  behind: { marginLeft: 'auto', fontSize: 11, fontWeight: '700', color: palette.amber },
-  invite: { fontSize: 12.5, fontWeight: '600', color: palette.textMuted },
+  target: { fontSize: 12.5, fontWeight: '700', color: theme.textMuted },
+  behind: { marginLeft: 'auto', fontSize: 11, fontWeight: '700', color: theme.warning },
+  invite: { fontSize: 12.5, fontWeight: '600', color: theme.textMuted },
   rewardRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  reward: { flex: 1, fontSize: 11.5, fontWeight: '700', color: palette.amber },
+  reward: { flex: 1, fontSize: 11.5, fontWeight: '700', color: theme.warning },
 });

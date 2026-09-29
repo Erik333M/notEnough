@@ -4,9 +4,11 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import type { Session } from '../../api/teams';
 import { longDateLabel } from '../../lib/time';
-import { accentColor, palette, radius } from '../../theme/theme';
+import { radius } from '../../theme/theme';
 import { GlassCard } from '../../ui/Glass';
 import { PressableScale } from '../../ui/Touchable';
+import type { Theme } from '../../theme/tokens';
+import { useStyles, useTheme } from '../../theme/ThemeContext';
 
 /**
  * A session in a list.
@@ -22,13 +24,15 @@ export const SessionRow = memo(function SessionRow({
   session: Session;
   onPress: () => void;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const count = session.taskCount ?? 0;
 
   return (
     <PressableScale haptic="light" onPress={onPress} accessibilityLabel={`Open ${session.name}`}>
       <GlassCard style={styles.row}>
         <View style={styles.icon}>
-          <Ionicons name="calendar-outline" size={17} color={accentColor.violet} />
+          <Ionicons name="calendar-outline" size={17} color={theme.accent.spirit} />
         </View>
 
         <View style={styles.body}>
@@ -46,17 +50,17 @@ export const SessionRow = memo(function SessionRow({
           <Ionicons
             name="eye-outline"
             size={15}
-            color={accentColor.cyan}
+            color={theme.accent.mind}
             accessibilityLabel="Results are visible to the whole team"
           />
         ) : null}
-        <Ionicons name="chevron-forward" size={16} color={palette.textFaint} />
+        <Ionicons name="chevron-forward" size={16} color={theme.textFaint} />
       </GlassCard>
     </PressableScale>
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 14 },
   icon: {
     width: 36,
@@ -64,9 +68,9 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: palette.violetSoft,
+    backgroundColor: theme.accentSoft.spirit,
   },
   body: { flex: 1, gap: 2 },
-  title: { fontSize: 14.5, fontWeight: '800', color: palette.text },
-  meta: { fontSize: 12, fontWeight: '600', color: palette.textMuted },
+  title: { fontSize: 14.5, fontWeight: '800', color: theme.text },
+  meta: { fontSize: 12, fontWeight: '600', color: theme.textMuted },
 });

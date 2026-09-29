@@ -11,11 +11,13 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import type { Assignment } from '../../api/teams';
-import { palette, radius } from '../../theme/theme';
+import { radius } from '../../theme/theme';
 import { Button } from '../../ui/Button';
 import { RoundIconButton, SectionHeader, Stepper } from '../../ui/Controls';
 import { TextArea } from '../../ui/Field';
 import { TASK_KIND_UNIT } from './taskCopy';
+import type { Theme } from '../../theme/tokens';
+import { useStyles } from '../../theme/ThemeContext';
 
 /**
  * Record what you actually did.
@@ -37,6 +39,7 @@ export function LogResultSheet({
   onClose: () => void;
   onSave: (input: { amount: number; done: boolean; notes: string }) => Promise<boolean>;
 }) {
+  const styles = useStyles(makeStyles);
   const insets = useSafeAreaInsets();
   const [amount, setAmount] = useState(0);
   const [notes, setNotes] = useState('');
@@ -152,13 +155,13 @@ export function LogResultSheet({
   );
 }
 
-const styles = StyleSheet.create({
-  backdrop: { flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(2,3,10,0.72)' },
+const makeStyles = (theme: Theme) => StyleSheet.create({
+  backdrop: { flex: 1, justifyContent: 'flex-end', backgroundColor: theme.scrim },
   sheetWrap: { maxHeight: '92%' },
   sheet: {
     gap: 14,
     padding: 18,
-    backgroundColor: '#111634',
+    backgroundColor: theme.surfaceElevated,
     borderTopLeftRadius: radius.xl,
     borderTopRightRadius: radius.xl,
   },
@@ -167,8 +170,8 @@ const styles = StyleSheet.create({
     width: 38,
     height: 4,
     borderRadius: 2,
-    backgroundColor: palette.hairlineStrong,
+    backgroundColor: theme.borderStrong,
   },
-  detail: { fontSize: 12.5, lineHeight: 18, fontWeight: '600', color: palette.textMuted },
-  short: { fontSize: 12, lineHeight: 17, fontWeight: '600', color: palette.textFaint },
+  detail: { fontSize: 12.5, lineHeight: 18, fontWeight: '600', color: theme.textMuted },
+  short: { fontSize: 12, lineHeight: 17, fontWeight: '600', color: theme.textFaint },
 });

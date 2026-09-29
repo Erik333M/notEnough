@@ -3,9 +3,11 @@ import { memo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import type { SessionTask } from '../../api/teams';
-import { accentColor, palette, radius } from '../../theme/theme';
+import { radius } from '../../theme/theme';
 import { RoundIconButton } from '../../ui/Controls';
 import { targetLabel } from './taskCopy';
+import type { Theme } from '../../theme/tokens';
+import { useStyles, useTheme } from '../../theme/ThemeContext';
 
 /**
  * One task in a session, as the coach building it sees it.
@@ -23,6 +25,8 @@ export const TaskRow = memo(function TaskRow({
   index: number;
   onRemove?: () => void;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const target = targetLabel(task.kind, task.target);
 
   return (
@@ -51,13 +55,13 @@ export const TaskRow = memo(function TaskRow({
           accessibilityLabel={`Remove ${task.title}`}
         />
       ) : (
-        <Ionicons name="ellipse-outline" size={15} color={palette.textFaint} />
+        <Ionicons name="ellipse-outline" size={15} color={theme.textFaint} />
       )}
     </View>
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -65,7 +69,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 14,
     borderRadius: radius.md,
-    backgroundColor: palette.glass,
+    backgroundColor: theme.surface,
   },
   number: {
     width: 26,
@@ -73,11 +77,11 @@ const styles = StyleSheet.create({
     borderRadius: 13,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: palette.violetSoft,
+    backgroundColor: theme.accentSoft.spirit,
   },
-  numberText: { fontSize: 11.5, fontWeight: '800', color: palette.violet },
+  numberText: { fontSize: 11.5, fontWeight: '800', color: theme.accent.spirit },
   body: { flex: 1, gap: 2 },
-  title: { fontSize: 14, fontWeight: '700', color: palette.text },
-  detail: { fontSize: 12, fontWeight: '600', color: palette.textMuted },
-  target: { fontSize: 11.5, fontWeight: '800', color: accentColor.cyan },
+  title: { fontSize: 14, fontWeight: '700', color: theme.text },
+  detail: { fontSize: 12, fontWeight: '600', color: theme.textMuted },
+  target: { fontSize: 11.5, fontWeight: '800', color: theme.accent.mind },
 });

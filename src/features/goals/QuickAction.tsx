@@ -2,9 +2,11 @@ import { Ionicons } from '@expo/vector-icons';
 import { memo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { accentColor, palette, radius } from '../../theme/theme';
+import { radius } from '../../theme/theme';
 import { GlassCard } from '../../ui/Glass';
 import { PressableScale } from '../../ui/Touchable';
+import type { Theme } from '../../theme/tokens';
+import { useStyles, useTheme } from '../../theme/ThemeContext';
 
 /**
  * One of the two shortcuts under the hero on Today.
@@ -23,13 +25,15 @@ export const QuickAction = memo(function QuickAction({
   icon: React.ComponentProps<typeof Ionicons>['name'];
   title: string;
   copy: string;
-  accent: 'cyan' | 'violet';
+  accent: 'mind' | 'spirit';
   onPress: () => void;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   return (
     <PressableScale onPress={onPress} haptic="medium" scaleTo={0.96} style={{ flex: 1 }}>
       <GlassCard style={styles.card}>
-        <Ionicons name={icon} size={22} color={accentColor[accent]} />
+        <Ionicons name={icon} size={22} color={theme.accent[accent]} />
         <Text style={styles.title}>{title}</Text>
         <Text style={styles.copy}>{copy}</Text>
       </GlassCard>
@@ -37,7 +41,7 @@ export const QuickAction = memo(function QuickAction({
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   card: { gap: 8, padding: 14 },
   icon: {
     width: 30,
@@ -46,6 +50,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  title: { fontSize: 14.5, fontWeight: '800', color: palette.text },
-  copy: { fontSize: 11.5, fontWeight: '600', color: palette.textMuted },
+  title: { fontSize: 14.5, fontWeight: '800', color: theme.text },
+  copy: { fontSize: 11.5, fontWeight: '600', color: theme.textMuted },
 });

@@ -16,12 +16,15 @@ import { clockLabel } from '../../lib/time';
 import { GOAL_ICONS } from '../../state/defaults';
 import type { GoalDraft } from '../../state/DataContext';
 import { GOAL_UNIT, type Goal, type GoalKind, type IconName } from '../../state/types';
-import { accentColor, palette, radius, type AccentName } from '../../theme/theme';
+import { radius } from '../../theme/theme';
 import { Button } from '../../ui/Button';
 import { RoundIconButton, SectionHeader, Segmented, Toggle } from '../../ui/Controls';
 import { Field } from '../../ui/Field';
 import { GlassCard } from '../../ui/Glass';
 import { PressableScale } from '../../ui/Touchable';
+import type { AccentName } from '../../theme/tokens';
+import type { Theme } from '../../theme/tokens';
+import { useStyles, useTheme } from '../../theme/ThemeContext';
 
 const KINDS: { value: GoalKind; label: string }[] = [
   { value: 'minutes', label: 'Minutes' },
@@ -30,7 +33,7 @@ const KINDS: { value: GoalKind; label: string }[] = [
   { value: 'check', label: 'Check' },
 ];
 
-const ACCENTS: AccentName[] = ['violet', 'cyan', 'lime', 'amber', 'rose'];
+const ACCENTS: AccentName[] = ['spirit', 'mind', 'body', 'warning', 'danger'];
 
 const TARGET_STEP: Record<GoalKind, number> = {
   minutes: 5,
@@ -55,12 +58,14 @@ type Props = {
 };
 
 export function GoalEditor({ visible, goal, onClose, onSave, onDelete }: Props) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const insets = useSafeAreaInsets();
   const [title, setTitle] = useState('');
   const [detail, setDetail] = useState('');
   const [kind, setKind] = useState<GoalKind>('minutes');
   const [target, setTarget] = useState(20);
-  const [accent, setAccent] = useState<AccentName>('violet');
+  const [accent, setAccent] = useState<AccentName>('spirit');
   const [icon, setIcon] = useState<IconName>('flame');
   const [remind, setRemind] = useState(true);
   const [hour, setHour] = useState(18);
@@ -75,7 +80,7 @@ export function GoalEditor({ visible, goal, onClose, onSave, onDelete }: Props) 
     setDetail(goal?.detail ?? '');
     setKind(goal?.kind ?? 'minutes');
     setTarget(goal?.target ?? DEFAULT_TARGET.minutes);
-    setAccent(goal?.accent ?? 'violet');
+    setAccent(goal?.accent ?? 'spirit');
     setIcon(goal?.icon ?? 'flame');
     setRemind(goal?.reminder.enabled ?? true);
     setHour(goal?.reminder.hour ?? 18);
@@ -210,7 +215,7 @@ export function GoalEditor({ visible, goal, onClose, onSave, onDelete }: Props) 
                       <View
                         style={[
                           styles.accentDot,
-                          { backgroundColor: accentColor[name] },
+                          { backgroundColor: theme.accent[name] },
                           accent === name && styles.accentDotActive,
                         ]}
                       />
@@ -233,7 +238,7 @@ export function GoalEditor({ visible, goal, onClose, onSave, onDelete }: Props) 
                         <Ionicons
                           name={name as IconName}
                           size={18}
-                          color={icon === name ? palette.text : palette.textFaint}
+                          color={icon === name ? theme.text : theme.textFaint}
                         />
                       </View>
                     </PressableScale>
@@ -304,6 +309,8 @@ function TimeUnit({
   onChange: (next: number) => void;
   step?: number;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   return (
     <View style={styles.timeUnit}>
       <Text style={styles.timeUnitLabel}>{label}</Text>
@@ -326,21 +333,21 @@ function TimeUnit({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   backdrop: {
     flex: 1,
     justifyContent: 'flex-end',
-    backgroundColor: 'rgba(2,3,10,0.72)',
+    backgroundColor: theme.scrim,
   },
   sheetWrap: {
     maxHeight: '92%',
   },
   sheet: {
-    backgroundColor: '#111634',
+    backgroundColor: theme.surfaceElevated,
     borderTopLeftRadius: radius.xl,
     borderTopRightRadius: radius.xl,
     borderTopWidth: StyleSheet.hairlineWidth * 2,
-    borderColor: palette.hairlineStrong,
+    borderColor: theme.borderStrong,
     paddingHorizontal: 18,
     paddingTop: 10,
   },
@@ -349,7 +356,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 4,
     borderRadius: 2,
-    backgroundColor: palette.hairlineStrong,
+    backgroundColor: theme.borderStrong,
     marginBottom: 12,
   },
   sheetContent: {
@@ -362,7 +369,7 @@ const styles = StyleSheet.create({
   groupLabel: {
     fontSize: 12,
     fontWeight: '700',
-    color: palette.textMuted,
+    color: theme.textMuted,
     marginLeft: 2,
   },
   targetRow: {
@@ -373,7 +380,7 @@ const styles = StyleSheet.create({
   targetValue: {
     fontSize: 20,
     fontWeight: '800',
-    color: palette.text,
+    color: theme.text,
     marginTop: 4,
   },
   targetControls: {
@@ -405,13 +412,13 @@ const styles = StyleSheet.create({
     borderRadius: radius.sm,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: palette.glassSunken,
+    backgroundColor: theme.surfaceSunken,
     borderWidth: StyleSheet.hairlineWidth * 2,
-    borderColor: palette.hairline,
+    borderColor: theme.border,
   },
   iconTileActive: {
-    backgroundColor: palette.glassStrong,
-    borderColor: palette.violet,
+    backgroundColor: theme.surfaceElevated,
+    borderColor: theme.accent.spirit,
   },
   reminderCard: {
     gap: 14,
@@ -424,11 +431,11 @@ const styles = StyleSheet.create({
   reminderTitle: {
     fontSize: 14,
     fontWeight: '800',
-    color: palette.text,
+    color: theme.text,
   },
   reminderCopy: {
     fontSize: 12,
-    color: palette.textFaint,
+    color: theme.textFaint,
     marginTop: 2,
   },
   timeRow: {
@@ -439,7 +446,7 @@ const styles = StyleSheet.create({
   timeColon: {
     fontSize: 20,
     fontWeight: '800',
-    color: palette.textFaint,
+    color: theme.textFaint,
     marginBottom: 8,
   },
   timeUnit: {
@@ -448,7 +455,7 @@ const styles = StyleSheet.create({
   timeUnitLabel: {
     fontSize: 11,
     fontWeight: '700',
-    color: palette.textFaint,
+    color: theme.textFaint,
     textAlign: 'center',
   },
   timeUnitControls: {
@@ -461,13 +468,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 20,
     fontWeight: '800',
-    color: palette.text,
+    color: theme.text,
     fontVariant: ['tabular-nums'],
   },
   timePreview: {
     fontSize: 22,
     fontWeight: '800',
-    color: palette.violet,
+    color: theme.accent.spirit,
     fontVariant: ['tabular-nums'],
   },
 });

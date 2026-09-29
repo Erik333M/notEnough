@@ -19,11 +19,13 @@ import type {
   MeasurementEntry,
   UnitSystem,
 } from '../state/journey/types';
-import { palette } from '../theme/theme';
+
 import { Button } from '../ui/Button';
 import { Appear, Segmented } from '../ui/Controls';
 import { EmptyState } from '../ui/Feedback';
 import { useToast } from '../ui/Toast';
+import type { Theme } from '../theme/tokens';
+import { useStyles } from '../theme/ThemeContext';
 
 const UNIT_OPTIONS = [
   { value: 'metric' as const, label: 'kg / cm' },
@@ -45,6 +47,7 @@ export default function MeasurementsScreen({
   bottomInset: number;
   onBack: () => void;
 }) {
+  const styles = useStyles(makeStyles);
   const state = useAppState();
   const { journey } = useActions();
   const { notify } = useToast();
@@ -220,7 +223,7 @@ export default function MeasurementsScreen({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   flex: {
     flex: 1,
   },
@@ -236,7 +239,7 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '800',
     letterSpacing: 1.4,
-    color: palette.textMuted,
+    color: theme.textMuted,
     paddingTop: 4,
   },
 });

@@ -2,11 +2,13 @@ import { memo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import type { RosterEntry } from '../../api/teams';
-import { accentColor, palette, radius } from '../../theme/theme';
+import { radius } from '../../theme/theme';
 import { Avatar } from '../../ui/Avatar';
 import { Button } from '../../ui/Button';
 import { SectionHeader } from '../../ui/Controls';
 import { GlassCard } from '../../ui/Glass';
+import type { Theme } from '../../theme/tokens';
+import { useStyles, useTheme } from '../../theme/ThemeContext';
 
 /**
  * Who is at the event, in the three groups that matter.
@@ -29,6 +31,7 @@ export const EventRosterSection = memo(function EventRosterSection({
   myId: string | null;
   onSetMember: (userId: string, change: { role?: 'coach' | 'athlete'; status?: 'active' }) => void;
 }) {
+  const styles = useStyles(makeStyles);
   const staff = roster.filter((row) => row.role === 'coach');
   const campers = roster.filter((row) => row.role === 'athlete' && row.status === 'active');
   const waiting = roster.filter((row) => row.role === 'athlete' && row.status === 'pending');
@@ -140,6 +143,8 @@ const Person = memo(function Person({
   busy: boolean;
   actions: Action[];
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   return (
     <View style={styles.row}>
       <Avatar name={entry.name} uri={entry.avatarUrl} size={34} />
@@ -164,21 +169,21 @@ const Person = memo(function Person({
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   wrap: { gap: 16 },
   group: { gap: 8 },
   card: { gap: 10, padding: 12 },
   row: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   body: { flex: 1, gap: 2 },
-  name: { fontSize: 14, fontWeight: '700', color: palette.text },
-  you: { fontSize: 11, fontWeight: '700', color: palette.textFaint },
-  note: { fontSize: 11, fontWeight: '700', color: accentColor.amber },
+  name: { fontSize: 14, fontWeight: '700', color: theme.text },
+  you: { fontSize: 11, fontWeight: '700', color: theme.textFaint },
+  note: { fontSize: 11, fontWeight: '700', color: theme.accent.warning },
   empty: {
     padding: 14,
     borderRadius: radius.md,
-    backgroundColor: palette.glass,
+    backgroundColor: theme.surface,
     fontSize: 12.5,
     fontWeight: '600',
-    color: palette.textMuted,
+    color: theme.textMuted,
   },
 });

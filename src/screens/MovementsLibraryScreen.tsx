@@ -12,13 +12,15 @@ import {
   searchMovements,
 } from '../state/journey/movements';
 import type { Movement, MovementCategory } from '../state/journey/types';
-import { muscleSummary } from '../state/journey/muscles';
+import { muscleSummary, type MuscleWork } from '../state/journey/muscles';
 import { MuscleSheet } from '../features/muscles/MuscleSheet';
-import { accentColor, palette } from '../theme/theme';
+
 import { Appear, RoundIconButton } from '../ui/Controls';
 import { EmptyState } from '../ui/Feedback';
 import { PressableScale } from '../ui/Touchable';
 import { useToast } from '../ui/Toast';
+import type { Theme } from '../theme/tokens';
+import { useStyles, useTheme } from '../theme/ThemeContext';
 
 /**
  * The movements catalogue.
@@ -40,6 +42,8 @@ const Row = memo(function Row({
   onDelete: (movement: Movement) => void;
   onShowMuscles: (movement: Movement) => void;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const handleDelete = useCallback(() => onDelete(movement), [movement, onDelete]);
   const tagged = movement.muscles.primary.length > 0;
 
@@ -55,19 +59,30 @@ const Row = memo(function Row({
         </Text>
       </View>
 
-      {/* The figure is the point of the tagging, so it is one tap from a row. */}
-      {tagged ? (
-        <PressableScale
-          onPress={() => onShowMuscles(movement)}
-          haptic="light"
-          scaleTo={0.86}
-          hitSlop={10}
-          accessibilityLabel={`Which muscles ${movement.name} works`}
-          style={styles.delete}
-        >
-          <Ionicons name="body-outline" size={16} color={accentColor.rose} />
-        </PressableScale>
-      ) : null}
+      {/*
+        Every row has a figure, tagged or not.
+        
+        It used to appear only on tagged rows, which meant a movement somebody
+        added themselves silently looked different from the 223 that ship with
+        the app — and offered no way to fix that. On an untagged one the icon
+        is an outline and opens the picker instead of the map.
+      */}
+      <PressableScale
+        onPress={() => onShowMuscles(movement)}
+        haptic="light"
+        scaleTo={0.86}
+        hitSlop={10}
+        accessibilityLabel={
+          tagged ? `Which muscles ${movement.name} works` : `Say what ${movement.name} works`
+        }
+        style={styles.delete}
+      >
+        <Ionicons
+          name={tagged ? 'body' : 'body-outline'}
+          size={16}
+          color={tagged ? theme.accent.danger : theme.textFaint}
+        />
+      </PressableScale>
 
       {movement.isCustom ? (
         <PressableScale
@@ -78,7 +93,7 @@ const Row = memo(function Row({
           accessibilityLabel={`Delete ${movement.name}`}
           style={styles.delete}
         >
-          <Ionicons name="trash-outline" size={15} color={palette.textFaint} />
+          <Ionicons name="trash-outline" size={15} color={theme.textFaint} />
         </PressableScale>
       ) : null}
     </View>
@@ -92,6 +107,7 @@ export default function MovementsLibraryScreen({
   bottomInset: number;
   onBack: () => void;
 }) {
+  const styles = useStyles(makeStyles);
   const state = useAppState();
   const { journey } = useActions();
   const { notify } = useToast();
@@ -117,8 +133,8 @@ export default function MovementsLibraryScreen({
   );
 
   const handleCreate = useCallback(
-    (name: string, cat: MovementCategory) => {
-      journey.addMovement(name, cat);
+    (name: string, cat: MovementCategory, muscles: MuscleWork) => {
+      journey.addMovement(name, cat, [], muscles);
       setCreating(false);
       notify(`${name} added.`, 'success');
     },
@@ -139,7 +155,7 @@ export default function MovementsLibraryScreen({
           <RoundIconButton
             icon="add"
             size={44}
-            accent="lime"
+            accent="body"
             onPress={() => setCreating(true)}
             accessibilityLabel="Add a movement"
           />
@@ -193,14 +209,21 @@ export default function MovementsLibraryScreen({
         name={showing?.name ?? null}
         work={showing?.muscles ?? { primary: [], secondary: [] }}
         form={bodyForm}
+        // Only your own movements are editable. The shipped catalogue is a
+        // reference; letting it be rewritten per account would make two people
+        // disagree about what a back squat works.
+        editable={showing?.isCustom ?? false}
         onChangeForm={journey.setBodyForm}
+        onChangeWork={(work) => {
+          if (showing) journey.setMovementMuscles(showing.id, work);
+        }}
         onClose={() => setShowing(null)}
       />
     </View>
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   flex: {
     flex: 1,
   },
@@ -217,7 +240,7 @@ const styles = StyleSheet.create({
     gap: 10,
     minHeight: 56,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: palette.hairline,
+    borderBottomColor: theme.border,
   },
   rowText: {
     flex: 1,
@@ -226,12 +249,12 @@ const styles = StyleSheet.create({
   rowTitle: {
     fontSize: 15,
     fontWeight: '700',
-    color: palette.text,
+    color: theme.text,
   },
   rowMeta: {
     fontSize: 11,
     fontWeight: '600',
-    color: palette.textFaint,
+    color: theme.textFaint,
     marginTop: 2,
   },
   delete: {

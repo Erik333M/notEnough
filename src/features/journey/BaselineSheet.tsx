@@ -20,10 +20,12 @@ import {
 } from '../../state/journey/baselineFields';
 import { BOUNDS } from '../../state/journey/bounds';
 import type { MeasurementBaseline, UnitSystem } from '../../state/journey/types';
-import { palette, radius } from '../../theme/theme';
+import { radius } from '../../theme/theme';
 import { Button } from '../../ui/Button';
 import { RoundIconButton, SectionHeader } from '../../ui/Controls';
 import { Field } from '../../ui/Field';
+import type { Theme } from '../../theme/tokens';
+import { useStyles, useTheme } from '../../theme/ThemeContext';
 
 /**
  * The five baseline figures.
@@ -50,6 +52,7 @@ type Props = {
 };
 
 export function BaselineSheet({ visible, baseline, units, onClose, onSave }: Props) {
+  const styles = useStyles(makeStyles);
   const insets = useSafeAreaInsets();
   const [text, setText] = useState<Record<BaselineKey, string>>(
     {} as Record<BaselineKey, string>,
@@ -159,6 +162,7 @@ const BaselineInput = memo(function BaselineInput({
   value: string;
   onChange: (next: string) => void;
 }) {
+  const theme = useTheme();
   const handle = useCallback(
     (text: string) => {
       const cleaned = text.replace(/[^0-9.]/g, '');
@@ -180,22 +184,22 @@ const BaselineInput = memo(function BaselineInput({
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   backdrop: {
     flex: 1,
     justifyContent: 'flex-end',
-    backgroundColor: 'rgba(2,3,10,0.72)',
+    backgroundColor: theme.scrim,
   },
   sheetWrap: {
     height: '90%',
   },
   sheet: {
     flex: 1,
-    backgroundColor: '#111634',
+    backgroundColor: theme.surfaceElevated,
     borderTopLeftRadius: radius.xl,
     borderTopRightRadius: radius.xl,
     borderTopWidth: StyleSheet.hairlineWidth * 2,
-    borderColor: palette.hairlineStrong,
+    borderColor: theme.borderStrong,
     paddingHorizontal: 18,
     paddingTop: 10,
     gap: 14,
@@ -205,7 +209,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 4,
     borderRadius: 2,
-    backgroundColor: palette.hairlineStrong,
+    backgroundColor: theme.borderStrong,
   },
   content: {
     gap: 16,
@@ -218,13 +222,13 @@ const styles = StyleSheet.create({
     fontSize: 11,
     lineHeight: 16,
     fontWeight: '600',
-    color: palette.textFaint,
+    color: theme.textFaint,
     marginLeft: 2,
   },
   error: {
     fontSize: 12,
     fontWeight: '700',
-    color: palette.rose,
+    color: theme.error,
     marginLeft: 2,
   },
 });

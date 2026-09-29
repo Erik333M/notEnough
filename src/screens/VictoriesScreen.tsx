@@ -13,12 +13,14 @@ import {
   totalDaysWon,
   victorySeries,
 } from '../state/victories';
-import { palette, radius } from '../theme/theme';
+import { radius } from '../theme/theme';
 import { Appear, SectionHeader, StatTile } from '../ui/Controls';
 import { SkeletonCard } from '../ui/Feedback';
 import { GlassCard } from '../ui/Glass';
 import { ColumnChart } from '../ui/Progress';
 import { useToast } from '../ui/Toast';
+import type { Theme } from '../theme/tokens';
+import { useStyles } from '../theme/ThemeContext';
 
 /**
  * 3 Victories dashboard.
@@ -29,6 +31,7 @@ import { useToast } from '../ui/Toast';
  * costs one pass over today's record rather than one per card.
  */
 export default function VictoriesScreen({ bottomInset }: { bottomInset: number }) {
+  const styles = useStyles(makeStyles);
   const state = useAppState();
   const stats = useStats();
   const { toggleVictoryGoal, setVictoryTarget } = useActions();
@@ -158,11 +161,11 @@ export default function VictoriesScreen({ bottomInset }: { bottomInset: number }
 
         <Appear delay={360}>
           <GlassCard style={styles.history}>
-            <ColumnChart data={series} accent="violet" height={118} />
+            <ColumnChart data={series} accent="spirit" height={118} />
             <View style={styles.statRow}>
-              <StatTile value={`${streak}d`} label="Perfect streak" accent="lime" />
-              <StatTile value={`${daysWon}`} label="Days won" accent="violet" />
-              <StatTile value={`${score}/${TOTAL_VICTORY_GOALS}`} label="Today" accent="amber" />
+              <StatTile value={`${streak}d`} label="Perfect streak" accent="body" />
+              <StatTile value={`${daysWon}`} label="Days won" accent="spirit" />
+              <StatTile value={`${score}/${TOTAL_VICTORY_GOALS}`} label="Today" accent="warning" />
             </View>
           </GlassCard>
         </Appear>
@@ -178,7 +181,7 @@ export default function VictoriesScreen({ bottomInset }: { bottomInset: number }
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   content: {
     paddingHorizontal: 18,
     gap: 14,
@@ -193,23 +196,23 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: '800',
     letterSpacing: 1.8,
-    color: palette.textFaint,
+    color: theme.textFaint,
   },
   heroLine: {
     fontSize: 15,
     lineHeight: 22,
     fontWeight: '800',
     letterSpacing: 0.6,
-    color: palette.text,
+    color: theme.text,
   },
   heroArrow: {
-    color: palette.violet,
+    color: theme.accent.spirit,
   },
   heroCopy: {
     fontSize: 12,
     lineHeight: 18,
     fontWeight: '600',
-    color: palette.textMuted,
+    color: theme.textMuted,
   },
   history: {
     gap: 14,

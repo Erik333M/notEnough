@@ -3,10 +3,12 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { WOD_ROUNDS, WOD_TAGS } from '../../state/journey/types';
 import type { WodRounds, WodTag } from '../../state/journey/types';
-import { palette, radius } from '../../theme/theme';
+import { radius } from '../../theme/theme';
 import { Chip } from '../../ui/Controls';
 import { GlassCard } from '../../ui/Glass';
 import { InfoTip } from './InfoTip';
+import type { Theme } from '../../theme/tokens';
+import { useStyles, useTheme } from '../../theme/ThemeContext';
 
 /**
  * The two tap-only cards at the top of the builder: what kind of training it
@@ -29,6 +31,8 @@ export const WodTagsCard = memo(function WodTagsCard({
   tags: WodTag[];
   onToggle: (tag: WodTag) => void;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   return (
     <GlassCard style={styles.card}>
       <View style={styles.headerRow}>
@@ -42,7 +46,7 @@ export const WodTagsCard = memo(function WodTagsCard({
             key={tag}
             label={`${tag} · ${TAG_LABEL[tag]}`}
             active={tags.includes(tag)}
-            accent="cyan"
+            accent="mind"
             onPress={() => onToggle(tag)}
           />
         ))}
@@ -58,6 +62,8 @@ export const WodRoundsCard = memo(function WodRoundsCard({
   rounds: WodRounds | null;
   onSelect: (rounds: WodRounds) => void;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   return (
     <GlassCard style={styles.card}>
       <Text style={styles.label}>ROUNDS</Text>
@@ -68,7 +74,7 @@ export const WodRoundsCard = memo(function WodRoundsCard({
             key={round}
             label={`${round}`}
             active={rounds === round}
-            accent="violet"
+            accent="spirit"
             onPress={() => onSelect(round)}
           />
         ))}
@@ -77,7 +83,7 @@ export const WodRoundsCard = memo(function WodRoundsCard({
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   card: {
     gap: 10,
     borderRadius: radius.lg,
@@ -92,13 +98,13 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '800',
     letterSpacing: 1.4,
-    color: palette.textMuted,
+    color: theme.textMuted,
   },
   hint: {
     fontSize: 12,
     lineHeight: 18,
     fontWeight: '600',
-    color: palette.textFaint,
+    color: theme.textFaint,
   },
   chips: {
     flexDirection: 'row',

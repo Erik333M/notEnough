@@ -2,8 +2,10 @@ import { memo } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import type { Leaderboard, StandingsRow } from '../../api/event-stats';
-import { accentColor, palette, radius } from '../../theme/theme';
+import { radius } from '../../theme/theme';
 import { GlassCard } from '../../ui/Glass';
+import type { Theme } from '../../theme/tokens';
+import { useStyles, useTheme } from '../../theme/ThemeContext';
 
 /**
  * The table, and who leads each thing being counted.
@@ -24,6 +26,8 @@ export const StandingsTable = memo(function StandingsTable({
   leaders: Leaderboard[];
   scoreLabel: string;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const anyPlayed = standings.some((row) => row.played > 0);
 
   return (
@@ -89,6 +93,8 @@ export const StandingsTable = memo(function StandingsTable({
 });
 
 const Head = memo(function Head({ label, wide = false }: { label: string; wide?: boolean }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   return <Text style={[styles.cell, wide && styles.wide, styles.headText]}>{label}</Text>;
 });
 
@@ -103,6 +109,8 @@ const Cell = memo(function Cell({
   strong?: boolean;
   signed?: boolean;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   return (
     <Text style={[styles.cell, wide && styles.wide, strong && styles.strong]}>
       {signed && value > 0 ? `+${value}` : value}
@@ -110,37 +118,37 @@ const Cell = memo(function Cell({
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   wrap: { gap: 10 },
   card: { gap: 8, padding: 14 },
   row: { flexDirection: 'row', alignItems: 'center' },
-  head: { paddingBottom: 6, borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.08)' },
+  head: { paddingBottom: 6, borderBottomWidth: 1, borderBottomColor: theme.surface },
   cell: {
     width: 30,
     paddingVertical: 5,
     textAlign: 'center',
     fontSize: 12.5,
     fontWeight: '700',
-    color: palette.textMuted,
+    color: theme.textMuted,
   },
   wide: { width: 38 },
-  name: { width: 120, textAlign: 'left', color: palette.text, fontWeight: '800' },
-  headText: { fontSize: 10.5, fontWeight: '800', color: palette.textFaint, textTransform: 'uppercase' },
-  strong: { color: accentColor.lime, fontWeight: '800' },
-  footnote: { fontSize: 11, lineHeight: 16, fontWeight: '600', color: palette.textFaint },
-  boardTitle: { fontSize: 13, fontWeight: '800', color: palette.text },
+  name: { width: 120, textAlign: 'left', color: theme.text, fontWeight: '800' },
+  headText: { fontSize: 10.5, fontWeight: '800', color: theme.textFaint, textTransform: 'uppercase' },
+  strong: { color: theme.accent.body, fontWeight: '800' },
+  footnote: { fontSize: 11, lineHeight: 16, fontWeight: '600', color: theme.textFaint },
+  boardTitle: { fontSize: 13, fontWeight: '800', color: theme.text },
   boardRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   rank: {
     width: 20,
     height: 20,
     borderRadius: 10,
-    backgroundColor: palette.violetSoft,
+    backgroundColor: theme.accentSoft.spirit,
     textAlign: 'center',
     lineHeight: 20,
     fontSize: 10.5,
     fontWeight: '800',
-    color: palette.violet,
+    color: theme.accent.spirit,
   },
-  boardName: { flex: 1, fontSize: 13, fontWeight: '700', color: palette.text },
-  boardValue: { fontSize: 14, fontWeight: '800', color: accentColor.lime },
+  boardName: { flex: 1, fontSize: 13, fontWeight: '700', color: theme.text },
+  boardValue: { fontSize: 14, fontWeight: '800', color: theme.accent.body },
 });

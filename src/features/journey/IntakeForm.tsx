@@ -2,9 +2,11 @@ import { memo, useCallback, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import type { Intake } from '../../state/journey/types';
-import { palette } from '../../theme/theme';
+
 import { Chip } from '../../ui/Controls';
 import { Field, TextArea } from '../../ui/Field';
+import type { Theme } from '../../theme/tokens';
+import { useStyles } from '../../theme/ThemeContext';
 
 /**
  * The baseline questions.
@@ -25,6 +27,7 @@ type Props = {
 const DAYS = [1, 2, 3, 4, 5, 6, 7];
 
 export const IntakeForm = memo(function IntakeForm({ value, onChange }: Props) {
+  const styles = useStyles(makeStyles);
   const [days, setDays] = useState<number | null>(value.daysPerWeek);
 
   const patch = useCallback(
@@ -49,7 +52,7 @@ export const IntakeForm = memo(function IntakeForm({ value, onChange }: Props) {
           <Chip
             label="Yes"
             active={value.currentlyTraining === true}
-            accent="lime"
+            accent="body"
             onPress={() =>
               patch({ currentlyTraining: value.currentlyTraining === true ? null : true })
             }
@@ -57,7 +60,7 @@ export const IntakeForm = memo(function IntakeForm({ value, onChange }: Props) {
           <Chip
             label="Not right now"
             active={value.currentlyTraining === false}
-            accent="violet"
+            accent="spirit"
             onPress={() =>
               patch({ currentlyTraining: value.currentlyTraining === false ? null : false })
             }
@@ -73,7 +76,7 @@ export const IntakeForm = memo(function IntakeForm({ value, onChange }: Props) {
               key={day}
               label={`${day}`}
               active={days === day}
-              accent="cyan"
+              accent="mind"
               onPress={() => handleDays(day)}
             />
           ))}
@@ -138,7 +141,7 @@ export const IntakeForm = memo(function IntakeForm({ value, onChange }: Props) {
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   wrap: {
     gap: 18,
   },
@@ -148,14 +151,14 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 13,
     fontWeight: '700',
-    color: palette.text,
+    color: theme.text,
     marginLeft: 2,
   },
   hint: {
     fontSize: 11,
     lineHeight: 16,
     fontWeight: '600',
-    color: palette.textFaint,
+    color: theme.textFaint,
     marginLeft: 2,
   },
   chips: {

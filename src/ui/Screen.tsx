@@ -8,8 +8,8 @@ import Animated, {
   withRepeat,
   withTiming,
 } from 'react-native-reanimated';
-
-import { gradients, palette } from '../theme/theme';
+import type { Theme } from '../theme/tokens';
+import { useStyles, useTheme } from '../theme/ThemeContext';
 
 /**
  * The app canvas: one gradient plus two slow-drifting light orbs.
@@ -30,6 +30,8 @@ const Orb = memo(function Orb({
   left: number;
   delay: number;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const drift = useSharedValue(0);
 
   useEffect(() => {
@@ -69,27 +71,38 @@ const Orb = memo(function Orb({
 });
 
 export function Screen({ children }: { children: React.ReactNode }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   return (
     <View style={styles.root}>
       <LinearGradient
-        colors={gradients.canvas}
+        colors={theme.canvas}
         locations={[0, 0.52, 1]}
         start={{ x: 0.1, y: 0 }}
         end={{ x: 0.9, y: 1 }}
         style={StyleSheet.absoluteFill}
       />
-      <Orb color="rgba(139,107,255,0.55)" size={300} top={-90} left={-70} delay={0} />
-      <Orb color="rgba(63,224,232,0.30)" size={240} top={220} left={210} delay={2600} />
-      <Orb color="rgba(255,122,143,0.22)" size={260} top={560} left={-60} delay={5200} />
+      {/*
+        Two, not three, and both faint.
+        
+        The old canvas had a violet, a cyan and a rose orb at a strength you
+        could name the colour of. Against graphite that reads as a different
+        app showing through, and it put saturated colour behind text that has
+        to stay legible. What is left is a single lift of the primary and one
+        of the surface — enough that the page is not a flat rectangle, not
+        enough to notice unless you look for it.
+      */}
+      <Orb color={theme.accentSoft.body} size={320} top={-110} left={-90} delay={0} />
+      <Orb color={theme.surfaceElevated} size={260} top={420} left={190} delay={2600} />
       {children}
     </View>
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: palette.bg0,
+    backgroundColor: theme.bgDeep,
     overflow: 'hidden',
   },
 });

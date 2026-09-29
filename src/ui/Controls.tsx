@@ -10,9 +10,12 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-import { accentColor, accentSoft, motion, palette, radius, type AccentName } from '../theme/theme';
+import { motion, radius } from '../theme/theme';
 import type { IconName } from '../state/types';
 import { PressableScale } from './Touchable';
+import type { AccentName } from '../theme/tokens';
+import type { Theme } from '../theme/tokens';
+import { useStyles, useTheme } from '../theme/ThemeContext';
 
 /* ------------------------------------------------------------------ header */
 
@@ -25,6 +28,8 @@ export const SectionHeader = memo(function SectionHeader({
   meta?: string;
   action?: React.ReactNode;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   return (
     <View style={styles.sectionHeader}>
       <View style={{ flex: 1 }}>
@@ -41,16 +46,18 @@ export const SectionHeader = memo(function SectionHeader({
 export const Pill = memo(function Pill({
   label,
   icon,
-  accent = 'violet',
+  accent = 'spirit',
 }: {
   label: string;
   icon?: IconName;
   accent?: AccentName;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   return (
-    <View style={[styles.pill, { backgroundColor: accentSoft[accent] }]}>
-      {icon ? <Ionicons name={icon} size={13} color={accentColor[accent]} /> : null}
-      <Text style={[styles.pillText, { color: accentColor[accent] }]} numberOfLines={1}>
+    <View style={[styles.pill, { backgroundColor: theme.accentSoft[accent] }]}>
+      {icon ? <Ionicons name={icon} size={13} color={theme.accent[accent]} /> : null}
+      <Text style={[styles.pillText, { color: theme.accent[accent] }]} numberOfLines={1}>
         {label}
       </Text>
     </View>
@@ -63,22 +70,24 @@ export const Chip = memo(function Chip({
   label,
   active,
   onPress,
-  accent = 'violet',
+  accent = 'spirit',
 }: {
   label: string;
   active: boolean;
   onPress: () => void;
   accent?: AccentName;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   return (
     <PressableScale onPress={onPress} haptic="selection" scaleTo={0.94} style={styles.chipWrap}>
       <View
         style={[
           styles.chip,
-          active && { backgroundColor: accentColor[accent], borderColor: accentColor[accent] },
+          active && { backgroundColor: theme.accent[accent], borderColor: theme.accent[accent] },
         ]}
       >
-        <Text style={[styles.chipText, active && { color: palette.onAccent }]} numberOfLines={1}>
+        <Text style={[styles.chipText, active && { color: theme.onPrimary }]} numberOfLines={1}>
           {label}
         </Text>
       </View>
@@ -106,6 +115,7 @@ export function Segmented<T extends string>({
     pos.value = withSpring(index, motion.spring);
   }, [index, pos]);
 
+  const styles = useStyles(makeStyles);
   const onLayout = useCallback((e: LayoutChangeEvent) => setWidth(e.nativeEvent.layout.width), []);
 
   const segmentWidth = width > 0 ? (width - 8) / options.length : 0;
@@ -143,12 +153,14 @@ export function Segmented<T extends string>({
 export const Toggle = memo(function Toggle({
   value,
   onChange,
-  accent = 'lime',
+  accent = 'body',
 }: {
   value: boolean;
   onChange: (next: boolean) => void;
   accent?: AccentName;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const t = useSharedValue(value ? 1 : 0);
 
   useEffect(() => {
@@ -159,7 +171,7 @@ export const Toggle = memo(function Toggle({
     backgroundColor: interpolateColor(
       t.value,
       [0, 1],
-      ['rgba(255,255,255,0.14)', accentColor[accent]],
+      [theme.surfaceElevated, theme.accent[accent]],
     ),
   }));
 
@@ -206,6 +218,8 @@ export const Stepper = memo(function Stepper({
   max: number;
   step?: number;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   return (
     <View style={styles.stepper}>
       <View style={{ flex: 1 }}>
@@ -249,6 +263,8 @@ export const RoundIconButton = memo(function RoundIconButton({
    */
   accessibilityLabel?: string;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   return (
     <PressableScale
       onPress={onPress}
@@ -261,13 +277,13 @@ export const RoundIconButton = memo(function RoundIconButton({
         style={[
           styles.roundButton,
           { width: size, height: size, borderRadius: size / 2 },
-          accent && { backgroundColor: accentSoft[accent], borderColor: accentColor[accent] },
+          accent && { backgroundColor: theme.accentSoft[accent], borderColor: theme.accent[accent] },
         ]}
       >
         <Ionicons
           name={icon}
           size={size * 0.45}
-          color={accent ? accentColor[accent] : palette.text}
+          color={accent ? theme.accent[accent] : theme.text}
         />
       </View>
     </PressableScale>
@@ -285,6 +301,8 @@ export const StatTile = memo(function StatTile({
   label: string;
   accent?: AccentName;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   return (
     <View style={styles.statTile}>
       {/*
@@ -293,7 +311,7 @@ export const StatTile = memo(function StatTile({
         nonsense — the one thing a stat tile must not do.
       */}
       <Text
-        style={[styles.statValue, accent && { color: accentColor[accent] }]}
+        style={[styles.statValue, accent && { color: theme.accent[accent] }]}
         numberOfLines={1}
         adjustsFontSizeToFit
         minimumFontScale={0.7}
@@ -321,6 +339,7 @@ export const Appear = memo(function Appear({
   distance?: number;
   style?: object;
 }) {
+  const theme = useTheme();
   const t = useSharedValue(0);
 
   useEffect(() => {
@@ -335,7 +354,7 @@ export const Appear = memo(function Appear({
   return <Animated.View style={[style, animated]}>{children}</Animated.View>;
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   sectionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -344,11 +363,11 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 17,
     fontWeight: '800',
-    color: palette.text,
+    color: theme.text,
   },
   sectionMeta: {
     fontSize: 12,
-    color: palette.textFaint,
+    color: theme.textFaint,
     marginTop: 2,
     fontWeight: '600',
   },
@@ -374,22 +393,22 @@ const styles = StyleSheet.create({
     borderRadius: radius.sm,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: palette.glass,
+    backgroundColor: theme.surface,
     borderWidth: StyleSheet.hairlineWidth * 2,
-    borderColor: palette.hairline,
+    borderColor: theme.border,
   },
   chipText: {
     fontSize: 13,
     fontWeight: '700',
-    color: palette.textMuted,
+    color: theme.textMuted,
   },
   segmented: {
     flexDirection: 'row',
     padding: 4,
     borderRadius: radius.md,
-    backgroundColor: palette.glassSunken,
+    backgroundColor: theme.surfaceSunken,
     borderWidth: StyleSheet.hairlineWidth * 2,
-    borderColor: palette.hairline,
+    borderColor: theme.border,
   },
   segmentIndicator: {
     position: 'absolute',
@@ -397,9 +416,9 @@ const styles = StyleSheet.create({
     left: 4,
     bottom: 4,
     borderRadius: radius.sm,
-    backgroundColor: palette.glassStrong,
+    backgroundColor: theme.surfaceElevated,
     borderWidth: StyleSheet.hairlineWidth * 2,
-    borderColor: palette.hairlineStrong,
+    borderColor: theme.borderStrong,
   },
   segment: {
     flex: 1,
@@ -410,10 +429,10 @@ const styles = StyleSheet.create({
   segmentText: {
     fontSize: 13,
     fontWeight: '700',
-    color: palette.textFaint,
+    color: theme.textFaint,
   },
   segmentTextActive: {
-    color: palette.text,
+    color: theme.text,
   },
   toggleHit: {
     padding: 4,
@@ -437,19 +456,19 @@ const styles = StyleSheet.create({
     gap: 12,
     padding: 14,
     borderRadius: radius.md,
-    backgroundColor: palette.glassSunken,
+    backgroundColor: theme.surfaceSunken,
     borderWidth: StyleSheet.hairlineWidth * 2,
-    borderColor: palette.hairline,
+    borderColor: theme.border,
   },
   stepperLabel: {
     fontSize: 12,
-    color: palette.textFaint,
+    color: theme.textFaint,
     fontWeight: '700',
   },
   stepperValue: {
     fontSize: 20,
     fontWeight: '800',
-    color: palette.text,
+    color: theme.text,
     marginTop: 2,
   },
   stepperControls: {
@@ -459,27 +478,27 @@ const styles = StyleSheet.create({
   roundButton: {
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: palette.glassStrong,
+    backgroundColor: theme.surfaceElevated,
     borderWidth: StyleSheet.hairlineWidth * 2,
-    borderColor: palette.hairlineStrong,
+    borderColor: theme.borderStrong,
   },
   statTile: {
     flex: 1,
     padding: 12,
     borderRadius: radius.md,
-    backgroundColor: palette.glassSunken,
+    backgroundColor: theme.surfaceSunken,
     borderWidth: StyleSheet.hairlineWidth * 2,
-    borderColor: palette.hairline,
+    borderColor: theme.border,
     gap: 3,
   },
   statValue: {
     fontSize: 19,
     fontWeight: '800',
-    color: palette.text,
+    color: theme.text,
   },
   statLabel: {
     fontSize: 11,
     fontWeight: '700',
-    color: palette.textFaint,
+    color: theme.textFaint,
   },
 });

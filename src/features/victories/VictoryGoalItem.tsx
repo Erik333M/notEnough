@@ -10,8 +10,11 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import type { VictoryGoalDef } from '../../state/victories';
-import { accentColor, motion, palette, radius, type AccentName } from '../../theme/theme';
+import { motion, radius } from '../../theme/theme';
 import { PressableScale } from '../../ui/Touchable';
+import type { AccentName } from '../../theme/tokens';
+import type { Theme } from '../../theme/tokens';
+import { useStyles, useTheme } from '../../theme/ThemeContext';
 
 type Props = {
   goal: VictoryGoalDef;
@@ -38,6 +41,8 @@ export const VictoryGoalItem = memo(function VictoryGoalItem({
   onToggle,
   onEditTarget,
 }: Props) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const t = useSharedValue(done ? 1 : 0);
 
   useEffect(() => {
@@ -48,12 +53,12 @@ export const VictoryGoalItem = memo(function VictoryGoalItem({
     backgroundColor: interpolateColor(
       t.value,
       [0, 1],
-      [palette.glassSunken, accentColor[accent]],
+      [theme.surfaceSunken, theme.accent[accent]],
     ),
     borderColor: interpolateColor(
       t.value,
       [0, 1],
-      [palette.hairlineStrong, accentColor[accent]],
+      [theme.borderStrong, theme.accent[accent]],
     ),
   }));
 
@@ -64,7 +69,7 @@ export const VictoryGoalItem = memo(function VictoryGoalItem({
   }));
 
   const titleStyle = useAnimatedStyle(() => ({
-    color: interpolateColor(t.value, [0, 1], [palette.text, accentColor[accent]]),
+    color: interpolateColor(t.value, [0, 1], [theme.text, theme.accent[accent]]),
   }));
 
   const handleToggle = useCallback(() => onToggle(goal.key), [goal.key, onToggle]);
@@ -84,7 +89,7 @@ export const VictoryGoalItem = memo(function VictoryGoalItem({
     >
       <Animated.View style={[styles.box, boxStyle]}>
         <Animated.View style={tickStyle}>
-          <Ionicons name="checkmark-sharp" size={16} color={palette.onAccent} />
+          <Ionicons name="checkmark-sharp" size={16} color={theme.onPrimary} />
         </Animated.View>
       </Animated.View>
 
@@ -105,7 +110,7 @@ export const VictoryGoalItem = memo(function VictoryGoalItem({
         accessibilityLabel={`Edit target for ${goal.title}`}
         style={styles.edit}
       >
-        <Ionicons name="options-outline" size={15} color={palette.textFaint} />
+        <Ionicons name="options-outline" size={15} color={theme.textFaint} />
       </PressableScale>
     </PressableScale>
   );
@@ -119,6 +124,8 @@ export const VictoryGoalDot = memo(function VictoryGoalDot({
   done: boolean;
   accent: AccentName;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const t = useSharedValue(done ? 1 : 0);
 
   useEffect(() => {
@@ -129,14 +136,14 @@ export const VictoryGoalDot = memo(function VictoryGoalDot({
     backgroundColor: interpolateColor(
       t.value,
       [0, 1],
-      ['rgba(255,255,255,0.14)', accentColor[accent]],
+      [theme.surfaceElevated, theme.accent[accent]],
     ),
   }));
 
   return <Animated.View style={[styles.dot, style]} />;
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -157,12 +164,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 14,
     fontWeight: '700',
-    color: palette.text,
+    color: theme.text,
   },
   target: {
     fontSize: 12,
     fontWeight: '600',
-    color: palette.textFaint,
+    color: theme.textFaint,
     marginTop: 2,
   },
   edit: {
@@ -171,7 +178,7 @@ const styles = StyleSheet.create({
     borderRadius: radius.pill,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: palette.glassSunken,
+    backgroundColor: theme.surfaceSunken,
   },
   dot: {
     flex: 1,

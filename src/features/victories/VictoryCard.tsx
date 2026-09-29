@@ -11,9 +11,11 @@ import Animated, {
 
 import type { VictoryDay, VictoryGoalKey } from '../../state/types';
 import { isGoalDone, victoryScore, type VictoryDef } from '../../state/victories';
-import { accentColor, accentSoft, motion, palette, radius } from '../../theme/theme';
+import { motion, radius } from '../../theme/theme';
 import { GlassCard } from '../../ui/Glass';
 import { VictoryGoalDot, VictoryGoalItem } from './VictoryGoalItem';
+import type { Theme } from '../../theme/tokens';
+import { useStyles, useTheme } from '../../theme/ThemeContext';
 
 type Props = {
   victory: VictoryDef;
@@ -36,6 +38,8 @@ export const VictoryCard = memo(function VictoryCard({
   onToggle,
   onEditTarget,
 }: Props) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const score = victoryScore(day, victory.key);
   const total = victory.goals.length;
   const won = score === total;
@@ -60,20 +64,20 @@ export const VictoryCard = memo(function VictoryCard({
         style={[
           styles.card,
           won && {
-            backgroundColor: accentSoft[victory.accent],
-            borderColor: accentColor[victory.accent],
+            backgroundColor: theme.accentSoft[victory.accent],
+            borderColor: theme.accent[victory.accent],
           },
         ]}
         tone={won ? 'strong' : 'default'}
         elevated={won}
       >
         <View style={styles.head}>
-          <View style={[styles.mark, { backgroundColor: accentSoft[victory.accent] }]}>
+          <View style={[styles.mark, { backgroundColor: theme.accentSoft[victory.accent] }]}>
             <Text style={styles.markText}>{victory.mark}</Text>
           </View>
 
           <View style={styles.headText}>
-            <Text style={[styles.label, { color: accentColor[victory.accent] }]} numberOfLines={1}>
+            <Text style={[styles.label, { color: theme.accent[victory.accent] }]} numberOfLines={1}>
               {victory.label}
             </Text>
             <Text style={styles.purpose} numberOfLines={1}>
@@ -81,7 +85,7 @@ export const VictoryCard = memo(function VictoryCard({
             </Text>
           </View>
 
-          <Text style={[styles.score, won && { color: accentColor[victory.accent] }]}>
+          <Text style={[styles.score, won && { color: theme.accent[victory.accent] }]}>
             {score} / {total}
           </Text>
         </View>
@@ -116,13 +120,13 @@ export const VictoryCard = memo(function VictoryCard({
             style={[
               styles.banner,
               {
-                backgroundColor: accentSoft[victory.accent],
-                borderColor: accentColor[victory.accent],
+                backgroundColor: theme.accentSoft[victory.accent],
+                borderColor: theme.accent[victory.accent],
               },
             ]}
           >
-            <Ionicons name="flame" size={14} color={accentColor[victory.accent]} />
-            <Text style={[styles.bannerText, { color: accentColor[victory.accent] }]}>
+            <Ionicons name="flame" size={14} color={theme.accent[victory.accent]} />
+            <Text style={[styles.bannerText, { color: theme.accent[victory.accent] }]}>
               {victory.label} VICTORY WON
             </Text>
           </Animated.View>
@@ -132,7 +136,7 @@ export const VictoryCard = memo(function VictoryCard({
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   card: {
     gap: 12,
   },
@@ -162,13 +166,13 @@ const styles = StyleSheet.create({
   purpose: {
     fontSize: 11,
     fontWeight: '600',
-    color: palette.textFaint,
+    color: theme.textFaint,
     marginTop: 3,
   },
   score: {
     fontSize: 15,
     fontWeight: '800',
-    color: palette.textMuted,
+    color: theme.textMuted,
     fontVariant: ['tabular-nums'],
   },
   dots: {
@@ -177,7 +181,7 @@ const styles = StyleSheet.create({
   },
   goals: {
     borderTopWidth: StyleSheet.hairlineWidth * 2,
-    borderTopColor: palette.hairline,
+    borderTopColor: theme.border,
     paddingTop: 2,
   },
   banner: {

@@ -10,8 +10,10 @@ import Animated, {
 
 import type { HabitDay } from '../../state/journey/habits';
 import type { Habit } from '../../state/journey/types';
-import { accentColor, motion, palette, radius } from '../../theme/theme';
+import { motion, radius } from '../../theme/theme';
 import { PressableScale } from '../../ui/Touchable';
+import type { Theme } from '../../theme/tokens';
+import { useStyles, useTheme } from '../../theme/ThemeContext';
 
 /**
  * One adopted habit: today's tick, its streak, and a fortnight of history.
@@ -44,6 +46,8 @@ export const HabitRow = memo(function HabitRow({
   onToggle,
   onEdit,
 }: Props) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const t = useSharedValue(done ? 1 : 0);
 
   useEffect(() => {
@@ -54,9 +58,9 @@ export const HabitRow = memo(function HabitRow({
     backgroundColor: interpolateColor(
       t.value,
       [0, 1],
-      [palette.glassSunken, accentColor.lime],
+      [theme.surfaceSunken, theme.accent.body],
     ),
-    borderColor: interpolateColor(t.value, [0, 1], [palette.hairlineStrong, accentColor.lime]),
+    borderColor: interpolateColor(t.value, [0, 1], [theme.borderStrong, theme.accent.body]),
   }));
 
   const tickStyle = useAnimatedStyle(() => ({
@@ -81,7 +85,7 @@ export const HabitRow = memo(function HabitRow({
     >
       <Animated.View style={[styles.box, boxStyle]}>
         <Animated.View style={tickStyle}>
-          <Ionicons name="checkmark-sharp" size={16} color={palette.onAccent} />
+          <Ionicons name="checkmark-sharp" size={16} color={theme.onPrimary} />
         </Animated.View>
       </Animated.View>
 
@@ -117,14 +121,14 @@ export const HabitRow = memo(function HabitRow({
           accessibilityLabel={`Edit ${habit.title}`}
           style={styles.edit}
         >
-          <Ionicons name="options-outline" size={15} color={palette.textFaint} />
+          <Ionicons name="options-outline" size={15} color={theme.textFaint} />
         </PressableScale>
       ) : null}
     </PressableScale>
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -147,7 +151,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 14,
     fontWeight: '700',
-    color: palette.text,
+    color: theme.text,
   },
   dots: {
     flexDirection: 'row',
@@ -164,14 +168,14 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.04)',
   },
   dotDone: {
-    backgroundColor: accentColor.lime,
+    backgroundColor: theme.accent.body,
   },
   streak: {
     flex: 1,
     marginLeft: 6,
     fontSize: 10,
     fontWeight: '700',
-    color: palette.textFaint,
+    color: theme.textFaint,
   },
   edit: {
     width: 32,

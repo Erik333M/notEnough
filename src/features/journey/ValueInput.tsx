@@ -3,7 +3,9 @@ import { StyleSheet, Text, TextInput, View } from 'react-native';
 
 import type { BenchmarkMetric, UnitSystem } from '../../state/journey/types';
 import { weightUnit } from '../../state/journey/units';
-import { palette, radius } from '../../theme/theme';
+import { radius } from '../../theme/theme';
+import type { Theme } from '../../theme/tokens';
+import { useStyles, useTheme } from '../../theme/ThemeContext';
 
 /**
  * Entry control for a benchmark result.
@@ -72,6 +74,8 @@ type Props = {
 };
 
 export const ValueInput = memo(function ValueInput({ metric, units, draft, onChange }: Props) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const setMinutes = useCallback(
     (text: string) => onChange({ ...draft, minutes: digits(text).slice(0, 3) }),
     [draft, onChange],
@@ -93,11 +97,11 @@ export const ValueInput = memo(function ValueInput({ metric, units, draft, onCha
             value={draft.minutes}
             onChangeText={setMinutes}
             placeholder="0"
-            placeholderTextColor={palette.textFaint}
+            placeholderTextColor={theme.textFaint}
             style={styles.box}
             keyboardType="number-pad"
             returnKeyType="done"
-            selectionColor={palette.violet}
+            selectionColor={theme.accent.spirit}
             accessibilityLabel="Minutes"
           />
           <Text style={styles.unit}>min</Text>
@@ -110,11 +114,11 @@ export const ValueInput = memo(function ValueInput({ metric, units, draft, onCha
             value={draft.amount}
             onChangeText={setAmount}
             placeholder="00"
-            placeholderTextColor={palette.textFaint}
+            placeholderTextColor={theme.textFaint}
             style={styles.box}
             keyboardType="number-pad"
             returnKeyType="done"
-            selectionColor={palette.violet}
+            selectionColor={theme.accent.spirit}
             accessibilityLabel="Seconds"
           />
           <Text style={styles.unit}>sec</Text>
@@ -132,11 +136,11 @@ export const ValueInput = memo(function ValueInput({ metric, units, draft, onCha
           value={draft.amount}
           onChangeText={setAmount}
           placeholder="0"
-          placeholderTextColor={palette.textFaint}
+          placeholderTextColor={theme.textFaint}
           style={styles.box}
           keyboardType={metric === 'weight' ? 'decimal-pad' : 'number-pad'}
           returnKeyType="done"
-          selectionColor={palette.violet}
+          selectionColor={theme.accent.spirit}
           accessibilityLabel={metric === 'weight' ? `Weight in ${label}` : 'Repetitions'}
         />
         <Text style={styles.unit}>{label}</Text>
@@ -145,7 +149,7 @@ export const ValueInput = memo(function ValueInput({ metric, units, draft, onCha
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -160,9 +164,9 @@ const styles = StyleSheet.create({
     height: 56,
     borderRadius: radius.md,
     borderWidth: StyleSheet.hairlineWidth * 2,
-    borderColor: palette.hairlineStrong,
-    backgroundColor: palette.glassSunken,
-    color: palette.text,
+    borderColor: theme.borderStrong,
+    backgroundColor: theme.surfaceSunken,
+    color: theme.text,
     fontSize: 22,
     fontWeight: '800',
     textAlign: 'center',
@@ -171,12 +175,12 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: '700',
     letterSpacing: 0.6,
-    color: palette.textFaint,
+    color: theme.textFaint,
   },
   colon: {
     fontSize: 20,
     fontWeight: '800',
-    color: palette.textFaint,
+    color: theme.textFaint,
     marginBottom: 14,
   },
 });

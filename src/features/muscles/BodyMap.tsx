@@ -8,8 +8,10 @@ import {
   type MuscleEmphasis,
   type MuscleWork,
 } from '../../state/journey/muscles';
-import { palette } from '../../theme/theme';
+
 import { VIEW_BOX, bodyRegions, type BodyForm, type BodyView } from './bodyGeometry';
+import type { Theme } from '../../theme/tokens';
+import { useStyles, useTheme } from '../../theme/ThemeContext';
 
 /**
  * A figure with the working muscles shaded.
@@ -48,6 +50,8 @@ export const BodyMap = memo(function BodyMap({
   view: BodyView;
   height?: number;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const regions = bodyRegions(form, view);
   const width = (height * VIEW_BOX.width) / VIEW_BOX.height;
 
@@ -119,13 +123,13 @@ function describe(work: MuscleWork, view: BodyView): string {
   return `${side} view. Works ${named.join(', ')}`;
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   wrap: { alignItems: 'center', gap: 6 },
   caption: {
     fontSize: 10,
     fontWeight: '800',
     letterSpacing: 1,
-    color: palette.textFaint,
+    color: theme.textFaint,
     textTransform: 'uppercase',
   },
 });

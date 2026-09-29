@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import type { Game } from '../../api/event-stats';
 import { dayKey } from '../../lib/time';
-import { accentColor, palette, radius } from '../../theme/theme';
+import { radius } from '../../theme/theme';
 import { Button } from '../../ui/Button';
 import { Chip, SectionHeader } from '../../ui/Controls';
 import { GlassCard } from '../../ui/Glass';
@@ -15,6 +15,8 @@ import { StatFieldsCard } from './StatFieldsCard';
 import { formatDay } from './eventCopy';
 import { useGames } from './useGames';
 import { useSquads } from './useSquads';
+import type { Theme } from '../../theme/tokens';
+import { useStyles } from '../../theme/ThemeContext';
 
 /**
  * Games, the table, and the schema behind both.
@@ -25,6 +27,7 @@ import { useSquads } from './useSquads';
  * while the fixtures are looked at every day.
  */
 export const EventGamesSection = memo(function EventGamesSection({ eventId }: { eventId: string }) {
+  const styles = useStyles(makeStyles);
   const games = useGames(eventId);
   const squads = useSquads(eventId);
   const { notify } = useToast();
@@ -177,19 +180,19 @@ export const EventGamesSection = memo(function EventGamesSection({ eventId }: { 
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   wrap: { gap: 10 },
-  blurb: { fontSize: 12.5, lineHeight: 18, fontWeight: '600', color: palette.textMuted },
+  blurb: { fontSize: 12.5, lineHeight: 18, fontWeight: '600', color: theme.textMuted },
   game: { gap: 6, padding: 14 },
   gameTop: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  teams: { flex: 1, fontSize: 14.5, fontWeight: '800', color: palette.text },
-  result: { fontSize: 16, fontWeight: '800', color: accentColor.lime },
-  pending: { fontSize: 11, fontWeight: '800', color: palette.textFaint, textTransform: 'uppercase' },
-  when: { fontSize: 11.5, fontWeight: '600', color: palette.textMuted },
+  teams: { flex: 1, fontSize: 14.5, fontWeight: '800', color: theme.text },
+  result: { fontSize: 16, fontWeight: '800', color: theme.accent.body },
+  pending: { fontSize: 11, fontWeight: '800', color: theme.textFaint, textTransform: 'uppercase' },
+  when: { fontSize: 11.5, fontWeight: '600', color: theme.textMuted },
   gameActions: { flexDirection: 'row', gap: 8, marginTop: 4 },
   grow: { flex: 1 },
   add: { gap: 10, padding: 14, borderRadius: radius.md },
-  addTitle: { fontSize: 13, fontWeight: '800', color: palette.text },
+  addTitle: { fontSize: 13, fontWeight: '800', color: theme.text },
   choices: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  cancel: { fontSize: 11.5, fontWeight: '700', color: palette.textFaint, textDecorationLine: 'underline' },
+  cancel: { fontSize: 11.5, fontWeight: '700', color: theme.textFaint, textDecorationLine: 'underline' },
 });

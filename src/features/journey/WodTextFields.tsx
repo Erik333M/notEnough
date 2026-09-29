@@ -4,9 +4,11 @@ import { StyleSheet, Text, View } from 'react-native';
 import { useActions } from '../../state/DataContext';
 import type { WodTextField } from '../../state/journey/entryReducer';
 import type { DayKey } from '../../state/journey/types';
-import { palette } from '../../theme/theme';
+
 import { TextArea } from '../../ui/Field';
 import { useAutosaveText } from './useAutosaveText';
+import type { Theme } from '../../theme/tokens';
+import { useStyles, useTheme } from '../../theme/ThemeContext';
 
 /**
  * The workout's two free-text boxes: how it was set up, and how it went.
@@ -35,6 +37,8 @@ export const WodTextBlock = memo(function WodTextBlock({
   placeholder,
   value,
 }: Props) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const { journey } = useActions();
 
   const commit = useCallback(
@@ -60,7 +64,7 @@ export const WodTextBlock = memo(function WodTextBlock({
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   group: {
     gap: 10,
   },
@@ -68,6 +72,6 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '800',
     letterSpacing: 1.4,
-    color: palette.textMuted,
+    color: theme.textMuted,
   },
 });

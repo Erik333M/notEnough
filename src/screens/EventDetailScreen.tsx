@@ -10,13 +10,15 @@ import { StaffRotaSection } from '../features/events/StaffRotaSection';
 import { ageLabel, durationLabel, formatRange, phaseLabel } from '../features/events/eventCopy';
 import { useEventDetail } from '../features/events/useEventDetail';
 import { InviteCard } from '../features/teams/InviteCard';
-import { accentColor, palette } from '../theme/theme';
+
 import { Appear, Pill, SectionHeader, StatTile } from '../ui/Controls';
 import { Button } from '../ui/Button';
 import { GlassCard } from '../ui/Glass';
 import { StackHeaderBar } from '../ui/StackHeaderBar';
 import { useToast } from '../ui/Toast';
 import { PressableScale } from '../ui/Touchable';
+import type { Theme } from '../theme/tokens';
+import { useStyles, useTheme } from '../theme/ThemeContext';
 
 /**
  * One event: when it runs, who is there, and — for staff — the controls.
@@ -36,6 +38,8 @@ export default function EventDetailScreen({
   onBack: () => void;
   onOpenChat: (eventName: string) => void;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const detail = useEventDetail(eventId);
   const { notify } = useToast();
   const [editing, setEditing] = useState(false);
@@ -83,7 +87,7 @@ export default function EventDetailScreen({
               await detail.refresh();
               setRefreshing(false);
             }}
-            tintColor={palette.textMuted}
+            tintColor={theme.textMuted}
           />
         }
       >
@@ -99,7 +103,7 @@ export default function EventDetailScreen({
           >
             <GlassCard style={styles.chatRow}>
               <View style={styles.chatIcon}>
-                <Ionicons name="chatbubbles" size={17} color={accentColor.violet} />
+                <Ionicons name="chatbubbles" size={17} color={theme.accent.spirit} />
               </View>
               <View style={styles.chatBody}>
                 <Text style={styles.chatTitle}>Channel</Text>
@@ -109,7 +113,7 @@ export default function EventDetailScreen({
                     : 'Announcements from the staff'}
                 </Text>
               </View>
-              <Ionicons name="chevron-forward" size={16} color={palette.textFaint} />
+              <Ionicons name="chevron-forward" size={16} color={theme.textFaint} />
             </GlassCard>
           </PressableScale>
         </Appear>
@@ -117,15 +121,15 @@ export default function EventDetailScreen({
         <Appear delay={25}>
           <GlassCard style={styles.head}>
             <View style={styles.pills}>
-              <Pill label={phaseLabel(event.startDate, event.endDate)} icon="time-outline" accent="cyan" />
-              {ages ? <Pill label={ages} icon="person-outline" accent="violet" /> : null}
-              {full ? <Pill label="Full" icon="alert-circle-outline" accent="amber" /> : null}
+              <Pill label={phaseLabel(event.startDate, event.endDate)} icon="time-outline" accent="mind" />
+              {ages ? <Pill label={ages} icon="person-outline" accent="spirit" /> : null}
+              {full ? <Pill label="Full" icon="alert-circle-outline" accent="warning" /> : null}
             </View>
 
             <View style={styles.tiles}>
-              <StatTile label="campers" value={`${counts.campers}/${event.capacity}`} accent="lime" />
-              <StatTile label="staff" value={`${counts.staff}/${event.staffTarget}`} accent="violet" />
-              <StatTile label="days" value={String(days)} accent="cyan" />
+              <StatTile label="campers" value={`${counts.campers}/${event.capacity}`} accent="body" />
+              <StatTile label="staff" value={`${counts.staff}/${event.staffTarget}`} accent="spirit" />
+              <StatTile label="days" value={String(days)} accent="mind" />
             </View>
 
             {counts.staff < event.staffTarget ? (
@@ -223,10 +227,10 @@ export default function EventDetailScreen({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   screen: { flex: 1 },
   centre: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12, padding: 24 },
-  quiet: { fontSize: 13, fontWeight: '600', color: palette.textMuted },
+  quiet: { fontSize: 13, fontWeight: '600', color: theme.textMuted },
   content: { padding: 18, gap: 16 },
   head: { gap: 12, padding: 16 },
   chatRow: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 14 },
@@ -236,14 +240,14 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: palette.violetSoft,
+    backgroundColor: theme.accentSoft.spirit,
   },
   chatBody: { flex: 1, gap: 2 },
-  chatTitle: { fontSize: 14.5, fontWeight: '800', color: palette.text },
-  chatCopy: { fontSize: 12, fontWeight: '600', color: palette.textMuted },
+  chatTitle: { fontSize: 14.5, fontWeight: '800', color: theme.text },
+  chatCopy: { fontSize: 12, fontWeight: '600', color: theme.textMuted },
   pills: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   tiles: { flexDirection: 'row', gap: 10 },
-  warn: { fontSize: 12, lineHeight: 17, fontWeight: '700', color: accentColor.amber },
-  note: { fontSize: 11.5, lineHeight: 17, fontWeight: '600', color: palette.textFaint },
+  warn: { fontSize: 12, lineHeight: 17, fontWeight: '700', color: theme.accent.warning },
+  note: { fontSize: 11.5, lineHeight: 17, fontWeight: '600', color: theme.textFaint },
   form: { gap: 12, padding: 14 },
 });

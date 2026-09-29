@@ -2,7 +2,9 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { memo } from 'react';
 import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 
-import { gradients, palette, radius, shadow } from '../theme/theme';
+import { radius, shadow } from '../theme/theme';
+import type { Theme } from '../theme/tokens';
+import { useStyles, useTheme } from '../theme/ThemeContext';
 
 type Tone = 'default' | 'strong' | 'sunken';
 
@@ -35,8 +37,10 @@ export const GlassCard = memo(function GlassCard({
   padded = true,
   elevated = false,
 }: Props) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const fill =
-    tone === 'strong' ? palette.glassStrong : tone === 'sunken' ? palette.glassSunken : palette.glass;
+    tone === 'strong' ? theme.surfaceElevated : tone === 'sunken' ? theme.surfaceSunken : theme.surface;
 
   return (
     <View
@@ -53,7 +57,7 @@ export const GlassCard = memo(function GlassCard({
     >
       {sheen && (
         <LinearGradient
-          colors={gradients.glassSheen}
+          colors={theme.sheen}
           start={{ x: 0.2, y: 0 }}
           end={{ x: 0.8, y: 1 }}
           style={[
@@ -67,10 +71,10 @@ export const GlassCard = memo(function GlassCard({
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   base: {
     borderWidth: StyleSheet.hairlineWidth * 2,
-    borderColor: palette.hairline,
+    borderColor: theme.border,
     overflow: 'hidden',
   },
 });

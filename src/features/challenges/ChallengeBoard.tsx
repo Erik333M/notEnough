@@ -2,9 +2,11 @@ import { memo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import type { ChallengeEntry } from '../../api/teams';
-import { accentColor, palette, radius } from '../../theme/theme';
+import { radius } from '../../theme/theme';
 import { GlassCard } from '../../ui/Glass';
 import { ProgressBar } from '../../ui/Progress';
+import type { Theme } from '../../theme/tokens';
+import { useStyles, useTheme } from '../../theme/ThemeContext';
 
 /**
  * Where everyone stands.
@@ -26,6 +28,8 @@ export const ChallengeBoard = memo(function ChallengeBoard({
   target: number;
   currentUserId: string | undefined;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   if (entries.length === 0) {
     return (
       <GlassCard style={styles.empty}>
@@ -50,7 +54,7 @@ export const ChallengeBoard = memo(function ChallengeBoard({
                 {entry.name}
                 {mine ? <Text style={styles.you}>  you</Text> : null}
               </Text>
-              <ProgressBar progress={share} accent={mine ? 'cyan' : 'violet'} height={5} />
+              <ProgressBar progress={share} accent={mine ? 'mind' : 'spirit'} height={5} />
             </View>
             <Text style={styles.score}>{entry.score}</Text>
           </View>
@@ -60,9 +64,9 @@ export const ChallengeBoard = memo(function ChallengeBoard({
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   empty: { paddingVertical: 16 },
-  emptyCopy: { fontSize: 12.5, lineHeight: 18, fontWeight: '600', color: palette.textMuted },
+  emptyCopy: { fontSize: 12.5, lineHeight: 18, fontWeight: '600', color: theme.textMuted },
   board: { gap: 8 },
   row: {
     flexDirection: 'row',
@@ -70,13 +74,13 @@ const styles = StyleSheet.create({
     gap: 12,
     padding: 12,
     borderRadius: radius.md,
-    backgroundColor: palette.glass,
+    backgroundColor: theme.surface,
   },
-  rowMine: { borderWidth: StyleSheet.hairlineWidth * 2, borderColor: palette.cyanSoft },
-  rank: { width: 22, fontSize: 14, fontWeight: '800', color: palette.textFaint, textAlign: 'center' },
-  rankTop: { color: accentColor.amber },
+  rowMine: { borderWidth: StyleSheet.hairlineWidth * 2, borderColor: theme.accentSoft.mind },
+  rank: { width: 22, fontSize: 14, fontWeight: '800', color: theme.textFaint, textAlign: 'center' },
+  rankTop: { color: theme.accent.warning },
   body: { flex: 1, gap: 6 },
-  name: { fontSize: 13.5, fontWeight: '700', color: palette.text },
-  you: { fontSize: 11, fontWeight: '700', color: palette.textFaint },
-  score: { fontSize: 16, fontWeight: '800', color: palette.text },
+  name: { fontSize: 13.5, fontWeight: '700', color: theme.text },
+  you: { fontSize: 11, fontWeight: '700', color: theme.textFaint },
+  score: { fontSize: 16, fontWeight: '800', color: theme.text },
 });

@@ -5,8 +5,11 @@ import { StyleSheet, Text, View } from 'react-native';
 import type { Share, ShareKind } from '../../api/teams';
 import { longDateLabel } from '../../lib/time';
 import type { IconName } from '../../state/types';
-import { accentColor, palette, radius, type AccentName } from '../../theme/theme';
+import { radius } from '../../theme/theme';
 import { RoundIconButton } from '../../ui/Controls';
+import type { AccentName } from '../../theme/tokens';
+import type { Theme } from '../../theme/tokens';
+import { useStyles, useTheme } from '../../theme/ThemeContext';
 
 /**
  * What the team has chosen to show each other.
@@ -20,10 +23,10 @@ import { RoundIconButton } from '../../ui/Controls';
  * moment a post can be scored, training starts being done for the score.
  */
 const LOOK: Record<ShareKind, { icon: IconName; accent: AccentName }> = {
-  streak: { icon: 'flame', accent: 'amber' },
-  personalBest: { icon: 'trophy', accent: 'violet' },
-  habit: { icon: 'repeat', accent: 'lime' },
-  work: { icon: 'checkmark-done', accent: 'cyan' },
+  streak: { icon: 'flame', accent: 'warning' },
+  personalBest: { icon: 'trophy', accent: 'spirit' },
+  habit: { icon: 'repeat', accent: 'body' },
+  work: { icon: 'checkmark-done', accent: 'mind' },
 };
 
 export const TeamFeed = memo(function TeamFeed({
@@ -37,11 +40,13 @@ export const TeamFeed = memo(function TeamFeed({
   isCoach: boolean;
   onRemove: (share: Share) => void;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   return (
     <View style={styles.list}>
       {shares.map((share) => {
         const look = LOOK[share.kind] ?? LOOK.work;
-        const tint = accentColor[look.accent];
+        const tint = theme.accent[look.accent];
         const mine = share.userId === currentUserId;
 
         return (
@@ -77,7 +82,7 @@ export const TeamFeed = memo(function TeamFeed({
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   list: { gap: 10 },
   row: {
     flexDirection: 'row',
@@ -85,9 +90,9 @@ const styles = StyleSheet.create({
     gap: 12,
     padding: 14,
     borderRadius: radius.lg,
-    backgroundColor: palette.glass,
+    backgroundColor: theme.surface,
     borderWidth: StyleSheet.hairlineWidth * 2,
-    borderColor: palette.hairline,
+    borderColor: theme.border,
   },
   icon: {
     width: 34,
@@ -97,10 +102,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   body: { flex: 1, gap: 3 },
-  author: { fontSize: 11.5, fontWeight: '800', letterSpacing: 0.3, color: palette.textFaint },
-  you: { fontSize: 10.5, fontWeight: '700', color: palette.textFaint },
-  title: { fontSize: 14.5, fontWeight: '800', color: palette.text },
-  detail: { fontSize: 12.5, fontWeight: '600', color: palette.textMuted },
-  note: { fontSize: 12.5, lineHeight: 18, fontWeight: '600', color: palette.text, fontStyle: 'italic' },
-  date: { fontSize: 11, fontWeight: '700', color: palette.textFaint },
+  author: { fontSize: 11.5, fontWeight: '800', letterSpacing: 0.3, color: theme.textFaint },
+  you: { fontSize: 10.5, fontWeight: '700', color: theme.textFaint },
+  title: { fontSize: 14.5, fontWeight: '800', color: theme.text },
+  detail: { fontSize: 12.5, fontWeight: '600', color: theme.textMuted },
+  note: { fontSize: 12.5, lineHeight: 18, fontWeight: '600', color: theme.text, fontStyle: 'italic' },
+  date: { fontSize: 11, fontWeight: '700', color: theme.textFaint },
 });

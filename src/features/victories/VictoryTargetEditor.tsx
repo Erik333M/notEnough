@@ -13,11 +13,13 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import type { VictoryGoalKey } from '../../state/types';
 import { goalDef, victoryDef } from '../../state/victories';
-import { accentColor, accentSoft, palette, radius } from '../../theme/theme';
+import { radius } from '../../theme/theme';
 import { Button } from '../../ui/Button';
 import { Chip, RoundIconButton, SectionHeader } from '../../ui/Controls';
 import { Field } from '../../ui/Field';
 import { GlassCard } from '../../ui/Glass';
+import type { Theme } from '../../theme/tokens';
+import { useStyles, useTheme } from '../../theme/ThemeContext';
 
 type Props = {
   /** Null closes the sheet; a key opens it for that goal. */
@@ -38,6 +40,8 @@ const MAX_TARGET = 60;
  * target never starts from an empty box.
  */
 export function VictoryTargetEditor({ goal, target, onClose, onSave }: Props) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const insets = useSafeAreaInsets();
   const [value, setValue] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -143,9 +147,9 @@ export function VictoryTargetEditor({ goal, target, onClose, onSave }: Props) {
                 </View>
 
                 <View
-                  style={[styles.note, { backgroundColor: accentSoft[parent.accent] }]}
+                  style={[styles.note, { backgroundColor: theme.accentSoft[parent.accent] }]}
                 >
-                  <Text style={[styles.noteText, { color: accentColor[parent.accent] }]}>
+                  <Text style={[styles.noteText, { color: theme.accent[parent.accent] }]}>
                     Changing a target does not touch days you have already won.
                   </Text>
                 </View>
@@ -166,21 +170,21 @@ export function VictoryTargetEditor({ goal, target, onClose, onSave }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   backdrop: {
     flex: 1,
     justifyContent: 'flex-end',
-    backgroundColor: 'rgba(2,3,10,0.72)',
+    backgroundColor: theme.scrim,
   },
   sheetWrap: {
     maxHeight: '92%',
   },
   sheet: {
-    backgroundColor: '#111634',
+    backgroundColor: theme.surfaceElevated,
     borderTopLeftRadius: radius.xl,
     borderTopRightRadius: radius.xl,
     borderTopWidth: StyleSheet.hairlineWidth * 2,
-    borderColor: palette.hairlineStrong,
+    borderColor: theme.borderStrong,
     paddingHorizontal: 18,
     paddingTop: 10,
   },
@@ -189,7 +193,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 4,
     borderRadius: 2,
-    backgroundColor: palette.hairlineStrong,
+    backgroundColor: theme.borderStrong,
     marginBottom: 12,
   },
   content: {
@@ -203,7 +207,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
     lineHeight: 19,
     fontWeight: '600',
-    color: palette.textMuted,
+    color: theme.textMuted,
   },
   group: {
     gap: 8,
@@ -211,7 +215,7 @@ const styles = StyleSheet.create({
   groupLabel: {
     fontSize: 12,
     fontWeight: '700',
-    color: palette.textMuted,
+    color: theme.textMuted,
     marginLeft: 2,
   },
   examples: {

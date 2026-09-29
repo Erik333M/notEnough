@@ -3,9 +3,11 @@ import { memo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import type { Assignment } from '../../api/teams';
-import { accentColor, palette, radius } from '../../theme/theme';
+import { radius } from '../../theme/theme';
 import { PressableScale } from '../../ui/Touchable';
 import { progressLabel, targetLabel } from './taskCopy';
+import type { Theme } from '../../theme/tokens';
+import { useStyles, useTheme } from '../../theme/ThemeContext';
 
 /**
  * How one athlete is going in this session.
@@ -30,6 +32,8 @@ export const AthleteProgressCard = memo(function AthleteProgressCard({
   /** Present only on your own rows — nobody logs for anyone else. */
   onToggleDone?: (assignment: Assignment) => void;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const done = assignments.filter((row) => row.result?.done).length;
   const complete = done === assignments.length && assignments.length > 0;
 
@@ -60,7 +64,7 @@ export const AthleteProgressCard = memo(function AthleteProgressCard({
               <Ionicons
                 name={isDone ? 'checkmark-circle' : 'ellipse-outline'}
                 size={17}
-                color={isDone ? accentColor.lime : palette.textFaint}
+                color={isDone ? theme.accent.body : theme.textFaint}
               />
               <Text style={[styles.title, isDone && styles.titleDone]} numberOfLines={1}>
                 {row.title}
@@ -90,31 +94,31 @@ export const AthleteProgressCard = memo(function AthleteProgressCard({
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   card: {
     gap: 10,
     padding: 14,
     borderRadius: radius.lg,
-    backgroundColor: palette.glass,
+    backgroundColor: theme.surface,
     borderWidth: StyleSheet.hairlineWidth * 2,
-    borderColor: palette.hairline,
+    borderColor: theme.border,
   },
   head: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  name: { flex: 1, fontSize: 14.5, fontWeight: '800', color: palette.text },
-  you: { fontSize: 11, fontWeight: '700', color: palette.textFaint },
+  name: { flex: 1, fontSize: 14.5, fontWeight: '800', color: theme.text },
+  you: { fontSize: 11, fontWeight: '700', color: theme.textFaint },
   count: {
     paddingHorizontal: 9,
     paddingVertical: 3,
     borderRadius: radius.pill,
-    backgroundColor: 'rgba(255,255,255,0.07)',
+    backgroundColor: theme.surface,
   },
-  countDone: { backgroundColor: palette.limeSoft },
-  countText: { fontSize: 11.5, fontWeight: '800', color: palette.textMuted },
-  countTextDone: { color: accentColor.lime },
+  countDone: { backgroundColor: theme.primarySoft },
+  countText: { fontSize: 11.5, fontWeight: '800', color: theme.textMuted },
+  countTextDone: { color: theme.accent.body },
   rows: { gap: 2 },
   row: { flexDirection: 'row', alignItems: 'center', gap: 9, paddingVertical: 7 },
-  title: { flex: 1, fontSize: 13, fontWeight: '600', color: palette.text },
-  titleDone: { color: palette.textMuted },
-  detail: { fontSize: 11.5, fontWeight: '800', color: accentColor.cyan },
-  hint: { fontSize: 11, fontWeight: '600', color: palette.textFaint },
+  title: { flex: 1, fontSize: 13, fontWeight: '600', color: theme.text },
+  titleDone: { color: theme.textMuted },
+  detail: { fontSize: 11.5, fontWeight: '800', color: theme.accent.mind },
+  hint: { fontSize: 11, fontWeight: '600', color: theme.textFaint },
 });

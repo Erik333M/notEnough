@@ -3,7 +3,9 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { dayKey, longDateLabel } from '../../lib/time';
 import type { DayKey } from '../../state/journey/types';
-import { accentColor, palette, radius } from '../../theme/theme';
+import { radius } from '../../theme/theme';
+import type { Theme } from '../../theme/tokens';
+import { useStyles, useTheme } from '../../theme/ThemeContext';
 
 /**
  * The date a logged thing belongs to.
@@ -20,6 +22,8 @@ export const DatePickRow = memo(function DatePickRow({
   date: DayKey;
   onChange: (date: DayKey) => void;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const useToday = useCallback(() => onChange(dayKey()), [onChange]);
   const isToday = date === dayKey();
 
@@ -42,7 +46,7 @@ export const DatePickRow = memo(function DatePickRow({
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -50,19 +54,19 @@ const styles = StyleSheet.create({
     minHeight: 44,
     paddingHorizontal: 13,
     borderRadius: radius.md,
-    backgroundColor: palette.glassSunken,
+    backgroundColor: theme.surfaceSunken,
   },
   label: {
     flex: 1,
     fontSize: 14,
     fontWeight: '700',
-    color: palette.text,
+    color: theme.text,
   },
   today: {
     fontSize: 11,
     fontWeight: '800',
     letterSpacing: 0.4,
-    color: accentColor.lime,
+    color: theme.accent.body,
   },
   reset: {
     minHeight: 44,
@@ -71,6 +75,6 @@ const styles = StyleSheet.create({
   resetText: {
     fontSize: 12,
     fontWeight: '700',
-    color: accentColor.cyan,
+    color: theme.accent.mind,
   },
 });

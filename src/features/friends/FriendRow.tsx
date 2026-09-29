@@ -3,11 +3,13 @@ import { memo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import type { Friendship } from '../../api/friends';
-import { accentColor, palette, radius } from '../../theme/theme';
+import { radius } from '../../theme/theme';
 import { Avatar } from '../../ui/Avatar';
 import { Button } from '../../ui/Button';
 import { GlassCard } from '../../ui/Glass';
 import { levelName } from './level';
+import type { Theme } from '../../theme/tokens';
+import { useStyles, useTheme } from '../../theme/ThemeContext';
 
 /**
  * One person, as much of them as you are allowed to see.
@@ -29,6 +31,8 @@ export const FriendRow = memo(function FriendRow({
   onAccept?: () => void;
   onRemove: () => void;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const { profile } = friendship;
   const published = profile.updatedAt !== null;
 
@@ -52,7 +56,7 @@ export const FriendRow = memo(function FriendRow({
 
         {published && kind === 'friend' ? (
           <View style={styles.streak}>
-            <Ionicons name="flame" size={13} color={accentColor.amber} />
+            <Ionicons name="flame" size={13} color={theme.accent.warning} />
             <Text style={styles.streakText}>{profile.streak}</Text>
           </View>
         ) : null}
@@ -75,16 +79,16 @@ export const FriendRow = memo(function FriendRow({
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   card: { gap: 12, padding: 14 },
   top: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   body: { flex: 1, gap: 2 },
-  name: { fontSize: 14.5, fontWeight: '800', color: palette.text },
-  meta: { fontSize: 12, fontWeight: '600', color: palette.textMuted },
-  quiet: { fontSize: 12, fontWeight: '600', color: palette.textFaint },
+  name: { fontSize: 14.5, fontWeight: '800', color: theme.text },
+  meta: { fontSize: 12, fontWeight: '600', color: theme.textMuted },
+  quiet: { fontSize: 12, fontWeight: '600', color: theme.textFaint },
   streak: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  streakText: { fontSize: 13, fontWeight: '800', color: accentColor.amber },
+  streakText: { fontSize: 13, fontWeight: '800', color: theme.accent.warning },
   actions: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   grow: { flex: 1 },
-  waiting: { flex: 1, fontSize: 12, fontWeight: '600', color: palette.textMuted },
+  waiting: { flex: 1, fontSize: 12, fontWeight: '600', color: theme.textMuted },
 });

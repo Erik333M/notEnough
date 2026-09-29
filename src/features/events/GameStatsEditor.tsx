@@ -3,11 +3,13 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import type { Game, StatEntry, StatField } from '../../api/event-stats';
 import type { Squad } from '../../api/events';
-import { accentColor, palette, radius } from '../../theme/theme';
+import { radius } from '../../theme/theme';
 import { Avatar } from '../../ui/Avatar';
 import { Button } from '../../ui/Button';
 import { GlassCard } from '../../ui/Glass';
 import { StatInput } from './StatInput';
+import type { Theme } from '../../theme/tokens';
+import { useStyles, useTheme } from '../../theme/ThemeContext';
 
 /**
  * Entering a result.
@@ -35,6 +37,8 @@ export const GameStatsEditor = memo(function GameStatsEditor({
   onSave: (entries: StatEntry[]) => void;
   onCancel: () => void;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const teamFields = fields.filter((row) => row.scope === 'team');
   const playerFields = fields.filter((row) => row.scope === 'player');
   const sides = [game.homeTeamId, game.awayTeamId]
@@ -123,15 +127,15 @@ export const GameStatsEditor = memo(function GameStatsEditor({
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   card: { gap: 14, padding: 14 },
   side: { gap: 8 },
-  sideName: { fontSize: 14, fontWeight: '800', color: accentColor.cyan },
-  person: { gap: 6, padding: 10, borderRadius: radius.md, backgroundColor: palette.glass },
+  sideName: { fontSize: 14, fontWeight: '800', color: theme.accent.mind },
+  person: { gap: 6, padding: 10, borderRadius: radius.md, backgroundColor: theme.surface },
   personHead: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  personName: { flex: 1, fontSize: 13, fontWeight: '700', color: palette.text },
-  quiet: { fontSize: 11.5, fontWeight: '600', color: palette.textFaint },
-  warn: { fontSize: 12, fontWeight: '700', color: accentColor.amber },
+  personName: { flex: 1, fontSize: 13, fontWeight: '700', color: theme.text },
+  quiet: { fontSize: 11.5, fontWeight: '600', color: theme.textFaint },
+  warn: { fontSize: 12, fontWeight: '700', color: theme.accent.warning },
   actions: { flexDirection: 'row', gap: 8 },
   grow: { flex: 1 },
 });

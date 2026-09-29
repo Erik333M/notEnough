@@ -15,13 +15,15 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { API_BASE_URL } from '../api/client';
 import { useAuth } from '../state/AuthContext';
-import { gradients, palette, radius } from '../theme/theme';
+import { radius } from '../theme/theme';
 import { Button } from '../ui/Button';
 import { Segmented } from '../ui/Controls';
 import { Field } from '../ui/Field';
 import { GlassCard } from '../ui/Glass';
 import { useToast } from '../ui/Toast';
 import { PressableScale } from '../ui/Touchable';
+import type { Theme } from '../theme/tokens';
+import { useStyles, useTheme } from '../theme/ThemeContext';
 
 type Mode = 'login' | 'register';
 
@@ -34,10 +36,12 @@ type Errors = { name?: string | null; email?: string | null; password?: string |
 
 /** Shown when the API is unreachable — with the URL, so it is actually fixable. */
 const OfflineBanner = memo(function OfflineBanner({ onRetry }: { onRetry: () => void }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   return (
     <Animated.View entering={FadeIn.duration(220)}>
       <View style={styles.offline}>
-        <Ionicons name="cloud-offline" size={16} color={palette.amber} />
+        <Ionicons name="cloud-offline" size={16} color={theme.warning} />
         <View style={{ flex: 1 }}>
           <Text style={styles.offlineTitle}>Can&apos;t reach the server</Text>
           <Text style={styles.offlineCopy} numberOfLines={2}>
@@ -46,7 +50,7 @@ const OfflineBanner = memo(function OfflineBanner({ onRetry }: { onRetry: () => 
           </Text>
         </View>
         <PressableScale onPress={onRetry} haptic="light" scaleTo={0.9}>
-          <Ionicons name="refresh" size={18} color={palette.amber} />
+          <Ionicons name="refresh" size={18} color={theme.warning} />
         </PressableScale>
       </View>
     </Animated.View>
@@ -54,6 +58,8 @@ const OfflineBanner = memo(function OfflineBanner({ onRetry }: { onRetry: () => 
 });
 
 export default function AuthScreen() {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const { login, register } = useAuth();
   const { notify } = useToast();
   const insets = useSafeAreaInsets();
@@ -115,12 +121,12 @@ export default function AuthScreen() {
       >
         <Animated.View entering={FadeInDown.duration(420)} style={styles.brandBlock}>
           <LinearGradient
-            colors={gradients.accent}
+            colors={theme.primaryGradient}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={styles.mark}
           >
-            <Ionicons name="flash" size={26} color={palette.onAccent} />
+            <Ionicons name="flash" size={26} color={theme.onPrimary} />
           </LinearGradient>
           <Text style={styles.brand}>NOTenough</Text>
           <Text style={styles.tagline}>
@@ -190,7 +196,7 @@ export default function AuthScreen() {
             </Animated.View>
 
             <Text style={styles.note}>
-              <Ionicons name="lock-closed" size={11} color={palette.textFaint} /> Passwords are
+              <Ionicons name="lock-closed" size={11} color={theme.textFaint} /> Passwords are
               hashed with scrypt and a per-account salt on the server. The device stores a signed
               token in the Keychain — never your password.
             </Text>
@@ -214,7 +220,7 @@ export default function AuthScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   flex: {
     flex: 1,
   },
@@ -238,13 +244,13 @@ const styles = StyleSheet.create({
   brand: {
     fontSize: 30,
     fontWeight: '800',
-    color: palette.text,
+    color: theme.text,
     letterSpacing: 0.3,
   },
   tagline: {
     fontSize: 13,
     lineHeight: 19,
-    color: palette.textFaint,
+    color: theme.textFaint,
     textAlign: 'center',
     maxWidth: 260,
     fontWeight: '600',
@@ -270,22 +276,22 @@ const styles = StyleSheet.create({
   offlineTitle: {
     fontSize: 13,
     fontWeight: '800',
-    color: palette.amber,
+    color: theme.warning,
   },
   offlineCopy: {
     fontSize: 11,
     lineHeight: 16,
-    color: palette.textMuted,
+    color: theme.textMuted,
     marginTop: 2,
   },
   offlineCode: {
     fontWeight: '800',
-    color: palette.text,
+    color: theme.text,
   },
   note: {
     fontSize: 11,
     lineHeight: 17,
-    color: palette.textFaint,
+    color: theme.textFaint,
     textAlign: 'center',
   },
   footer: {
@@ -296,11 +302,11 @@ const styles = StyleSheet.create({
   },
   footerText: {
     fontSize: 13,
-    color: palette.textFaint,
+    color: theme.textFaint,
   },
   footerLink: {
     fontSize: 13,
     fontWeight: '800',
-    color: palette.violet,
+    color: theme.accent.spirit,
   },
 });

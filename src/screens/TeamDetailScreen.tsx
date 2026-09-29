@@ -16,13 +16,15 @@ import { TeamWallSection } from '../features/teams/TeamWallSection';
 import { useTeamDetail } from '../features/teams/useTeamData';
 import { useAuth } from '../state/AuthContext';
 import { useTeams } from '../state/TeamsContext';
-import { palette, radius } from '../theme/theme';
+import { radius } from '../theme/theme';
 import { Button } from '../ui/Button';
 import { Appear } from '../ui/Controls';
 import { SkeletonCard } from '../ui/Feedback';
 import { GlassCard } from '../ui/Glass';
 import { StackHeaderBar } from '../ui/StackHeaderBar';
 import { useToast } from '../ui/Toast';
+import type { Theme } from '../theme/tokens';
+import { useStyles, useTheme } from '../theme/ThemeContext';
 
 /**
  * One team: who is in it, and what has been set.
@@ -47,6 +49,8 @@ export default function TeamDetailScreen({
   onOpenVisibility: (teamName: string) => void;
   onOpenChallenge: (challengeId: string) => void;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const { token, user } = useAuth();
   const { refresh: refreshTeams } = useTeams();
   const { data, loading, error, reload } = useTeamDetail(teamId);
@@ -120,7 +124,7 @@ export default function TeamDetailScreen({
       contentContainerStyle={[styles.content, { paddingBottom: bottomInset }]}
       showsVerticalScrollIndicator={false}
       refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={palette.textMuted} />
+        <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={theme.textMuted} />
       }
     >
       <StackHeaderBar
@@ -134,7 +138,7 @@ export default function TeamDetailScreen({
 
       {error ? (
         <View style={styles.notice}>
-          <Ionicons name="cloud-offline-outline" size={15} color={palette.amber} />
+          <Ionicons name="cloud-offline-outline" size={15} color={theme.warning} />
           <Text style={styles.noticeText}>{error}</Text>
         </View>
       ) : null}
@@ -217,7 +221,7 @@ export default function TeamDetailScreen({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   content: { padding: 18, gap: 16 },
   notice: {
     flexDirection: 'row',
@@ -225,9 +229,9 @@ const styles = StyleSheet.create({
     gap: 8,
     padding: 12,
     borderRadius: radius.md,
-    backgroundColor: 'rgba(255,183,77,0.10)',
+    backgroundColor: theme.warningSoft,
   },
-  noticeText: { flex: 1, fontSize: 12, fontWeight: '600', color: palette.amber },
+  noticeText: { flex: 1, fontSize: 12, fontWeight: '600', color: theme.warning },
   list: { gap: 10 },
   actions: { marginTop: 10 },
 });

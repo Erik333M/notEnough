@@ -3,8 +3,10 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { dayOfMonth, weekdayLabel } from '../../lib/time';
 import type { DayDot } from '../../state/journey/entries';
-import { accentColor, palette, radius } from '../../theme/theme';
+import { radius } from '../../theme/theme';
 import { PressableScale } from '../../ui/Touchable';
+import type { Theme } from '../../theme/tokens';
+import { useStyles, useTheme } from '../../theme/ThemeContext';
 
 /**
  * The last ~14 days as a row of dots.
@@ -22,6 +24,8 @@ const DayCell = memo(function DayCell({
   dot: DayDot;
   onPress: (date: string) => void;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const handlePress = useCallback(() => onPress(dot.key), [dot.key, onPress]);
 
   // Never fully transparent: a logged day is always visibly logged.
@@ -46,7 +50,7 @@ const DayCell = memo(function DayCell({
           <View
             style={[
               styles.dotFill,
-              { backgroundColor: accentColor.violet, opacity: fillOpacity },
+              { backgroundColor: theme.accent.spirit, opacity: fillOpacity },
             ]}
           />
         ) : null}
@@ -64,6 +68,8 @@ export const CalendarStrip = memo(function CalendarStrip({
   days: DayDot[];
   onSelect: (date: string) => void;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const scroller = useRef<ScrollView>(null);
 
   // Today is the rightmost cell, so the strip opens showing it. Without this
@@ -90,7 +96,7 @@ export const CalendarStrip = memo(function CalendarStrip({
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   row: {
     gap: 4,
     paddingHorizontal: 2,
@@ -107,7 +113,7 @@ const styles = StyleSheet.create({
   weekday: {
     fontSize: 10,
     fontWeight: '700',
-    color: palette.textFaint,
+    color: theme.textFaint,
     letterSpacing: 0.4,
   },
   dot: {
@@ -117,12 +123,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: StyleSheet.hairlineWidth * 2,
-    borderColor: palette.hairline,
-    backgroundColor: palette.glassSunken,
+    borderColor: theme.border,
+    backgroundColor: theme.surfaceSunken,
     overflow: 'hidden',
   },
   todayDot: {
-    borderColor: accentColor.violet,
+    borderColor: theme.accent.spirit,
   },
   dotFill: {
     width: '100%',
@@ -132,9 +138,9 @@ const styles = StyleSheet.create({
   date: {
     fontSize: 11,
     fontWeight: '700',
-    color: palette.textMuted,
+    color: theme.textMuted,
   },
   todayText: {
-    color: palette.text,
+    color: theme.text,
   },
 });

@@ -12,11 +12,13 @@ import {
 } from '../state/journey/benchmarks';
 import { daysLoggedThisMonth, entryStreak, totalDaysLogged } from '../state/journey/entries';
 import { activeHabits, habitConsistency } from '../state/journey/habits';
-import { accentColor, palette, radius } from '../theme/theme';
+import { radius } from '../theme/theme';
 import { Appear, StatTile } from '../ui/Controls';
 import { EmptyState } from '../ui/Feedback';
 import { GlassCard } from '../ui/Glass';
 import { useToast } from '../ui/Toast';
+import type { Theme } from '../theme/tokens';
+import { useStyles } from '../theme/ThemeContext';
 
 /**
  * A light summary of the whole feature.
@@ -33,6 +35,7 @@ export default function JourneyProgressScreen({
   bottomInset: number;
   onBack: () => void;
 }) {
+  const styles = useStyles(makeStyles);
   const state = useAppState();
   const { intake, withdraw } = useIntake();
   const { notify } = useToast();
@@ -95,12 +98,12 @@ export default function JourneyProgressScreen({
             <Appear>
               <GlassCard style={styles.card} elevated>
                 <View style={styles.statRow}>
-                  <StatTile value={`${thisMonth}`} label="This month" accent="violet" />
-                  <StatTile value={`${streak}`} label="Day streak" accent="amber" />
+                  <StatTile value={`${thisMonth}`} label="This month" accent="spirit" />
+                  <StatTile value={`${streak}`} label="Day streak" accent="warning" />
                   <StatTile
                     value={habits > 0 ? `${Math.round(consistency * 100)}%` : '—'}
                     label="Habits kept"
-                    accent="lime"
+                    accent="body"
                   />
                 </View>
                 <Text style={styles.note}>
@@ -150,7 +153,7 @@ export default function JourneyProgressScreen({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   flex: {
     flex: 1,
   },
@@ -169,21 +172,21 @@ const styles = StyleSheet.create({
   note: {
     fontSize: 11,
     fontWeight: '600',
-    color: palette.textFaint,
+    color: theme.textFaint,
     textAlign: 'center',
   },
   sectionLabel: {
     fontSize: 11,
     fontWeight: '800',
     letterSpacing: 1.4,
-    color: palette.textMuted,
+    color: theme.textMuted,
     paddingTop: 4,
   },
   empty: {
     fontSize: 13,
     lineHeight: 19,
     fontWeight: '600',
-    color: palette.textMuted,
+    color: theme.textMuted,
   },
   record: {
     flexDirection: 'row',
@@ -197,17 +200,17 @@ const styles = StyleSheet.create({
   recordName: {
     fontSize: 14,
     fontWeight: '700',
-    color: palette.text,
+    color: theme.text,
   },
   recordDate: {
     fontSize: 11,
     fontWeight: '600',
-    color: palette.textFaint,
+    color: theme.textFaint,
     marginTop: 1,
   },
   recordValue: {
     fontSize: 15,
     fontWeight: '800',
-    color: accentColor.lime,
+    color: theme.accent.body,
   },
 });

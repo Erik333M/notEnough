@@ -1,5 +1,5 @@
 import type { IconName } from '../../state/types';
-import { accentColor, gradients } from '../../theme/theme';
+import type { AccentName } from '../../theme/tokens';
 
 /**
  * The three answers to the opening question, as data.
@@ -7,6 +7,9 @@ import { accentColor, gradients } from '../../theme/theme';
  * Kept apart from the screen for the same reason the privacy copy is: the
  * wording is the part most worth reviewing, and it should be readable without
  * layout around it.
+ *
+ * Colours are roles rather than values, because this is a module constant and
+ * a module constant cannot read a theme. The screen resolves them.
  *
  * None of these is an identity. The chosen key picks the opening screen and is
  * never read again — capabilities come from real team memberships, so somebody
@@ -18,8 +21,8 @@ export type Intent = 'solo' | 'athlete' | 'coach';
 export type IntentChoice = {
   key: Intent;
   icon: IconName;
-  gradient: readonly [string, string];
-  tint: string;
+  /** Which of the three accents carries this choice. */
+  accent: AccentName;
   title: string;
   copy: string;
   /** What tapping this actually does, so the tap holds no surprise. */
@@ -30,8 +33,7 @@ export const INTENT_CHOICES: IntentChoice[] = [
   {
     key: 'solo',
     icon: 'person-outline',
-    gradient: gradients.lime,
-    tint: accentColor.lime,
+    accent: 'body',
     title: 'Train on my own',
     copy: 'Everything you log stays private to you.',
     next: 'Opens on today',
@@ -39,8 +41,7 @@ export const INTENT_CHOICES: IntentChoice[] = [
   {
     key: 'athlete',
     icon: 'barbell-outline',
-    gradient: gradients.cyan,
-    tint: accentColor.cyan,
+    accent: 'mind',
     title: 'Train with a coach',
     copy: 'They see only the work they set you — never your own training.',
     next: 'Asks for your invite code',
@@ -48,8 +49,7 @@ export const INTENT_CHOICES: IntentChoice[] = [
   {
     key: 'coach',
     icon: 'clipboard-outline',
-    gradient: gradients.accent,
-    tint: accentColor.violet,
+    accent: 'spirit',
     title: 'Coach others',
     copy: 'Build sessions, hand them out, follow how the squad is going.',
     next: 'Starts your first team',

@@ -4,9 +4,11 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { intakeHasAnswers } from '../../state/journey/intake';
 import type { Intake } from '../../state/journey/types';
-import { palette, radius } from '../../theme/theme';
+import { radius } from '../../theme/theme';
 import { Button } from '../../ui/Button';
 import { GlassCard } from '../../ui/Glass';
+import type { Theme } from '../../theme/tokens';
+import { useStyles, useTheme } from '../../theme/ThemeContext';
 
 /**
  * Review or withdraw the baseline answers.
@@ -27,13 +29,15 @@ export const IntakePrivacyCard = memo(function IntakePrivacyCard({
   intake: Intake;
   onWithdraw: () => void;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const [confirming, setConfirming] = useState(false);
   const hasAnswers = intakeHasAnswers(intake);
 
   return (
     <GlassCard tone="sunken" style={styles.card}>
       <View style={styles.head}>
-        <Ionicons name="lock-closed-outline" size={15} color={palette.textFaint} />
+        <Ionicons name="lock-closed-outline" size={15} color={theme.textFaint} />
         <Text style={styles.title}>Your answers</Text>
       </View>
 
@@ -73,7 +77,7 @@ export const IntakePrivacyCard = memo(function IntakePrivacyCard({
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   card: {
     gap: 10,
     borderRadius: radius.lg,
@@ -87,13 +91,13 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '800',
     letterSpacing: 1.4,
-    color: palette.textMuted,
+    color: theme.textMuted,
   },
   copy: {
     fontSize: 12,
     lineHeight: 18,
     fontWeight: '600',
-    color: palette.textMuted,
+    color: theme.textMuted,
   },
   row: {
     flexDirection: 'row',

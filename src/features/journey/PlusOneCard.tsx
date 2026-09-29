@@ -10,11 +10,13 @@ import Animated, {
 
 import { PLUS_ONE_KEYS } from '../../state/journey/factory';
 import type { PlusOne, PlusOneKey } from '../../state/journey/types';
-import { accentColor, motion, palette } from '../../theme/theme';
+import { motion } from '../../theme/theme';
 import { GlassCard } from '../../ui/Glass';
 import { PressableScale } from '../../ui/Touchable';
 import { InfoTip } from './InfoTip';
 import { PLUS_ONE_HINT, PLUS_ONE_LABEL } from './journeyCopy';
+import type { Theme } from '../../theme/tokens';
+import { useStyles, useTheme } from '../../theme/ThemeContext';
 
 /**
  * The six Plus One dimensions.
@@ -36,6 +38,8 @@ const Dimension = memo(function Dimension({
   done: boolean;
   onToggle: (key: PlusOneKey) => void;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const t = useSharedValue(done ? 1 : 0);
 
   useEffect(() => {
@@ -46,9 +50,9 @@ const Dimension = memo(function Dimension({
     backgroundColor: interpolateColor(
       t.value,
       [0, 1],
-      [palette.glassSunken, accentColor.cyan],
+      [theme.surfaceSunken, theme.accent.mind],
     ),
-    borderColor: interpolateColor(t.value, [0, 1], [palette.hairlineStrong, accentColor.cyan]),
+    borderColor: interpolateColor(t.value, [0, 1], [theme.borderStrong, theme.accent.mind]),
   }));
 
   const tickStyle = useAnimatedStyle(() => ({
@@ -69,7 +73,7 @@ const Dimension = memo(function Dimension({
     >
       <Animated.View style={[styles.box, boxStyle]}>
         <Animated.View style={tickStyle}>
-          <Ionicons name="add" size={17} color={palette.onAccent} />
+          <Ionicons name="add" size={17} color={theme.onPrimary} />
         </Animated.View>
       </Animated.View>
 
@@ -90,6 +94,8 @@ export const PlusOneCard = memo(function PlusOneCard({
   plusOne: PlusOne;
   onToggle: (key: PlusOneKey) => void;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   return (
     <GlassCard style={styles.card}>
       <View style={styles.header}>
@@ -112,7 +118,7 @@ export const PlusOneCard = memo(function PlusOneCard({
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   card: {
     gap: 4,
   },
@@ -126,12 +132,12 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '800',
     letterSpacing: 1.4,
-    color: accentColor.cyan,
+    color: theme.accent.mind,
   },
   lede: {
     fontSize: 12,
     fontWeight: '600',
-    color: palette.textMuted,
+    color: theme.textMuted,
     marginBottom: 6,
   },
   list: {
@@ -159,12 +165,12 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontWeight: '700',
-    color: palette.text,
+    color: theme.text,
   },
   hint: {
     fontSize: 11,
     fontWeight: '600',
-    color: palette.textFaint,
+    color: theme.textFaint,
     marginTop: 1,
   },
 });

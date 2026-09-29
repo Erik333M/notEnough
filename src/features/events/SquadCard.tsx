@@ -2,12 +2,14 @@ import { memo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import type { Squad } from '../../api/events';
-import { accentColor, palette } from '../../theme/theme';
+
 import { Avatar } from '../../ui/Avatar';
 import { Button } from '../../ui/Button';
 import { RoundIconButton } from '../../ui/Controls';
 import { Field } from '../../ui/Field';
 import { GlassCard } from '../../ui/Glass';
+import type { Theme } from '../../theme/tokens';
+import { useStyles, useTheme } from '../../theme/ThemeContext';
 
 /**
  * One squad inside an event.
@@ -31,6 +33,8 @@ export const SquadCard = memo(function SquadCard({
   onRename: (name: string) => void;
   onDisband: () => void;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState(squad.team.name);
   const [confirming, setConfirming] = useState(false);
@@ -126,15 +130,15 @@ export const SquadCard = memo(function SquadCard({
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   card: { gap: 10, padding: 14 },
   head: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  name: { flex: 1, fontSize: 15, fontWeight: '800', color: palette.text },
-  count: { fontSize: 11.5, fontWeight: '700', color: palette.textMuted },
+  name: { flex: 1, fontSize: 15, fontWeight: '800', color: theme.text },
+  count: { fontSize: 11.5, fontWeight: '700', color: theme.textMuted },
   row: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  member: { flex: 1, fontSize: 13.5, fontWeight: '700', color: palette.text },
-  leads: { fontSize: 10.5, fontWeight: '800', color: accentColor.violet, textTransform: 'uppercase' },
-  empty: { fontSize: 12, fontWeight: '600', color: palette.textFaint },
+  member: { flex: 1, fontSize: 13.5, fontWeight: '700', color: theme.text },
+  leads: { fontSize: 10.5, fontWeight: '800', color: theme.accent.spirit, textTransform: 'uppercase' },
+  empty: { fontSize: 12, fontWeight: '600', color: theme.textFaint },
   rename: { gap: 10 },
   renameRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   grow: { flex: 1 },

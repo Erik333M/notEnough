@@ -4,6 +4,7 @@ import {
   Modal,
   Platform,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   View,
@@ -11,33 +12,44 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { MOVEMENT_CATEGORY_LABEL } from '../../state/journey/movements';
+import { NO_MUSCLE_WORK, type MuscleWork } from '../../state/journey/muscles';
 import type { MovementCategory } from '../../state/journey/types';
-import { palette, radius } from '../../theme/theme';
+import { MusclePicker } from '../muscles/MusclePicker';
+import { radius } from '../../theme/theme';
 import { Button } from '../../ui/Button';
 import { Chip, RoundIconButton, SectionHeader } from '../../ui/Controls';
 import { Field } from '../../ui/Field';
+import type { Theme } from '../../theme/tokens';
+import { useStyles, useTheme } from '../../theme/ThemeContext';
 
 /**
  * Adds a movement to the user's own catalogue.
  *
- * Two fields and nothing else. The category only affects filtering, so it has
- * a sensible default and never blocks saving — the point is to get back to
- * logging the workout.
+ * Name, category, and what it works. None of the three blocks saving: the
+ * point is to get back to logging the workout, and a movement with no muscles
+ * on it is still a movement.
+ *
+ * The muscles are asked for here because this is the one moment somebody knows
+ * the answer — they have just thought of the exercise. Tagging it later means
+ * finding it again in a list of hundreds.
  */
 type Props = {
   visible: boolean;
   /** Prefills from whatever was being searched when this was opened. */
   initialName?: string;
   onClose: () => void;
-  onCreate: (name: string, category: MovementCategory) => void;
+  onCreate: (name: string, category: MovementCategory, muscles: MuscleWork) => void;
 };
 
 const CATEGORIES = Object.keys(MOVEMENT_CATEGORY_LABEL) as MovementCategory[];
 
 export function NewMovementSheet({ visible, initialName = '', onClose, onCreate }: Props) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const insets = useSafeAreaInsets();
   const [name, setName] = useState('');
   const [category, setCategory] = useState<MovementCategory>('strength');
+  const [muscles, setMuscles] = useState<MuscleWork>(NO_MUSCLE_WORK);
   const [error, setError] = useState<string | null>(null);
 
   // Reset on open so a cancelled entry never leaks into the next one.
@@ -45,6 +57,7 @@ export function NewMovementSheet({ visible, initialName = '', onClose, onCreate 
     if (!visible) return;
     setName(initialName);
     setCategory('strength');
+    setMuscles(NO_MUSCLE_WORK);
     setError(null);
   }, [visible, initialName]);
 
@@ -54,8 +67,8 @@ export function NewMovementSheet({ visible, initialName = '', onClose, onCreate 
       setError('Give the movement a name.');
       return;
     }
-    onCreate(clean, category);
-  }, [name, category, onCreate]);
+    onCreate(clean, category, muscles);
+  }, [name, category, muscles, onCreate]);
 
   return (
     <Modal
@@ -71,7 +84,12 @@ export function NewMovementSheet({ visible, initialName = '', onClose, onCreate 
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}
           style={styles.sheetWrap}
         >
-          <View style={[styles.sheet, { paddingBottom: insets.bottom + 16 }]}>
+          <ScrollView
+            style={styles.sheet}
+            contentContainerStyle={[styles.sheetBody, { paddingBottom: insets.bottom + 16 }]}
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+          >
             <View style={styles.grabber} />
 
             <SectionHeader
@@ -110,36 +128,45 @@ export function NewMovementSheet({ visible, initialName = '', onClose, onCreate 
                     key={key}
                     label={MOVEMENT_CATEGORY_LABEL[key]}
                     active={category === key}
-                    accent="cyan"
+                    accent="mind"
                     onPress={() => setCategory(key)}
                   />
                 ))}
               </View>
             </View>
 
+            <View style={styles.group}>
+              <Text style={styles.groupLabel}>What does it work?</Text>
+              <MusclePicker work={muscles} onChange={setMuscles} />
+            </View>
+
             <Button label="Add movement" icon="checkmark" onPress={handleSave} />
-          </View>
+          </ScrollView>
         </KeyboardAvoidingView>
       </View>
     </Modal>
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   backdrop: {
     flex: 1,
     justifyContent: 'flex-end',
-    backgroundColor: 'rgba(2,3,10,0.72)',
+    backgroundColor: theme.scrim,
   },
   sheetWrap: {
     maxHeight: '92%',
   },
   sheet: {
-    backgroundColor: '#111634',
+    backgroundColor: theme.surfaceElevated,
     borderTopLeftRadius: radius.xl,
     borderTopRightRadius: radius.xl,
     borderTopWidth: StyleSheet.hairlineWidth * 2,
-    borderColor: palette.hairlineStrong,
+    borderColor: theme.borderStrong,
+  },
+  // Gap lives on the scrolling content now that the sheet is a ScrollView;
+  // a gap on the scroller itself is ignored.
+  sheetBody: {
     paddingHorizontal: 18,
     paddingTop: 10,
     gap: 16,
@@ -149,7 +176,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 4,
     borderRadius: 2,
-    backgroundColor: palette.hairlineStrong,
+    backgroundColor: theme.borderStrong,
   },
   group: {
     gap: 8,
@@ -157,7 +184,7 @@ const styles = StyleSheet.create({
   groupLabel: {
     fontSize: 12,
     fontWeight: '700',
-    color: palette.textMuted,
+    color: theme.textMuted,
     marginLeft: 2,
   },
   chips: {

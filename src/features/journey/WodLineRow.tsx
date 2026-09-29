@@ -4,8 +4,10 @@ import { StyleSheet, Text, TextInput, View } from 'react-native';
 
 import type { UnitSystem, WodLine } from '../../state/journey/types';
 import { displayWeight, roundTo, storeWeight, weightUnit } from '../../state/journey/units';
-import { palette, radius } from '../../theme/theme';
+import { radius } from '../../theme/theme';
 import { PressableScale } from '../../ui/Touchable';
+import type { Theme } from '../../theme/tokens';
+import { useStyles, useTheme } from '../../theme/ThemeContext';
 
 /**
  * One line of a workout: reps × movement @ weight.
@@ -52,6 +54,8 @@ export const WodLineRow = memo(function WodLineRow({
   onChange,
   onRemove,
 }: Props) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const handleReps = useCallback(
     (text: string) => onChange(line.id, { reps: parseCount(text) }),
     [line.id, onChange],
@@ -77,12 +81,12 @@ export const WodLineRow = memo(function WodLineRow({
         value={line.reps === null ? '' : `${line.reps}`}
         onChangeText={handleReps}
         placeholder="—"
-        placeholderTextColor={palette.textFaint}
+        placeholderTextColor={theme.textFaint}
         style={[styles.box, styles.reps]}
         keyboardType="number-pad"
         returnKeyType="done"
         maxLength={4}
-        selectionColor={palette.violet}
+        selectionColor={theme.accent.spirit}
         accessibilityLabel="Reps"
       />
 
@@ -99,7 +103,7 @@ export const WodLineRow = memo(function WodLineRow({
         >
           {label || 'Choose a movement'}
         </Text>
-        <Ionicons name="chevron-down" size={14} color={palette.textFaint} />
+        <Ionicons name="chevron-down" size={14} color={theme.textFaint} />
       </PressableScale>
 
       <View style={styles.weightWrap}>
@@ -107,12 +111,12 @@ export const WodLineRow = memo(function WodLineRow({
           value={shownWeight === null ? '' : `${roundTo(shownWeight, 1)}`}
           onChangeText={handleWeight}
           placeholder="—"
-          placeholderTextColor={palette.textFaint}
+          placeholderTextColor={theme.textFaint}
           style={[styles.box, styles.weight]}
           keyboardType="decimal-pad"
           returnKeyType="done"
           maxLength={6}
-          selectionColor={palette.violet}
+          selectionColor={theme.accent.spirit}
           accessibilityLabel={`Weight in ${weightUnit(units)}`}
         />
         <Text style={styles.unit}>{weightUnit(units)}</Text>
@@ -126,13 +130,13 @@ export const WodLineRow = memo(function WodLineRow({
         accessibilityLabel={`Remove ${label || 'this line'}`}
         style={styles.remove}
       >
-        <Ionicons name="close" size={16} color={palette.textFaint} />
+        <Ionicons name="close" size={16} color={theme.textFaint} />
       </PressableScale>
     </View>
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -143,9 +147,9 @@ const styles = StyleSheet.create({
     height: 44,
     borderRadius: radius.sm,
     borderWidth: StyleSheet.hairlineWidth * 2,
-    borderColor: palette.hairline,
-    backgroundColor: palette.glassSunken,
-    color: palette.text,
+    borderColor: theme.border,
+    backgroundColor: theme.surfaceSunken,
+    color: theme.text,
     fontSize: 15,
     fontWeight: '700',
     textAlign: 'center',
@@ -163,17 +167,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 11,
     borderRadius: radius.sm,
     borderWidth: StyleSheet.hairlineWidth * 2,
-    borderColor: palette.hairline,
-    backgroundColor: palette.glassSunken,
+    borderColor: theme.border,
+    backgroundColor: theme.surfaceSunken,
   },
   movementText: {
     flex: 1,
     fontSize: 14,
     fontWeight: '700',
-    color: palette.text,
+    color: theme.text,
   },
   movementPlaceholder: {
-    color: palette.textFaint,
+    color: theme.textFaint,
     fontWeight: '600',
   },
   weightWrap: {
@@ -186,7 +190,7 @@ const styles = StyleSheet.create({
   unit: {
     fontSize: 9,
     fontWeight: '700',
-    color: palette.textFaint,
+    color: theme.textFaint,
   },
   remove: {
     width: 30,

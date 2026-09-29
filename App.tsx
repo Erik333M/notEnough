@@ -10,10 +10,17 @@ import AuthScreen from './src/screens/AuthScreen';
 import { AuthProvider, useAuth } from './src/state/AuthContext';
 import { DataProvider } from './src/state/DataContext';
 import { TeamsProvider } from './src/state/TeamsContext';
+import { ThemeProvider, useTheme } from './src/theme/ThemeContext';
 import { ErrorBoundary } from './src/ui/ErrorBoundary';
 import { BootSplash } from './src/ui/Feedback';
 import { Screen } from './src/ui/Screen';
 import { ToastProvider } from './src/ui/Toast';
+
+/** The clock and battery have to be legible against whichever canvas is up. */
+function ThemedStatusBar() {
+  const theme = useTheme();
+  return <StatusBar style={theme.name === 'dark' ? 'light' : 'dark'} />;
+}
 
 export default function App() {
   return (
@@ -24,14 +31,20 @@ export default function App() {
           message rather than a blank window.
         */}
         <ErrorBoundary>
-          <Screen>
-            <StatusBar style="light" />
-            <AuthProvider>
-              <ToastProvider>
-                <Root />
-              </ToastProvider>
-            </AuthProvider>
-          </Screen>
+          {/*
+            Inside the boundary and outside everything else: every surface in
+            the app asks it for colours, and a crash screen must not.
+          */}
+          <ThemeProvider>
+            <Screen>
+              <ThemedStatusBar />
+              <AuthProvider>
+                <ToastProvider>
+                  <Root />
+                </ToastProvider>
+              </AuthProvider>
+            </Screen>
+          </ThemeProvider>
         </ErrorBoundary>
       </SafeAreaProvider>
     </GestureHandlerRootView>

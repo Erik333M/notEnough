@@ -13,9 +13,11 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-import { gradients, palette, radius } from '../theme/theme';
+import { radius } from '../theme/theme';
 import type { IconName } from '../state/types';
 import { GlassCard } from './Glass';
+import type { Theme } from '../theme/tokens';
+import { useStyles, useTheme } from '../theme/ThemeContext';
 
 /** Shimmering placeholder block used while persisted state hydrates. */
 export const Skeleton = memo(function Skeleton({
@@ -29,6 +31,8 @@ export const Skeleton = memo(function Skeleton({
   rounded?: number;
   delay?: number;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const shimmer = useSharedValue(0);
 
   useEffect(() => {
@@ -43,7 +47,7 @@ export const Skeleton = memo(function Skeleton({
   return (
     <Animated.View
       style={[
-        { width, height, borderRadius: rounded, backgroundColor: 'rgba(255,255,255,0.16)' },
+        { width, height, borderRadius: rounded, backgroundColor: theme.surfaceElevated },
         style,
       ]}
     />
@@ -51,6 +55,8 @@ export const Skeleton = memo(function Skeleton({
 });
 
 export const SkeletonCard = memo(function SkeletonCard({ delay = 0 }: { delay?: number }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   return (
     <GlassCard style={{ gap: 12 }}>
       <Skeleton width="45%" height={12} delay={delay} />
@@ -70,6 +76,8 @@ export const SkeletonCard = memo(function SkeletonCard({ delay = 0 }: { delay?: 
  * repeating UI-thread animation so a slow disk read never freezes it.
  */
 export const BootSplash = memo(function BootSplash({ label = 'Warming up' }: { label?: string }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const pulse = useSharedValue(0);
   const glow = useSharedValue(0);
 
@@ -100,12 +108,12 @@ export const BootSplash = memo(function BootSplash({ label = 'Warming up' }: { l
         <Animated.View style={[styles.splashHalo, haloStyle]} />
         <Animated.View style={markStyle}>
           <LinearGradient
-            colors={gradients.accent}
+            colors={theme.primaryGradient}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={styles.splashMark}
           >
-            <Ionicons name="flash" size={30} color={palette.onAccent} />
+            <Ionicons name="flash" size={30} color={theme.onPrimary} />
           </LinearGradient>
         </Animated.View>
       </View>
@@ -121,6 +129,8 @@ export const BootSplash = memo(function BootSplash({ label = 'Warming up' }: { l
 });
 
 const LoadingBar = memo(function LoadingBar() {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const t = useSharedValue(0);
 
   useEffect(() => {
@@ -135,7 +145,7 @@ const LoadingBar = memo(function LoadingBar() {
     <View style={styles.loaderTrack}>
       <Animated.View style={[styles.loaderThumb, style]}>
         <LinearGradient
-          colors={gradients.cyan}
+          colors={theme.coolGradient}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
           style={StyleSheet.absoluteFill}
@@ -154,6 +164,8 @@ export const EmptyState = memo(function EmptyState({
   title: string;
   copy: string;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const float = useSharedValue(0);
 
   useEffect(() => {
@@ -165,7 +177,7 @@ export const EmptyState = memo(function EmptyState({
   return (
     <View style={styles.empty}>
       <Animated.View style={[styles.emptyIcon, style]}>
-        <Ionicons name={icon} size={26} color={palette.textMuted} />
+        <Ionicons name={icon} size={26} color={theme.textMuted} />
       </Animated.View>
       <Text style={styles.emptyTitle}>{title}</Text>
       <Text style={styles.emptyCopy}>{copy}</Text>
@@ -173,7 +185,7 @@ export const EmptyState = memo(function EmptyState({
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   splash: {
     flex: 1,
     alignItems: 'center',
@@ -190,7 +202,7 @@ const styles = StyleSheet.create({
     width: 108,
     height: 108,
     borderRadius: 54,
-    backgroundColor: palette.violet,
+    backgroundColor: theme.accent.spirit,
   },
   splashMark: {
     width: 74,
@@ -202,12 +214,12 @@ const styles = StyleSheet.create({
   splashBrand: {
     fontSize: 26,
     fontWeight: '800',
-    color: palette.text,
+    color: theme.text,
     letterSpacing: 0.4,
   },
   splashLabel: {
     fontSize: 13,
-    color: palette.textFaint,
+    color: theme.textFaint,
     fontWeight: '600',
   },
   loaderTrack: {
@@ -215,7 +227,7 @@ const styles = StyleSheet.create({
     width: 140,
     height: 4,
     borderRadius: 999,
-    backgroundColor: 'rgba(255,255,255,0.10)',
+    backgroundColor: theme.surfaceElevated,
     overflow: 'hidden',
   },
   loaderThumb: {
@@ -236,19 +248,19 @@ const styles = StyleSheet.create({
     borderRadius: 28,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: palette.glassStrong,
+    backgroundColor: theme.surfaceElevated,
     borderWidth: StyleSheet.hairlineWidth * 2,
-    borderColor: palette.hairline,
+    borderColor: theme.border,
   },
   emptyTitle: {
     fontSize: 15,
     fontWeight: '800',
-    color: palette.text,
+    color: theme.text,
   },
   emptyCopy: {
     fontSize: 13,
     lineHeight: 19,
-    color: palette.textFaint,
+    color: theme.textFaint,
     textAlign: 'center',
     maxWidth: 260,
   },

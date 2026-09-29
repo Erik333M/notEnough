@@ -4,8 +4,10 @@ import { StyleSheet, Text } from 'react-native';
 import { longDateLabel } from '../../lib/time';
 import { MEASUREMENT_METRICS } from '../../state/journey/measurements';
 import type { MeasurementEntry } from '../../state/journey/types';
-import { palette, radius } from '../../theme/theme';
+import { radius } from '../../theme/theme';
 import { PressableScale } from '../../ui/Touchable';
+import type { Theme } from '../../theme/tokens';
+import { useStyles, useTheme } from '../../theme/ThemeContext';
 
 /**
  * One dated reading in the history list.
@@ -21,6 +23,8 @@ export const MeasurementHistoryRow = memo(function MeasurementHistoryRow({
   entry: MeasurementEntry;
   onPress: (entry: MeasurementEntry) => void;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const handlePress = useCallback(() => onPress(entry), [entry, onPress]);
   const filled = MEASUREMENT_METRICS.filter((m) => entry[m.key] !== null).length;
 
@@ -42,7 +46,7 @@ export const MeasurementHistoryRow = memo(function MeasurementHistoryRow({
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -50,17 +54,17 @@ const styles = StyleSheet.create({
     minHeight: 48,
     paddingHorizontal: 13,
     borderRadius: radius.md,
-    backgroundColor: palette.glassSunken,
+    backgroundColor: theme.surfaceSunken,
   },
   date: {
     flex: 1,
     fontSize: 13,
     fontWeight: '700',
-    color: palette.text,
+    color: theme.text,
   },
   count: {
     fontSize: 11,
     fontWeight: '700',
-    color: palette.textFaint,
+    color: theme.textFaint,
   },
 });

@@ -3,9 +3,11 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { memo } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
 
-import { gradients, palette, radius } from '../theme/theme';
+import { radius } from '../theme/theme';
 import type { IconName } from '../state/types';
 import { PressableScale } from './Touchable';
+import type { Theme } from '../theme/tokens';
+import { useStyles, useTheme } from '../theme/ThemeContext';
 
 type Variant = 'primary' | 'glass' | 'ghost' | 'danger';
 
@@ -30,10 +32,12 @@ export const Button = memo(function Button({
   style,
   size = 'md',
 }: Props) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const height = size === 'lg' ? 56 : 48;
   const isPrimary = variant === 'primary';
   const tint =
-    variant === 'danger' ? palette.rose : isPrimary ? palette.onAccent : palette.text;
+    variant === 'danger' ? theme.error : isPrimary ? theme.onPrimary : theme.text;
 
   const content = (
     <View style={styles.row}>
@@ -60,7 +64,7 @@ export const Button = memo(function Button({
     >
       {isPrimary ? (
         <LinearGradient
-          colors={gradients.accent}
+          colors={theme.primaryGradient}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={[styles.base, { height }]}
@@ -83,7 +87,7 @@ export const Button = memo(function Button({
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   base: {
     borderRadius: radius.md,
     alignItems: 'center',
@@ -91,15 +95,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 18,
   },
   glass: {
-    backgroundColor: palette.glassStrong,
+    backgroundColor: theme.surfaceElevated,
     borderWidth: StyleSheet.hairlineWidth * 2,
-    borderColor: palette.hairlineStrong,
+    borderColor: theme.borderStrong,
   },
   ghost: {
     backgroundColor: 'transparent',
   },
   danger: {
-    backgroundColor: palette.roseSoft,
+    backgroundColor: theme.errorSoft,
     borderColor: 'rgba(255,122,143,0.35)',
   },
   row: {

@@ -2,8 +2,9 @@ import { memo } from 'react';
 import { StyleSheet, TextInput, type TextStyle } from 'react-native';
 import Animated, { useAnimatedProps, type SharedValue } from 'react-native-reanimated';
 
-import { palette } from '../../theme/theme';
 import { formatClock, formatCountdown } from './clock';
+import type { Theme } from '../../theme/tokens';
+import { useStyles, useTheme } from '../../theme/ThemeContext';
 
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 
@@ -25,9 +26,14 @@ export const TimerDigits = memo(function TimerDigits({
   value,
   mode = 'clock',
   size = 64,
-  color = palette.text,
+  color,
   style,
 }: Props) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
+  // Defaulted here rather than in the signature: a parameter default is
+  // evaluated before any hook has run, so it cannot read the theme.
+  const tint = color ?? theme.text;
   const animatedProps = useAnimatedProps(() => {
     const text = mode === 'countdown' ? formatCountdown(value.value) : formatClock(value.value);
     // `text` is not part of the public TextInput prop types but is supported by
@@ -44,14 +50,14 @@ export const TimerDigits = memo(function TimerDigits({
       accessibilityRole="text"
       style={[
         styles.digits,
-        { fontSize: size, lineHeight: size * 1.16, color },
+        { fontSize: size, lineHeight: size * 1.16, color: tint },
         style,
       ]}
     />
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   digits: {
     fontWeight: '800',
     textAlign: 'center',

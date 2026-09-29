@@ -12,8 +12,11 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import type { SyncStatus } from '../state/sync';
-import { accentColor, palette, radius, type AccentName } from '../theme/theme';
+import { radius } from '../theme/theme';
 import { PressableScale } from '../ui/Touchable';
+import type { AccentName } from '../theme/tokens';
+import type { Theme } from '../theme/tokens';
+import { useStyles, useTheme } from '../theme/ThemeContext';
 
 export const Header = memo(function Header({
   title,
@@ -28,6 +31,8 @@ export const Header = memo(function Header({
   syncStatus: SyncStatus;
   onSync: () => void;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   return (
     <View style={styles.wrap}>
       <Animated.View key={title} entering={FadeIn.duration(200)} style={styles.titles}>
@@ -42,7 +47,7 @@ export const Header = memo(function Header({
       <SyncBadge status={syncStatus} onPress={onSync} />
 
       <View style={styles.streak}>
-        <Ionicons name="flame" size={14} color={palette.amber} />
+        <Ionicons name="flame" size={14} color={theme.warning} />
         <Text style={styles.streakText}>{streak}</Text>
       </View>
     </View>
@@ -50,11 +55,11 @@ export const Header = memo(function Header({
 });
 
 const SYNC_META: Record<SyncStatus, { icon: 'cloud-done' | 'cloud-offline' | 'sync' | 'warning'; accent: AccentName; label: string }> = {
-  idle: { icon: 'sync', accent: 'cyan', label: 'Sync' },
-  syncing: { icon: 'sync', accent: 'cyan', label: 'Syncing' },
-  synced: { icon: 'cloud-done', accent: 'lime', label: 'Synced' },
-  offline: { icon: 'cloud-offline', accent: 'amber', label: 'Offline' },
-  error: { icon: 'warning', accent: 'rose', label: 'Sync failed' },
+  idle: { icon: 'sync', accent: 'mind', label: 'Sync' },
+  syncing: { icon: 'sync', accent: 'mind', label: 'Syncing' },
+  synced: { icon: 'cloud-done', accent: 'body', label: 'Synced' },
+  offline: { icon: 'cloud-offline', accent: 'warning', label: 'Offline' },
+  error: { icon: 'warning', accent: 'danger', label: 'Sync failed' },
 };
 
 /** Tappable sync state. Spins only while a request is actually in flight. */
@@ -65,6 +70,8 @@ const SyncBadge = memo(function SyncBadge({
   status: SyncStatus;
   onPress: () => void;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const meta = SYNC_META[status];
   const spin = useSharedValue(0);
 
@@ -86,16 +93,16 @@ const SyncBadge = memo(function SyncBadge({
       haptic="light"
       scaleTo={0.88}
       accessibilityLabel={meta.label}
-      style={[styles.sync, { borderColor: `${accentColor[meta.accent]}55` }]}
+      style={[styles.sync, { borderColor: `${theme.accent[meta.accent]}55` }]}
     >
       <Animated.View style={style}>
-        <Ionicons name={meta.icon} size={14} color={accentColor[meta.accent]} />
+        <Ionicons name={meta.icon} size={14} color={theme.accent[meta.accent]} />
       </Animated.View>
     </PressableScale>
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   wrap: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -109,9 +116,9 @@ const styles = StyleSheet.create({
     borderRadius: 21,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: palette.glassStrong,
+    backgroundColor: theme.surfaceElevated,
     borderWidth: StyleSheet.hairlineWidth * 2,
-    borderColor: palette.hairlineStrong,
+    borderColor: theme.borderStrong,
   },
   titles: {
     flex: 1,
@@ -119,11 +126,11 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: '800',
-    color: palette.text,
+    color: theme.text,
   },
   subtitle: {
     fontSize: 12,
-    color: palette.textFaint,
+    color: theme.textFaint,
     marginTop: 2,
     fontWeight: '600',
   },
@@ -133,7 +140,7 @@ const styles = StyleSheet.create({
     borderRadius: 17,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: palette.glassSunken,
+    backgroundColor: theme.surfaceSunken,
     borderWidth: StyleSheet.hairlineWidth * 2,
   },
   streak: {
@@ -143,11 +150,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     height: 34,
     borderRadius: radius.pill,
-    backgroundColor: palette.amberSoft,
+    backgroundColor: theme.warningSoft,
   },
   streakText: {
     fontSize: 13,
     fontWeight: '800',
-    color: palette.amber,
+    color: theme.warning,
   },
 });

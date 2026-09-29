@@ -5,10 +5,12 @@ import Animated, { LinearTransition } from 'react-native-reanimated';
 
 import { clockLabel } from '../../lib/time';
 import { GOAL_UNIT, type Goal } from '../../state/types';
-import { accentColor, accentSoft, palette, radius } from '../../theme/theme';
+import { radius } from '../../theme/theme';
 import { GlassCard } from '../../ui/Glass';
 import { ProgressBar } from '../../ui/Progress';
 import { PressableScale } from '../../ui/Touchable';
+import type { Theme } from '../../theme/tokens';
+import { useStyles, useTheme } from '../../theme/ThemeContext';
 
 /** How much one tap adds, per goal kind. */
 export function stepFor(goal: Goal): number {
@@ -53,6 +55,8 @@ export const GoalCard = memo(function GoalCard({
   onPress,
   delay = 0,
 }: Props) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const done = amount >= goal.target;
   const ratio = goal.target > 0 ? Math.min(1, amount / goal.target) : 0;
   const step = stepFor(goal);
@@ -73,8 +77,8 @@ export const GoalCard = memo(function GoalCard({
       >
         <GlassCard style={styles.card} tone={done ? 'strong' : 'default'}>
           <View style={styles.top}>
-            <View style={[styles.icon, { backgroundColor: accentSoft[goal.accent] }]}>
-              <Ionicons name={goal.icon} size={18} color={accentColor[goal.accent]} />
+            <View style={[styles.icon, { backgroundColor: theme.accentSoft[goal.accent] }]}>
+              <Ionicons name={goal.icon} size={18} color={theme.accent[goal.accent]} />
             </View>
 
             <View style={styles.titles}>
@@ -92,13 +96,13 @@ export const GoalCard = memo(function GoalCard({
               scaleTo={0.88}
               style={[
                 styles.check,
-                done && { backgroundColor: accentColor[goal.accent], borderColor: 'transparent' },
+                done && { backgroundColor: theme.accent[goal.accent], borderColor: 'transparent' },
               ]}
             >
               <Ionicons
                 name="checkmark"
                 size={17}
-                color={done ? palette.onAccent : palette.textFaint}
+                color={done ? theme.onPrimary : theme.textFaint}
               />
             </PressableScale>
           </View>
@@ -106,14 +110,14 @@ export const GoalCard = memo(function GoalCard({
           <ProgressBar progress={ratio} accent={goal.accent} delay={delay} />
 
           <View style={styles.bottom}>
-            <Text style={[styles.amount, done && { color: accentColor[goal.accent] }]}>
+            <Text style={[styles.amount, done && { color: theme.accent[goal.accent] }]}>
               {amountLabel(goal, amount)}
             </Text>
 
             <View style={styles.actions}>
               {goal.reminder.enabled ? (
                 <View style={styles.reminderTag}>
-                  <Ionicons name="notifications" size={11} color={palette.textMuted} />
+                  <Ionicons name="notifications" size={11} color={theme.textMuted} />
                   <Text style={styles.reminderText}>
                     {clockLabel(goal.reminder.hour, goal.reminder.minute)}
                   </Text>
@@ -123,7 +127,7 @@ export const GoalCard = memo(function GoalCard({
               {goal.kind === 'check' ? null : (
                 <PressableScale onPress={handleAdd} haptic="light" scaleTo={0.9}>
                   <View style={styles.addButton}>
-                    <Ionicons name="add" size={14} color={palette.text} />
+                    <Ionicons name="add" size={14} color={theme.text} />
                     <Text style={styles.addText}>
                       {goal.kind === 'distance' ? `${step}m` : `${step}`}
                     </Text>
@@ -138,7 +142,7 @@ export const GoalCard = memo(function GoalCard({
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   card: {
     gap: 12,
   },
@@ -160,11 +164,11 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 15,
     fontWeight: '800',
-    color: palette.text,
+    color: theme.text,
   },
   detail: {
     fontSize: 12,
-    color: palette.textFaint,
+    color: theme.textFaint,
     marginTop: 2,
   },
   check: {
@@ -174,8 +178,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: StyleSheet.hairlineWidth * 2,
-    borderColor: palette.hairlineStrong,
-    backgroundColor: palette.glassSunken,
+    borderColor: theme.borderStrong,
+    backgroundColor: theme.surfaceSunken,
   },
   bottom: {
     flexDirection: 'row',
@@ -186,7 +190,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 12,
     fontWeight: '700',
-    color: palette.textMuted,
+    color: theme.textMuted,
   },
   actions: {
     flexDirection: 'row',
@@ -200,12 +204,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 5,
     borderRadius: radius.pill,
-    backgroundColor: palette.glassSunken,
+    backgroundColor: theme.surfaceSunken,
   },
   reminderText: {
     fontSize: 11,
     fontWeight: '700',
-    color: palette.textMuted,
+    color: theme.textMuted,
   },
   addButton: {
     flexDirection: 'row',
@@ -214,13 +218,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 11,
     paddingVertical: 7,
     borderRadius: radius.pill,
-    backgroundColor: palette.glassStrong,
+    backgroundColor: theme.surfaceElevated,
     borderWidth: StyleSheet.hairlineWidth * 2,
-    borderColor: palette.hairlineStrong,
+    borderColor: theme.borderStrong,
   },
   addText: {
     fontSize: 12,
     fontWeight: '800',
-    color: palette.text,
+    color: theme.text,
   },
 });

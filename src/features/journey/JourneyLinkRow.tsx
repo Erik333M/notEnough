@@ -3,8 +3,11 @@ import { memo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import type { IconName } from '../../state/types';
-import { accentColor, accentSoft, palette, radius, type AccentName } from '../../theme/theme';
+import { radius } from '../../theme/theme';
 import { PressableScale } from '../../ui/Touchable';
+import type { AccentName } from '../../theme/tokens';
+import type { Theme } from '../../theme/tokens';
+import { useStyles, useTheme } from '../../theme/ThemeContext';
 
 /**
  * A way into one of the feature's longer-horizon modules.
@@ -29,9 +32,11 @@ export const JourneyLinkRow = memo(function JourneyLinkRow({
   icon,
   title,
   meta,
-  accent = 'violet',
+  accent = 'spirit',
   onPress,
 }: Props) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   return (
     <PressableScale
       onPress={onPress}
@@ -40,8 +45,8 @@ export const JourneyLinkRow = memo(function JourneyLinkRow({
       accessibilityLabel={`${title}. ${meta}`}
       style={styles.row}
     >
-      <View style={[styles.icon, { backgroundColor: accentSoft[accent] }]}>
-        <Ionicons name={icon} size={18} color={accentColor[accent]} />
+      <View style={[styles.icon, { backgroundColor: theme.accentSoft[accent] }]}>
+        <Ionicons name={icon} size={18} color={theme.accent[accent]} />
       </View>
 
       <View style={styles.text}>
@@ -53,12 +58,12 @@ export const JourneyLinkRow = memo(function JourneyLinkRow({
         </Text>
       </View>
 
-      <Ionicons name="chevron-forward" size={16} color={palette.textFaint} />
+      <Ionicons name="chevron-forward" size={16} color={theme.textFaint} />
     </PressableScale>
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -66,9 +71,9 @@ const styles = StyleSheet.create({
     minHeight: 60,
     paddingHorizontal: 14,
     borderRadius: radius.md,
-    backgroundColor: palette.glass,
+    backgroundColor: theme.surface,
     borderWidth: StyleSheet.hairlineWidth * 2,
-    borderColor: palette.hairline,
+    borderColor: theme.border,
   },
   icon: {
     width: 36,
@@ -83,12 +88,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 14,
     fontWeight: '700',
-    color: palette.text,
+    color: theme.text,
   },
   meta: {
     fontSize: 11,
     fontWeight: '600',
-    color: palette.textFaint,
+    color: theme.textFaint,
     marginTop: 2,
   },
 });

@@ -52,7 +52,7 @@ export const VICTORIES: VictoryDef[] = [
     label: 'PHYSICAL',
     title: 'Physical Victory',
     purpose: 'Build and maintain a strong, healthy body.',
-    accent: 'amber',
+    accent: 'warning',
     icon: 'barbell',
     goals: [
       {
@@ -106,7 +106,7 @@ export const VICTORIES: VictoryDef[] = [
     label: 'MIND',
     title: 'Mind Victory',
     purpose: 'Become smarter, more disciplined and better at your profession.',
-    accent: 'cyan',
+    accent: 'mind',
     icon: 'bulb',
     goals: [
       {
@@ -157,7 +157,7 @@ export const VICTORIES: VictoryDef[] = [
     label: 'SPIRIT',
     title: 'Spiritual Victory',
     purpose: 'Grow closer to God and live the Christian faith.',
-    accent: 'violet',
+    accent: 'spirit',
     icon: 'sparkles',
     goals: [
       {

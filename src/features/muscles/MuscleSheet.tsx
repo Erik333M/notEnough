@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -8,9 +8,13 @@ import {
   worksView,
 } from '../../state/journey/muscles';
 import type { BodyForm } from '../../state/journey/types';
-import { accentColor, palette, radius } from '../../theme/theme';
+import { radius } from '../../theme/theme';
 import { RoundIconButton, SectionHeader, Segmented } from '../../ui/Controls';
 import { BodyMap } from './BodyMap';
+import { MusclePicker } from './MusclePicker';
+import { Button } from '../../ui/Button';
+import type { Theme } from '../../theme/tokens';
+import { useStyles } from '../../theme/ThemeContext';
 
 /**
  * What a movement works, on a figure.
@@ -22,21 +26,37 @@ import { BodyMap } from './BodyMap';
  * The figure is a preference, not a claim about anyone: the switch is here
  * rather than buried in settings because this is the screen where it matters,
  * and it changes the drawing and nothing else.
+ *
+ * A movement you added yourself can be tagged from here. The 223 that ship
+ * with the app cannot: they are a reference, and letting each account rewrite
+ * them would leave two people disagreeing about what a back squat works.
  */
 export function MuscleSheet({
   name,
   work,
   form,
+  editable = false,
   onChangeForm,
+  onChangeWork,
   onClose,
 }: {
   name: string | null;
   work: MuscleWork;
   form: BodyForm;
+  /** True for a movement of your own. The shipped catalogue is read-only. */
+  editable?: boolean;
   onChangeForm: (form: BodyForm) => void;
+  onChangeWork?: (work: MuscleWork) => void;
   onClose: () => void;
 }) {
+  const styles = useStyles(makeStyles);
   const insets = useSafeAreaInsets();
+  const [editing, setEditing] = useState(false);
+
+  // Closing and reopening should show the figure, not the form you left open.
+  useEffect(() => {
+    if (name === null) setEditing(false);
+  }, [name]);
 
   const list = useCallback(
     (groups: typeof work.primary, tone: 'primary' | 'secondary') =>
@@ -64,15 +84,32 @@ export function MuscleSheet({
 
           <SectionHeader
             title={name ?? ''}
-            meta={untagged ? 'Not tagged yet' : 'What it works'}
+            meta={editing ? 'Tap what it works' : untagged ? 'Not tagged yet' : 'What it works'}
             action={<RoundIconButton icon="close" size={34} onPress={onClose} accessibilityLabel="Close" />}
           />
 
           <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.body}>
+            {editing ? (
+              <>
+                {/*
+                  The figure stays on screen while the chips are tapped. The
+                  whole point of tagging is seeing where it lands, and hiding
+                  the drawing behind the form would turn it into a quiz.
+                */}
+                <View style={styles.figures}>
+                  <BodyMap work={work} form={form} view="front" height={170} />
+                  <BodyMap work={work} form={form} view="back" height={170} />
+                </View>
+                <MusclePicker work={work} onChange={(next) => onChangeWork?.(next)} />
+                <Button label="Done" icon="checkmark" onPress={() => setEditing(false)} />
+              </>
+            ) : (
+              <>
             {untagged ? (
               <Text style={styles.copy}>
-                Nobody has said what this one works. Movements you add yourself start untagged —
-                the figure stays blank rather than guessing.
+                {editable
+                  ? 'Nobody has said what this one works yet. Tag it and the figure fills in — it is your movement, so it is your call.'
+                  : 'Nothing is tagged on this one.'}
               </Text>
             ) : null}
 
@@ -104,6 +141,15 @@ export function MuscleSheet({
               </>
             ) : null}
 
+            {editable ? (
+              <Button
+                label={untagged ? 'Say what it works' : 'Change what it works'}
+                icon="create-outline"
+                variant="ghost"
+                onPress={() => setEditing(true)}
+              />
+            ) : null}
+
             <View style={styles.formBlock}>
               <Text style={styles.formLabel}>FIGURE</Text>
               <Segmented
@@ -119,6 +165,8 @@ export function MuscleSheet({
                 expects of you.
               </Text>
             </View>
+              </>
+            )}
           </ScrollView>
         </View>
       </View>
@@ -126,13 +174,13 @@ export function MuscleSheet({
   );
 }
 
-const styles = StyleSheet.create({
-  backdrop: { flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(2,3,10,0.72)' },
+const makeStyles = (theme: Theme) => StyleSheet.create({
+  backdrop: { flex: 1, justifyContent: 'flex-end', backgroundColor: theme.scrim },
   sheet: {
     maxHeight: '92%',
     gap: 12,
     padding: 18,
-    backgroundColor: '#111634',
+    backgroundColor: theme.surfaceElevated,
     borderTopLeftRadius: radius.xl,
     borderTopRightRadius: radius.xl,
   },
@@ -141,21 +189,21 @@ const styles = StyleSheet.create({
     width: 38,
     height: 4,
     borderRadius: 2,
-    backgroundColor: palette.hairlineStrong,
+    backgroundColor: theme.borderStrong,
   },
   body: { gap: 14, paddingBottom: 8 },
   figures: { flexDirection: 'row', justifyContent: 'center', gap: 18 },
-  copy: { fontSize: 12.5, lineHeight: 18, fontWeight: '600', color: palette.textMuted },
+  copy: { fontSize: 12.5, lineHeight: 18, fontWeight: '600', color: theme.textMuted },
   legendRow: { flexDirection: 'row', alignItems: 'center', gap: 7, justifyContent: 'center' },
   dot: { width: 9, height: 9, borderRadius: 5 },
-  legend: { fontSize: 11, fontWeight: '700', color: palette.textMuted, marginRight: 8 },
+  legend: { fontSize: 11, fontWeight: '700', color: theme.textMuted, marginRight: 8 },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 7 },
   chip: { paddingHorizontal: 10, paddingVertical: 6, borderRadius: radius.pill },
   chipPrimary: { backgroundColor: 'rgba(255,90,95,0.18)' },
-  chipSecondary: { backgroundColor: 'rgba(255,255,255,0.06)' },
-  chipText: { fontSize: 12, fontWeight: '700', color: palette.textMuted },
-  chipTextPrimary: { color: accentColor.rose },
-  note: { fontSize: 11.5, lineHeight: 16.5, fontWeight: '600', color: palette.textFaint },
+  chipSecondary: { backgroundColor: theme.surface },
+  chipText: { fontSize: 12, fontWeight: '700', color: theme.textMuted },
+  chipTextPrimary: { color: theme.accent.danger },
+  note: { fontSize: 11.5, lineHeight: 16.5, fontWeight: '600', color: theme.textFaint },
   formBlock: { gap: 8, marginTop: 4 },
-  formLabel: { fontSize: 10, fontWeight: '800', letterSpacing: 1.3, color: palette.textFaint },
+  formLabel: { fontSize: 10, fontWeight: '800', letterSpacing: 1.3, color: theme.textFaint },
 });

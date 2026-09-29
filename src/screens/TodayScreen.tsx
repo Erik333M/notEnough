@@ -14,10 +14,12 @@ import { dayKey } from '../lib/time';
 import { useActions, useAppState, useStats } from '../state/DataContext';
 import { useAuth } from '../state/AuthContext';
 import { projectPlan } from '../state/selectors';
-import { palette, radius } from '../theme/theme';
+import { radius } from '../theme/theme';
 import { Appear, Pill, SectionHeader } from '../ui/Controls';
 import { EmptyState, SkeletonCard } from '../ui/Feedback';
 import { GlassCard } from '../ui/Glass';
+import type { Theme } from '../theme/tokens';
+import { useStyles } from '../theme/ThemeContext';
 
 /**
  * Today.
@@ -43,6 +45,7 @@ export default function TodayScreen({
   /** The feed lives here, but Friends itself is a screen under the You tab. */
   onOpenFriends: () => void;
 }) {
+  const styles = useStyles(makeStyles);
   const state = useAppState();
   const stats = useStats();
   const { addProgress, completeGoal } = useActions();
@@ -117,14 +120,14 @@ export default function TodayScreen({
             icon="stopwatch"
             title="Start a run"
             copy="Stopwatch & intervals"
-            accent="cyan"
+            accent="mind"
             onPress={onOpenTimer}
           />
           <QuickAction
             icon="add-circle"
             title="New goal"
             copy="Set a daily target"
-            accent="violet"
+            accent="spirit"
             onPress={onOpenGoals}
           />
         </View>
@@ -161,7 +164,7 @@ export default function TodayScreen({
         <GlassCard style={styles.push}>
           <View style={styles.pushTop}>
             <Text style={styles.pushTitle}>NOTenough push</Text>
-            <Pill label="Stretch target" icon="trending-up" accent="amber" />
+            <Pill label="Stretch target" icon="trending-up" accent="warning" />
           </View>
           <Text style={styles.pushCopy}>
             Hitting today&apos;s numbers is the floor, not the ceiling. Once this level is stable,
@@ -184,8 +187,7 @@ export default function TodayScreen({
   );
 }
 
-
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   content: {
     paddingHorizontal: 18,
     gap: 14,
@@ -196,8 +198,8 @@ const styles = StyleSheet.create({
   },
   push: {
     gap: 10,
-    backgroundColor: 'rgba(255,182,92,0.10)',
-    borderColor: 'rgba(255,182,92,0.28)',
+    backgroundColor: theme.warningSoft,
+    borderColor: theme.warningSoft,
     borderRadius: radius.lg,
   },
   pushTop: {
@@ -209,15 +211,15 @@ const styles = StyleSheet.create({
   pushTitle: {
     fontSize: 13,
     fontWeight: '800',
-    color: palette.amber,
+    color: theme.warning,
   },
   pushCopy: {
     fontSize: 13,
     lineHeight: 20,
-    color: palette.textMuted,
+    color: theme.textMuted,
   },
   pushAccent: {
     fontWeight: '800',
-    color: palette.amber,
+    color: theme.warning,
   },
 });

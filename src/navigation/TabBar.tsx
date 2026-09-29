@@ -4,9 +4,11 @@ import { memo, useCallback, useEffect, useState } from 'react';
 import { LayoutChangeEvent, Platform, StyleSheet, Text, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 
-import { motion, palette, radius, shadow } from '../theme/theme';
+import { motion, radius, shadow } from '../theme/theme';
 import { PressableScale } from '../ui/Touchable';
 import { ROUTES, TAB_ROUTES, type RouteKey } from './routes';
+import type { Theme } from '../theme/tokens';
+import { useStyles, useTheme } from '../theme/ThemeContext';
 
 export const TAB_BAR_HEIGHT = 74;
 
@@ -27,6 +29,8 @@ export const TabBar = memo(function TabBar({
   onSelect: (key: RouteKey) => void;
   bottomInset: number;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const [width, setWidth] = useState(0);
   // -1 on the routes that live only in the slide-out menu. Clamping that to 0
   // would park the pill under Today and tell you that you are somewhere you
@@ -53,8 +57,13 @@ export const TabBar = memo(function TabBar({
       style={[styles.wrap, { pointerEvents: 'box-none', bottom: Math.max(bottomInset, 10) }]}
       onLayout={onLayout}
     >
+      {/* The blur follows the theme; a dark blur under a light page is a bug. */}
       {Platform.OS === 'ios' ? (
-        <BlurView intensity={38} tint="dark" style={StyleSheet.absoluteFill} />
+        <BlurView
+          intensity={38}
+          tint={theme.name === 'dark' ? 'dark' : 'light'}
+          style={StyleSheet.absoluteFill}
+        />
       ) : null}
       <View style={[styles.tint, { pointerEvents: 'none' }]} />
       {itemWidth > 0 && onATab ? <Animated.View style={[styles.indicator, indicator]} /> : null}
@@ -75,6 +84,8 @@ const TabItem = memo(function TabItem({
   active: boolean;
   onSelect: (key: RouteKey) => void;
 }) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const meta = ROUTES[routeKey];
   const lift = useSharedValue(active ? 1 : 0);
 
@@ -100,7 +111,7 @@ const TabItem = memo(function TabItem({
         <Ionicons
           name={active ? meta.iconActive : meta.icon}
           size={21}
-          color={active ? palette.text : palette.textFaint}
+          color={active ? theme.text : theme.textFaint}
         />
       </Animated.View>
       <Text style={[styles.label, active && styles.labelActive]} numberOfLines={1}>
@@ -110,7 +121,7 @@ const TabItem = memo(function TabItem({
   );
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => StyleSheet.create({
   wrap: {
     position: 'absolute',
     left: 16,
@@ -121,7 +132,7 @@ const styles = StyleSheet.create({
     padding: 6,
     borderRadius: radius.xl,
     borderWidth: StyleSheet.hairlineWidth * 2,
-    borderColor: palette.hairlineStrong,
+    borderColor: theme.borderStrong,
     overflow: 'hidden',
     ...(shadow.float as object),
   },
@@ -131,7 +142,12 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: Platform.OS === 'ios' ? 'rgba(18,22,44,0.45)' : 'rgba(16,20,42,0.92)',
+    /*
+     * iOS lets the blur do the work; Android has no usable blur here, so the
+     * bar is a solid surface. Either way it is the theme's surface rather
+     * than a fixed navy, which was still dark behind a light page.
+     */
+    backgroundColor: Platform.OS === 'ios' ? theme.surfaceElevated : theme.surface,
   },
   indicator: {
     position: 'absolute',
@@ -139,9 +155,9 @@ const styles = StyleSheet.create({
     top: 6,
     bottom: 6,
     borderRadius: radius.lg,
-    backgroundColor: 'rgba(255,255,255,0.10)',
+    backgroundColor: theme.surfaceElevated,
     borderWidth: StyleSheet.hairlineWidth * 2,
-    borderColor: palette.hairline,
+    borderColor: theme.border,
   },
   item: {
     flex: 1,
@@ -153,9 +169,9 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 11,
     fontWeight: '700',
-    color: palette.textFaint,
+    color: theme.textFaint,
   },
   labelActive: {
-    color: palette.text,
+    color: theme.text,
   },
 });
