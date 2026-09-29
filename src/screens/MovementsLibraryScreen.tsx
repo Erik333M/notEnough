@@ -12,7 +12,7 @@ import {
   searchMovements,
 } from '../state/journey/movements';
 import type { Movement, MovementCategory } from '../state/journey/types';
-import { muscleSummary } from '../state/journey/muscles';
+import { muscleSummary, type MuscleWork } from '../state/journey/muscles';
 import { MuscleSheet } from '../features/muscles/MuscleSheet';
 import { accentColor, palette } from '../theme/theme';
 import { Appear, RoundIconButton } from '../ui/Controls';
@@ -55,19 +55,30 @@ const Row = memo(function Row({
         </Text>
       </View>
 
-      {/* The figure is the point of the tagging, so it is one tap from a row. */}
-      {tagged ? (
-        <PressableScale
-          onPress={() => onShowMuscles(movement)}
-          haptic="light"
-          scaleTo={0.86}
-          hitSlop={10}
-          accessibilityLabel={`Which muscles ${movement.name} works`}
-          style={styles.delete}
-        >
-          <Ionicons name="body-outline" size={16} color={accentColor.rose} />
-        </PressableScale>
-      ) : null}
+      {/*
+        Every row has a figure, tagged or not.
+        
+        It used to appear only on tagged rows, which meant a movement somebody
+        added themselves silently looked different from the 223 that ship with
+        the app — and offered no way to fix that. On an untagged one the icon
+        is an outline and opens the picker instead of the map.
+      */}
+      <PressableScale
+        onPress={() => onShowMuscles(movement)}
+        haptic="light"
+        scaleTo={0.86}
+        hitSlop={10}
+        accessibilityLabel={
+          tagged ? `Which muscles ${movement.name} works` : `Say what ${movement.name} works`
+        }
+        style={styles.delete}
+      >
+        <Ionicons
+          name={tagged ? 'body' : 'body-outline'}
+          size={16}
+          color={tagged ? accentColor.rose : palette.textFaint}
+        />
+      </PressableScale>
 
       {movement.isCustom ? (
         <PressableScale
@@ -117,8 +128,8 @@ export default function MovementsLibraryScreen({
   );
 
   const handleCreate = useCallback(
-    (name: string, cat: MovementCategory) => {
-      journey.addMovement(name, cat);
+    (name: string, cat: MovementCategory, muscles: MuscleWork) => {
+      journey.addMovement(name, cat, [], muscles);
       setCreating(false);
       notify(`${name} added.`, 'success');
     },
@@ -193,7 +204,14 @@ export default function MovementsLibraryScreen({
         name={showing?.name ?? null}
         work={showing?.muscles ?? { primary: [], secondary: [] }}
         form={bodyForm}
+        // Only your own movements are editable. The shipped catalogue is a
+        // reference; letting it be rewritten per account would make two people
+        // disagree about what a back squat works.
+        editable={showing?.isCustom ?? false}
         onChangeForm={journey.setBodyForm}
+        onChangeWork={(work) => {
+          if (showing) journey.setMovementMuscles(showing.id, work);
+        }}
         onClose={() => setShowing(null)}
       />
     </View>

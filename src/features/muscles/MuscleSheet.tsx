@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -11,6 +11,8 @@ import type { BodyForm } from '../../state/journey/types';
 import { accentColor, palette, radius } from '../../theme/theme';
 import { RoundIconButton, SectionHeader, Segmented } from '../../ui/Controls';
 import { BodyMap } from './BodyMap';
+import { MusclePicker } from './MusclePicker';
+import { Button } from '../../ui/Button';
 
 /**
  * What a movement works, on a figure.
@@ -22,21 +24,36 @@ import { BodyMap } from './BodyMap';
  * The figure is a preference, not a claim about anyone: the switch is here
  * rather than buried in settings because this is the screen where it matters,
  * and it changes the drawing and nothing else.
+ *
+ * A movement you added yourself can be tagged from here. The 223 that ship
+ * with the app cannot: they are a reference, and letting each account rewrite
+ * them would leave two people disagreeing about what a back squat works.
  */
 export function MuscleSheet({
   name,
   work,
   form,
+  editable = false,
   onChangeForm,
+  onChangeWork,
   onClose,
 }: {
   name: string | null;
   work: MuscleWork;
   form: BodyForm;
+  /** True for a movement of your own. The shipped catalogue is read-only. */
+  editable?: boolean;
   onChangeForm: (form: BodyForm) => void;
+  onChangeWork?: (work: MuscleWork) => void;
   onClose: () => void;
 }) {
   const insets = useSafeAreaInsets();
+  const [editing, setEditing] = useState(false);
+
+  // Closing and reopening should show the figure, not the form you left open.
+  useEffect(() => {
+    if (name === null) setEditing(false);
+  }, [name]);
 
   const list = useCallback(
     (groups: typeof work.primary, tone: 'primary' | 'secondary') =>
@@ -64,15 +81,32 @@ export function MuscleSheet({
 
           <SectionHeader
             title={name ?? ''}
-            meta={untagged ? 'Not tagged yet' : 'What it works'}
+            meta={editing ? 'Tap what it works' : untagged ? 'Not tagged yet' : 'What it works'}
             action={<RoundIconButton icon="close" size={34} onPress={onClose} accessibilityLabel="Close" />}
           />
 
           <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.body}>
+            {editing ? (
+              <>
+                {/*
+                  The figure stays on screen while the chips are tapped. The
+                  whole point of tagging is seeing where it lands, and hiding
+                  the drawing behind the form would turn it into a quiz.
+                */}
+                <View style={styles.figures}>
+                  <BodyMap work={work} form={form} view="front" height={170} />
+                  <BodyMap work={work} form={form} view="back" height={170} />
+                </View>
+                <MusclePicker work={work} onChange={(next) => onChangeWork?.(next)} />
+                <Button label="Done" icon="checkmark" onPress={() => setEditing(false)} />
+              </>
+            ) : (
+              <>
             {untagged ? (
               <Text style={styles.copy}>
-                Nobody has said what this one works. Movements you add yourself start untagged —
-                the figure stays blank rather than guessing.
+                {editable
+                  ? 'Nobody has said what this one works yet. Tag it and the figure fills in — it is your movement, so it is your call.'
+                  : 'Nothing is tagged on this one.'}
               </Text>
             ) : null}
 
@@ -104,6 +138,15 @@ export function MuscleSheet({
               </>
             ) : null}
 
+            {editable ? (
+              <Button
+                label={untagged ? 'Say what it works' : 'Change what it works'}
+                icon="create-outline"
+                variant="ghost"
+                onPress={() => setEditing(true)}
+              />
+            ) : null}
+
             <View style={styles.formBlock}>
               <Text style={styles.formLabel}>FIGURE</Text>
               <Segmented
@@ -119,6 +162,8 @@ export function MuscleSheet({
                 expects of you.
               </Text>
             </View>
+              </>
+            )}
           </ScrollView>
         </View>
       </View>

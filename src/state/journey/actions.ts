@@ -17,6 +17,7 @@ import {
   createMovement,
   createWodLine,
 } from './factory';
+import { NO_MUSCLE_WORK, type MuscleWork } from './muscles';
 import type { JourneyAction, EntryTextField, IntentionSlot, WodTextField } from './reducer';
 import type {
   BodyForm,
@@ -64,7 +65,14 @@ export type JourneyActions = {
   removeWod: (date: DayKey) => void;
 
   /* movements */
-  addMovement: (name: string, category: MovementCategory, aliases?: string[]) => Movement;
+  addMovement: (
+    name: string,
+    category: MovementCategory,
+    aliases?: string[],
+    muscles?: MuscleWork,
+  ) => Movement;
+  /** Tag, retag or clear what a movement works. Only your own movements. */
+  setMovementMuscles: (id: string, muscles: MuscleWork) => void;
   renameMovement: (id: string, name: string) => void;
   deleteMovement: (id: string) => void;
 
@@ -157,10 +165,14 @@ export function createJourneyActions(dispatch: JourneyDispatch): JourneyActions 
       dispatch({ type: 'entry/setWod', date, wod: null });
     },
 
-    addMovement(name, category, aliases = []) {
-      const movement = createMovement(name.trim(), category, aliases);
+    addMovement(name, category, aliases = [], muscles = NO_MUSCLE_WORK) {
+      const movement = createMovement(name.trim(), category, aliases, muscles);
       dispatch({ type: 'movement/add', movement });
       return movement;
+    },
+
+    setMovementMuscles(id, muscles) {
+      dispatch({ type: 'movement/update', id, patch: { muscles } });
     },
 
     renameMovement(id, name) {

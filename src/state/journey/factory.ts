@@ -1,4 +1,4 @@
-import { NO_MUSCLE_WORK } from './muscles';
+import { NO_MUSCLE_WORK, type MuscleWork } from './muscles';
 /**
  * Constructors for every Success Journey shape.
  *
@@ -124,10 +124,17 @@ export function createMovement(
   name: string,
   category: MovementCategory,
   aliases: string[] = [],
+  muscles: MuscleWork = NO_MUSCLE_WORK,
 ): Movement {
-  // Untagged on purpose: nobody has said what a movement somebody just
-  // invented works, and an unshaded figure is honest where a guess is not.
-  return { id: makeId(), name, category, aliases, isCustom: true, muscles: NO_MUSCLE_WORK };
+  /*
+   * Untagged unless the person says otherwise.
+   *
+   * Nobody but them knows what a movement they invented works, so the app
+   * still refuses to guess — but it now asks, which is the difference between
+   * an honest blank and a dead end. An untagged movement is offered a figure
+   * to fill in rather than no figure at all.
+   */
+  return { id: makeId(), name, category, aliases, isCustom: true, muscles };
 }
 
 export function createHabit(
