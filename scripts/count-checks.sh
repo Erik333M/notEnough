@@ -11,6 +11,9 @@
 # Needs the API on :4137 and Metro on :8081 for the browser drives, the same
 # as running them individually. Takes about fifteen minutes; most of that is
 # Playwright.
+#
+# Contrast is counted alongside the rest: a colour that fails WCAG is as much
+# a defect as a wrong total, and it should be as visible.
 
 set -uo pipefail
 cd "$(dirname "$0")/.."
@@ -35,6 +38,7 @@ count_summary() {
 }
 
 echo
+count         'contrast'            'npm run --silent test:contrast'
 count         'server smoke'        'cd server && npm run --silent smoke'
 count         'server npm test'     'cd server && npm test'
 count         'e2e (main drive)'    'npm run --silent e2e'

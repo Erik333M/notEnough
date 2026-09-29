@@ -10,7 +10,7 @@ The premise is in the name: when a target becomes comfortable, the app raises it
 ![React Native 0.86](https://img.shields.io/badge/React%20Native-0.86-61DAFB?logo=react&logoColor=black)
 ![TypeScript strict](https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white)
 ![Express 5](https://img.shields.io/badge/Express-5-000000?logo=express&logoColor=white)
-![checks 880](https://img.shields.io/badge/automated%20checks-880%20passing-2ea44f)
+![checks 942](https://img.shields.io/badge/automated%20checks-942%20passing-2ea44f)
 
 **Coaching a squad** — the coach sets the work and sees only what came back from it.
 
@@ -136,6 +136,10 @@ A daily workbook that opens on today and asks for almost nothing.
   in kg/cm or lb/in. Nothing is prescribed and no target is suggested.
 - **Habits** — adopt a suggestion or write your own, tick daily, keep the streak. Stopping one
   archives it and keeps every day you already ticked.
+- **Light and dark** — graphite and athletic lime, following the device setting unless you
+  override it. Colours are roles rather than hues, so both themes answer the same questions;
+  `npm run test:contrast` measures forty pairs against WCAG AA in both. See
+  [docs/design](docs/design/).
 - **Onboarding** — three screens, all skippable. The health questions sit behind an explicit
   "why we ask" gate and never leave the device. See [PRIVACY.md](PRIVACY.md).
 
@@ -243,7 +247,9 @@ src/
     TeamsContext.tsx       memberships → one capabilities object the UI reads
     selectors.ts           streaks, completion, projections — pure functions
   ui/                      design-system primitives (glass, progress, controls, toast)
-  theme/theme.ts           the only place colours, radii and motion curves are defined
+  theme/tokens.ts          colour roles, for both themes — nothing else names a hue
+  theme/ThemeContext.tsx   which theme is in force, and useStyles/useTheme
+  theme/theme.ts           radius, spacing, type and motion — the parts that never change
 server/
   src/db.js                JSON store: serialised writes, atomic rename
   src/auth.js              scrypt hashing, JWT issuing, auth middleware
@@ -353,7 +359,7 @@ rejection, field-tagged validation errors, login, wrong-password handling, accou
 resistance, `401` on unauthenticated access, state push/pull, the stale-write `409` rule, and that a
 token dies with its account.
 
-**`cd server && npm test`** — 389 checks covering storage, team authorization, sessions,
+**`cd server && npm test`** — 411 checks covering storage, team authorization, sessions,
 sharing, challenges, avatars, and events down to the live chat socket. Mostly
 negative: an athlete cannot assign work, a coach cannot log a result for someone, a coach of another
 team sees nothing of this one, a roster never carries an email address, and saving private training
@@ -383,7 +389,7 @@ reload → still signed in, state intact, zero console errors
 
 Data assertions are made **against the API, not the screen**, so a UI that renders the right thing
 for the wrong reason still fails. Plus `npm run typecheck` (strict, clean) and a production Metro
-bundle for Android and web. **880 checks pass in total** — run `npm run count` to total them
+bundle for Android and web. **942 checks pass in total** — run `npm run count` to total them
 again rather than trusting this sentence, which has been wrong before.
 
 The screenshots above are generated, not posed: [`e2e/shots.mjs`](e2e/shots.mjs) seeds a squad
