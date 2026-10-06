@@ -7,7 +7,7 @@ import {
   resyncReminders,
   scheduledCount,
 } from '../notifications/notifications';
-import { API_BASE_URL } from '../api/client';
+import { API_BASE_URL, pingApi } from '../api/client';
 import { useAuth } from '../state/AuthContext';
 import { useActions, useAppState, useSync } from '../state/DataContext';
 import { radius } from '../theme/theme';
@@ -42,6 +42,26 @@ export default function SettingsScreen({
   const sync = useSync();
   const { clearToday } = useActions();
   const { notify } = useToast();
+
+  const [probing, setProbing] = useState(false);
+
+  /**
+   * Says plainly whether the server answers, and names it either way.
+   *
+   * A reachability check that only reports failure is half a tool: somebody
+   * who suspects their network wants to see it succeed too.
+   */
+  const handleProbe = useCallback(async () => {
+    setProbing(true);
+    const reachable = await pingApi();
+    setProbing(false);
+    notify(
+      reachable
+        ? `Reached ${API_BASE_URL.replace(/^https?:\/\//, '')}.`
+        : `No answer from ${API_BASE_URL.replace(/^https?:\/\//, '')}. Is it running, and is this device on the same network?`,
+      reachable ? 'success' : 'error',
+    );
+  }, [notify]);
 
   const [name, setName] = useState(user?.name ?? '');
   const [scheduled, setScheduled] = useState<number | null>(null);
@@ -223,6 +243,28 @@ export default function SettingsScreen({
             working with no connection and catches up when there is one.
           </Text>
           <Button label="Sync now" icon="cloud-upload-outline" variant="glass" onPress={sync.syncNow} />
+
+          {/*
+            The address, shown rather than hidden.
+            
+            Teams, events and friends are the only parts that need a server;
+            everything else keeps working without one. So when the server is
+            unreachable those features look broken rather than offline, and
+            the first useful question is "which machine is it even trying?".
+          */}
+          <View style={styles.kvRow}>
+            <Text style={styles.kvKey}>Server</Text>
+            <Text style={styles.kvValue} numberOfLines={1}>
+              {API_BASE_URL.replace(/^https?:\/\//, '')}
+            </Text>
+          </View>
+          <Button
+            label={probing ? 'Checking…' : 'Check the connection'}
+            icon="pulse-outline"
+            variant="glass"
+            loading={probing}
+            onPress={handleProbe}
+          />
         </GlassCard>
       </Appear>
 

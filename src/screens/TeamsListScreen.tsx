@@ -120,6 +120,7 @@ export default function TeamsListScreen({
         <Appear>
           <EventsSection
             events={events.events}
+            unreachable={events.unreachable}
             onOpenEvent={onOpenEvent}
             onCreate={async (input) => {
               const result = await events.create(input);

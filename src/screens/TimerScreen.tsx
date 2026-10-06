@@ -14,7 +14,7 @@ import { TimerDigits } from '../features/timer/TimerDigits';
 import { useRunTimer } from '../features/timer/useRunTimer';
 import { formatDuration, formatPace } from '../lib/time';
 import { useActions } from '../state/DataContext';
-import type { RunMode } from '../state/types';
+import type { IconName, RunMode } from '../state/types';
 import { radius } from '../theme/theme';
 import { Button } from '../ui/Button';
 import { Appear, Pill, RoundIconButton, SectionHeader, Segmented, StatTile } from '../ui/Controls';
@@ -34,9 +34,11 @@ const MODES = [
 export default function TimerScreen({
   bottomInset,
   onOpenPlan,
+  onOpenMovements,
 }: {
   bottomInset: number;
   onOpenPlan: () => void;
+  onOpenMovements: () => void;
 }) {
   const styles = useStyles(makeStyles);
   const theme = useTheme();
@@ -53,9 +55,64 @@ export default function TimerScreen({
       </Appear>
 
       {mode === 'stopwatch' ? <StopwatchPanel /> : <IntervalPanel />}
+
+      {/*
+        The two other halves of training, under the thing you came here for.
+        
+        The plan link was already a prop on this screen and was never rendered,
+        so the plan screen could not be reached at all. The movements link is
+        new, and is how the body map stops being four levels deep in another
+        tab.
+      */}
+      <Appear delay={120}>
+        <View style={styles.links}>
+          <TrainLink
+            icon="body-outline"
+            title="Movements"
+            copy="223 exercises, and a body map of what each one works"
+            onPress={onOpenMovements}
+          />
+          <TrainLink
+            icon="trending-up-outline"
+            title="Training plan"
+            copy="Where your current numbers are heading"
+            onPress={onOpenPlan}
+          />
+        </View>
+      </Appear>
     </ScrollView>
   );
 }
+
+const TrainLink = memo(function TrainLink({
+  icon,
+  title,
+  copy,
+  onPress,
+}: {
+  icon: IconName;
+  title: string;
+  copy: string;
+  onPress: () => void;
+}) {
+  const styles = useStyles(makeStyles);
+  const theme = useTheme();
+
+  return (
+    <PressableScale haptic="light" onPress={onPress} accessibilityLabel={title}>
+      <GlassCard style={styles.link}>
+        <View style={styles.linkIcon}>
+          <Ionicons name={icon} size={17} color={theme.primary} />
+        </View>
+        <View style={styles.linkBody}>
+          <Text style={styles.linkTitle}>{title}</Text>
+          <Text style={styles.linkCopy}>{copy}</Text>
+        </View>
+        <Ionicons name="chevron-forward" size={16} color={theme.textFaint} />
+      </GlassCard>
+    </PressableScale>
+  );
+});
 
 /* -------------------------------------------------------------- stopwatch */
 
@@ -496,6 +553,19 @@ const IntervalStepper = memo(function IntervalStepper({
 });
 
 const makeStyles = (theme: Theme) => StyleSheet.create({
+  links: { gap: 10, marginTop: 4 },
+  link: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 14 },
+  linkIcon: {
+    width: 36,
+    height: 36,
+    borderRadius: radius.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: theme.primarySoft,
+  },
+  linkBody: { flex: 1, gap: 2 },
+  linkTitle: { fontSize: 14.5, fontWeight: '800', color: theme.text },
+  linkCopy: { fontSize: 12, lineHeight: 16, fontWeight: '600', color: theme.textMuted },
   content: {
     paddingHorizontal: 18,
     gap: 14,
