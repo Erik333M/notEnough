@@ -51,12 +51,18 @@ export const EventGamesSection = memo(function EventGamesSection({ eventId }: { 
 
   return (
     <View style={styles.wrap}>
-      <SectionHeader title="Games" />
+      {/*
+        "Games and statistics", because "statistics" is the word somebody is
+        looking for when they want to write down what happened in a match,
+        and "Games" alone does not contain it.
+      */}
+      <SectionHeader title="Games and statistics" />
 
       {squads.squads.length < 2 ? (
         <Text style={styles.blurb}>
-          Make at least two squads and they can play each other. Results feed a table and a
-          leaderboard for everything you choose to count.
+          Matches go here. Make at least two squads above first — a game is between two of them —
+          and then every result you record feeds a league table, plus a leaderboard for each thing
+          you choose to count.
         </Text>
       ) : null}
 

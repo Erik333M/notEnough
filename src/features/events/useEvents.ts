@@ -14,6 +14,14 @@ export function useEvents() {
   const { token } = useAuth();
   const [events, setEvents] = useState<EventSummary[]>([]);
   const [loading, setLoading] = useState(true);
+  /**
+   * Set when the list could not be fetched at all.
+   *
+   * Without it an unreachable server and an empty list look identical — the
+   * section renders "no events yet" and invites you to make one, which then
+   * fails. Somebody reasonably concludes the feature is broken.
+   */
+  const [unreachable, setUnreachable] = useState(false);
   const mounted = useRef(true);
 
   useEffect(() => {
@@ -30,7 +38,12 @@ export function useEvents() {
     }
     const result = await eventsApi.list(token);
     if (!mounted.current) return;
-    if (result.ok) setEvents(result.data.events);
+    if (result.ok) {
+      setEvents(result.data.events);
+      setUnreachable(false);
+    } else {
+      setUnreachable(result.error.kind === 'offline');
+    }
     setLoading(false);
   }, [token]);
 
@@ -49,5 +62,5 @@ export function useEvents() {
     [refresh, token],
   );
 
-  return { events, loading, refresh, create };
+  return { events, loading, unreachable, refresh, create };
 }

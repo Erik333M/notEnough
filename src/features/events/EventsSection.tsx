@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import { memo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
@@ -25,10 +26,13 @@ import { useStyles, useTheme } from '../../theme/ThemeContext';
  */
 export const EventsSection = memo(function EventsSection({
   events,
+  unreachable = false,
   onOpenEvent,
   onCreate,
 }: {
   events: EventSummary[];
+  /** The list could not be fetched, which is not the same as having none. */
+  unreachable?: boolean;
   onOpenEvent: (eventId: string) => void;
   onCreate: (input: EventInput) => Promise<{ ok: boolean; message?: string; id?: string }>;
 }) {
@@ -42,10 +46,28 @@ export const EventsSection = memo(function EventsSection({
     <View style={styles.wrap}>
       <SectionHeader title="Events" />
 
-      {events.length === 0 && !open ? (
+      {unreachable ? (
+        /*
+         * Said in place rather than as a toast on the button. The toast only
+         * appears after somebody has filled in a form and pressed save, by
+         * which point they have concluded the feature does not work.
+         */
+        <GlassCard style={styles.offline}>
+          <Ionicons name="cloud-offline-outline" size={16} color={theme.warning} />
+          <View style={styles.offlineBody}>
+            <Text style={styles.offlineTitle}>Cannot reach the server</Text>
+            <Text style={styles.offlineCopy}>
+              Events, teams and friends all live on the server, so none of them will work until it
+              is reachable. Everything you track on your own is unaffected and still on this
+              device. Settings shows the address being tried.
+            </Text>
+          </View>
+        </GlassCard>
+      ) : events.length === 0 && !open ? (
         <Text style={styles.empty}>
-          A camp, a training week, a competition weekend. Anything that runs for a set number of days
-          with people to organise.
+          A camp, a training week, a competition weekend. Set one up to split people into squads,
+          run matches between them, and record whatever you want to count — goals, assists,
+          cards, anything you name yourself — into a table and a leaderboard.
         </Text>
       ) : null}
 
@@ -92,5 +114,9 @@ export const EventsSection = memo(function EventsSection({
 const makeStyles = (theme: Theme) => StyleSheet.create({
   wrap: { gap: 10 },
   empty: { fontSize: 12.5, lineHeight: 18, fontWeight: '600', color: theme.textMuted },
+  offline: { flexDirection: 'row', gap: 10, padding: 14 },
+  offlineBody: { flex: 1, gap: 4 },
+  offlineTitle: { fontSize: 13.5, fontWeight: '800', color: theme.warning },
+  offlineCopy: { fontSize: 12, lineHeight: 17, fontWeight: '600', color: theme.textMuted },
   form: { gap: 12, padding: 14 },
 });

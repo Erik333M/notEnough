@@ -99,7 +99,15 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
         kind: 'offline',
         status: 0,
         code: 'offline',
-        message: 'Cannot reach the server.',
+        /*
+         * Names the address, because "cannot reach the server" is true and
+         * useless. This app is local-first: goals, the journey and victories
+         * all keep working from the device, so when the API is down the only
+         * thing that breaks is the half that needs it — teams, events,
+         * friends. That reads as "events are broken" rather than "the server
+         * is off", and the message was doing nothing to correct it.
+         */
+        message: `Cannot reach the server at ${API_BASE_URL}.`,
       },
     };
   } finally {
@@ -136,6 +144,18 @@ export type RemoteState = {
   journey: unknown;
   updatedAt: number;
 };
+
+/**
+ * Is the server there at all?
+ *
+ * A short timeout on purpose: this answers "is it up", and somebody pressing
+ * a Check button wants a verdict rather than a spinner. Health needs no
+ * token, so a `true` here means reachable, not signed in.
+ */
+export async function pingApi(): Promise<boolean> {
+  const result = await request<{ ok: boolean }>('/api/health', { timeoutMs: 4000 });
+  return result.ok;
+}
 
 export const api = {
   health: () => request<{ ok: boolean }>('/api/health', { timeoutMs: 3000 }),
