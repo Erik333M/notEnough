@@ -3,6 +3,7 @@ import { Router } from 'express';
 
 import { requireAuth } from '../auth.js';
 import { read, write } from '../db.js';
+import { isBlocked } from '../permissions.js';
 import { publicProfile } from './profile-shape.js';
 import { ValidationError, makeInviteCode, requireString } from '../validate.js';
 
@@ -72,6 +73,13 @@ friendsRouter.post('/request', async (req, res, next) => {
       const target = data.users.find((row) => row.friendCode === code);
       if (!target) return { error: 'no_such_code' };
       if (target.id === userId) return { error: 'self' };
+      /*
+       * A block answers exactly as a wrong code does.
+       *
+       * Saying "you are blocked" would tell somebody they had been blocked
+       * and by whom, which is the one thing a block should not broadcast.
+       */
+      if (isBlocked(data, userId, target.id)) return { error: 'no_such_code' };
 
       const existing = data.friendships.find(
         (row) =>
@@ -135,6 +143,8 @@ friendsRouter.post('/request-teammate', async (req, res, next) => {
     const outcome = await write((data) => {
       if (targetId === userId) return { error: 'self' };
       if (!data.users.some((row) => row.id === targetId)) return { error: 'forbidden' };
+      // Same answer as somebody who shares no team: a block says nothing.
+      if (isBlocked(data, userId, targetId)) return { error: 'forbidden' };
 
       const mine = new Set(
         data.memberships

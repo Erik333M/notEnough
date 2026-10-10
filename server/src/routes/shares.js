@@ -3,8 +3,9 @@ import { Router } from 'express';
 
 import { requireAuth } from '../auth.js';
 import { read, write } from '../db.js';
-import { canRemoveShare, canViewTeam, isMember } from '../permissions.js';
-import { SHARE_PAGE, requireShareInput } from '../validate.js';
+import { canRemoveShare, canViewTeam, hiddenFrom, isMember } from '../permissions.js';
+import { refusedTerm } from '../moderation.js';
+import { SHARE_PAGE, ValidationError, requireShareInput } from '../validate.js';
 
 /**
  * Achievements an athlete chose to show their team.
@@ -29,6 +30,9 @@ const forbidden = (res) =>
 sharesRouter.post('/:teamId/shares', async (req, res, next) => {
   try {
     const input = requireShareInput(req.body);
+    if (refusedTerm(`${input.title} ${input.detail} ${input.note ?? ''}`)) {
+      throw new ValidationError('note', 'That wording is not allowed here. Change it and try again.');
+    }
     const { teamId } = req.params;
     const userId = req.user.id;
     const name = req.user.name;
@@ -72,8 +76,12 @@ sharesRouter.get('/:teamId/shares', async (req, res, next) => {
     const { teamId } = req.params;
     if (!canViewTeam(data, req.user.id, teamId)) return forbidden(res);
 
+    // Somebody you blocked is silent on the wall too. They stay on the
+    // roster — being in a squad is a fact about the team, not a feed.
+    const hidden = hiddenFrom(data, req.user.id);
+
     const shares = data.shares
-      .filter((row) => row.teamId === teamId)
+      .filter((row) => row.teamId === teamId && !hidden.has(row.userId))
       .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
       .slice(0, SHARE_PAGE);
 

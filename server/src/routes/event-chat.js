@@ -4,7 +4,8 @@ import { Router } from 'express';
 import { requireAuth } from '../auth.js';
 import { read, write } from '../db.js';
 import { avatarUrlFor } from '../avatar-store.js';
-import { canManageEvent, canViewEvent } from '../permissions.js';
+import { canManageEvent, canViewEvent, hiddenFrom } from '../permissions.js';
+import { refusedTerm } from '../moderation.js';
 import { broadcastMessage } from '../realtime.js';
 import { requireString } from '../validate.js';
 
@@ -60,8 +61,17 @@ eventChatRouter.get('/:eventId/messages', async (req, res, next) => {
     const event = data.events.find((row) => row.id === req.params.eventId);
     if (!canViewEvent(data, req.user.id, event)) return forbidden(res);
 
+    /*
+     * Somebody you blocked is silent to you here.
+     *
+     * Only staff can post, so this is rare — but a camper who blocks a staff
+     * member must not keep reading them, or the block is a lie. They still
+     * see everybody else's announcements.
+     */
+    const hidden = hiddenFrom(data, req.user.id);
+
     const all = data.messages
-      .filter((row) => row.eventId === event.id)
+      .filter((row) => row.eventId === event.id && !hidden.has(row.userId))
       .sort((a, b) => a.createdAt.localeCompare(b.createdAt) || a.id.localeCompare(b.id));
 
     const before = typeof req.query.before === 'string' ? req.query.before : null;
@@ -83,6 +93,13 @@ eventChatRouter.get('/:eventId/messages', async (req, res, next) => {
 eventChatRouter.post('/:eventId/messages', async (req, res, next) => {
   try {
     const body = requireString(req.body?.body, 'body', { min: 1, max: 2000 });
+    if (refusedTerm(body)) {
+      return res.status(400).json({
+        error: 'validation_error',
+        field: 'body',
+        message: 'That wording is not allowed here. Change it and try again.',
+      });
+    }
     const userId = req.user.id;
 
     const outcome = await write((data) => {

@@ -162,6 +162,9 @@ export function canManageChallenge(data, userId, challenge) {
  */
 export function areFriends(data, a, b) {
   if (!a || !b || a === b) return false;
+  // Checked before the friendship, not after: a block has to beat an older
+  // accepted request, or blocking somebody you already added would do nothing.
+  if (isBlocked(data, a, b)) return false;
   return data.friendships.some(
     (row) =>
       row.status === 'accepted' &&
@@ -180,6 +183,40 @@ export function areFriends(data, a, b) {
  */
 export function canViewProfile(data, viewerId, ownerId) {
   return viewerId === ownerId || areFriends(data, viewerId, ownerId);
+}
+
+/* -------------------------------------------------------------- moderation */
+
+/**
+ * Blocking, and why it cuts both ways.
+ *
+ * If A blocks B, neither sees the other. A one-directional block lets the
+ * blocked person keep watching, keep replying into a feed the other person
+ * can read, and keep being visible on every roster — which is not what
+ * anybody means by the word.
+ *
+ * It hides rather than deletes. Nothing either of them recorded is touched,
+ * and unblocking restores the view. The one thing it cannot undo is a shared
+ * roster: being in the same squad is a fact about a team, not a feed, and
+ * quietly removing somebody from it would be a different act entirely.
+ */
+export function isBlocked(data, a, b) {
+  if (!a || !b || a === b) return false;
+  return data.blocks.some(
+    (row) =>
+      (row.userId === a && row.blockedUserId === b) ||
+      (row.userId === b && row.blockedUserId === a),
+  );
+}
+
+/** Everybody the viewer has blocked or been blocked by, for filtering a list. */
+export function hiddenFrom(data, userId) {
+  const out = new Set();
+  for (const row of data.blocks) {
+    if (row.userId === userId) out.add(row.blockedUserId);
+    if (row.blockedUserId === userId) out.add(row.userId);
+  }
+  return out;
 }
 
 /* ------------------------------------------------------------------ events */

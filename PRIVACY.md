@@ -1,6 +1,6 @@
 # Privacy Policy
 
-**Last updated: 19 September 2026**
+**Last updated: 10 October 2026**
 
 NOTenough is a training journal. This document describes exactly what the app
 stores, where it stores it, and what you can delete. It describes the app as it
@@ -187,6 +187,29 @@ are delivered as they are posted rather than on a refresh. Nothing about them
 goes to a third party, and there is no push notification service — a message
 arrives when you have the channel open.
 
+## Blocking and reporting
+
+Anywhere somebody else can write something — an event channel, a friend feed,
+a team wall — you can **block** them or **report** what they wrote.
+
+**Blocking works both ways and takes effect at once.** Neither of you sees the
+other; a friendship between you stops counting as one; a friend request from
+them is refused with the same answer as a wrong code, so a block tells the
+blocked person nothing. It **hides rather than deletes** — nothing either of
+you recorded is touched, and unblocking brings it all back. Undo it in
+Settings → Blocked.
+
+**Reporting** sends the reason you picked, anything you added, and a copy of
+what you reported. It blocks that person too unless you say otherwise. A
+report is **kept even if the account it concerns is deleted**: evidence that
+disappears with its subject is worth nothing. If you delete your own account,
+your reports stay but are detached from you.
+
+The most obvious abuse is **refused before it is posted**, including in display
+names. That filter is a floor rather than a solution — it catches slurs typed
+in the clear and nothing subtler. Blocking is the mechanism that always works,
+because it needs nobody else to agree with you.
+
 ## What the app does not do
 
 - **No analytics or telemetry.** There is no analytics SDK in the project.
@@ -196,6 +219,9 @@ arrives when you have the channel open.
   messages.
 - **No location tracking.** The run timer measures elapsed time and a distance
   you enter yourself; it does not read GPS.
+- **No private messaging.** There is no direct message anywhere in this app. An event
+  channel carries staff announcements to everybody at that event; nothing carries one
+  person to another.
 - **No contacts access, and no camera or microphone.** The photo picker is
   configured without the camera and microphone permissions, so the app cannot
   open your camera or record audio.

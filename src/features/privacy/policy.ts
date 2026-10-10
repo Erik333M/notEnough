@@ -25,7 +25,7 @@ export type PolicySection = {
   rows?: PolicyRow[];
 };
 
-export const POLICY_UPDATED = '19 September 2026';
+export const POLICY_UPDATED = '10 October 2026';
 
 export const POLICY_SUMMARY = [
   'Everything you write is kept on your device first. The app works fully offline.',
@@ -174,6 +174,18 @@ export const POLICY_SECTIONS: PolicySection[] = [
     ],
   },
   {
+    id: 'moderation',
+    title: 'Blocking and reporting',
+    icon: 'flag-outline',
+    accent: 'danger',
+    body: [
+      'Anywhere somebody else can write something — an event channel, a friend feed, a team wall — you can block them or report what they wrote.',
+      'Blocking works both ways and takes effect at once: neither of you sees the other, and a friendship between you stops counting as one. It hides rather than deletes, so nothing either of you recorded is touched and unblocking brings it back. Undo it in Settings.',
+      'Reporting sends the reason you picked, anything you added, and a copy of what you reported. It blocks that person too unless you say otherwise. A report is kept even if the account it is about is deleted — evidence that vanishes with the account it concerns is worth nothing.',
+      'The most obvious abuse is refused before it is posted. That filter is a floor, not a solution: it catches slurs typed in the clear and nothing subtler. Blocking is the mechanism that always works, because it needs nobody else to agree with you.',
+    ],
+  },
+  {
     id: 'never',
     title: 'What the app never does',
     icon: 'close-circle-outline',
@@ -193,6 +205,11 @@ export const POLICY_SECTIONS: PolicySection[] = [
           'The run timer counts elapsed time and a distance you enter yourself. It does not read GPS.',
       },
       { term: 'No contacts', detail: 'The app never asks for your address book.' },
+      {
+        term: 'No private messaging',
+        detail:
+          'There is no direct message anywhere in this app. An event channel carries staff announcements to everybody at that event, and nothing carries one person to another.',
+      },
       {
         term: 'No camera or microphone',
         detail:

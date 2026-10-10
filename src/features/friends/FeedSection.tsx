@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { memo } from 'react';
+import { memo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import type { FeedPost } from '../../api/friends';
@@ -9,6 +9,8 @@ import { Avatar } from '../../ui/Avatar';
 import { RoundIconButton, SectionHeader } from '../../ui/Controls';
 import { GlassCard } from '../../ui/Glass';
 import { PressableScale } from '../../ui/Touchable';
+import { ReportSheet } from '../moderation/ReportSheet';
+import { useModeration } from '../moderation/useModeration';
 import { useFeed } from './useFeed';
 import type { Theme } from '../../theme/tokens';
 import { useStyles, useTheme } from '../../theme/ThemeContext';
@@ -48,7 +50,9 @@ export const FeedSection = memo(function FeedSection({
 }) {
   const styles = useStyles(makeStyles);
   const theme = useTheme();
-  const { feed, friendCount, loading, myId, remove } = useFeed();
+  const { feed, friendCount, loading, myId, refresh, remove } = useFeed();
+  const moderation = useModeration(refresh);
+  const [reporting, setReporting] = useState<FeedPost | null>(null);
 
   // Nothing at all to say yet, and no friends to say it to: stay out of the way.
   if (loading || (feed.length === 0 && friendCount === 0)) return null;
@@ -90,7 +94,19 @@ export const FeedSection = memo(function FeedSection({
                   onPress={() => void remove(post.id)}
                   accessibilityLabel="Take this post down"
                 />
-              ) : null}
+              ) : (
+                /*
+                  On somebody else's post, not your own. Reporting yourself is
+                  refused by the server anyway, and an affordance that always
+                  fails is worse than none.
+                */
+                <RoundIconButton
+                  icon="flag-outline"
+                  size={28}
+                  onPress={() => setReporting(post)}
+                  accessibilityLabel={`Report this post by ${post.authorName}`}
+                />
+              )}
             </View>
 
             <Text style={styles.title}>{post.title}</Text>
@@ -99,6 +115,18 @@ export const FeedSection = memo(function FeedSection({
           </GlassCard>
         ))
       )}
+
+      <ReportSheet
+        kind={reporting ? 'post' : null}
+        personName={reporting?.authorName ?? ''}
+        busy={moderation.busy}
+        onClose={() => setReporting(null)}
+        onSubmit={async (reason, note, block) => {
+          if (!reporting) return;
+          await moderation.report('post', reporting.userId, reason, note, block, reporting.id);
+          setReporting(null);
+        }}
+      />
     </View>
   );
 });

@@ -12,6 +12,8 @@ import {
 
 import type { ChatMessage } from '../api/chat';
 import { ChatBubble } from '../features/events/ChatBubble';
+import { ReportSheet } from '../features/moderation/ReportSheet';
+import { useModeration } from '../features/moderation/useModeration';
 import { formatDay } from '../features/events/eventCopy';
 import { useChat } from '../features/events/useChat';
 import { dayKey } from '../lib/time';
@@ -46,6 +48,8 @@ export default function EventChatScreen({
   const styles = useStyles(makeStyles);
   const theme = useTheme();
   const chat = useChat(eventId);
+  const moderation = useModeration(chat.reload);
+  const [reporting, setReporting] = useState<ChatMessage | null>(null);
   const { notify } = useToast();
   const [draft, setDraft] = useState('');
   const lastTyped = useRef(0);
@@ -144,6 +148,9 @@ export default function EventChatScreen({
               grouped={item.grouped}
               canRemove={item.message.userId === chat.myId || chat.canPost}
               onRemove={() => void chat.remove(item.message.id)}
+              onReport={
+                item.message.userId === chat.myId ? undefined : () => setReporting(item.message)
+              }
             />
           )
         }
@@ -183,6 +190,28 @@ export default function EventChatScreen({
           <Text style={styles.readOnlyText}>Only the event staff post here.</Text>
         </View>
       )}
+      <ReportSheet
+        kind={reporting ? 'message' : null}
+        personName={reporting?.name ?? ''}
+        busy={moderation.busy}
+        onClose={() => setReporting(null)}
+        onSubmit={async (reason, note, block) => {
+          if (!reporting) return;
+          const result = await moderation.report(
+            'message',
+            reporting.userId,
+            reason,
+            note,
+            block,
+            reporting.id,
+          );
+          setReporting(null);
+          notify(
+            result.ok ? 'Reported. Thank you for telling us.' : result.message || 'That did not send.',
+            result.ok ? 'success' : 'error',
+          );
+        }}
+      />
     </KeyboardAvoidingView>
   );
 }

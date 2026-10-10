@@ -2,7 +2,7 @@ import { WebSocketServer } from 'ws';
 
 import { userFromToken } from './auth.js';
 import { read } from './db.js';
-import { canViewEvent } from './permissions.js';
+import { canViewEvent, isBlocked } from './permissions.js';
 
 /**
  * Live delivery for event chat.
@@ -51,6 +51,9 @@ export async function broadcastMessage(eventId, message) {
       client.rooms.delete(eventId);
       continue;
     }
+    // The history endpoint filters blocked authors; without the same check
+    // here, a block would hold on reload and leak in real time.
+    if (isBlocked(data, client.userId, message.userId)) continue;
     send(client.socket, { type: 'message', eventId, message });
   }
 }

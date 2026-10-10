@@ -26,12 +26,15 @@ export const ChatBubble = memo(function ChatBubble({
   grouped,
   canRemove,
   onRemove,
+  onReport,
 }: {
   message: ChatMessage;
   mine: boolean;
   grouped: boolean;
   canRemove: boolean;
   onRemove: () => void;
+  /** Absent on your own messages — reporting yourself is refused anyway. */
+  onReport?: () => void;
 }) {
   const styles = useStyles(makeStyles);
   const theme = useTheme();
@@ -43,10 +46,23 @@ export const ChatBubble = memo(function ChatBubble({
         </View>
       ) : null}
 
+      {/*
+        Tap deletes your own; long-press reports somebody else's. A visible
+        flag on every bubble would put a moderation control in the middle of
+        a conversation, which is the wrong weight for something used rarely —
+        but it has to be reachable without leaving the screen.
+      */}
       <PressableScale
         haptic="light"
         onPress={canRemove ? onRemove : undefined}
-        accessibilityLabel={canRemove ? `Message from ${message.name}. Tap to delete.` : undefined}
+        onLongPress={onReport}
+        accessibilityLabel={
+          canRemove
+            ? `Message from ${message.name}. Tap to delete.`
+            : onReport
+              ? `Message from ${message.name}. Press and hold to report it.`
+              : undefined
+        }
       >
         <View style={[styles.bubble, mine ? styles.mine : styles.theirs]}>
           {!mine && !grouped ? <Text style={styles.name}>{message.name}</Text> : null}

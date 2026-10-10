@@ -4,13 +4,19 @@ import { Router } from 'express';
 import { hashPassword, publicUser, requireAuth, signToken, verifyPassword } from '../auth.js';
 import { deleteAvatar } from '../avatar-store.js';
 import { findUserByEmail, purgeUserData, write } from '../db.js';
-import { requireEmail, requirePassword, requireString } from '../validate.js';
+import { refusedTerm } from '../moderation.js';
+import { ValidationError, requireEmail, requirePassword, requireString } from '../validate.js';
 
 export const authRouter = Router();
 
 authRouter.post('/register', async (req, res, next) => {
   try {
     const name = requireString(req.body?.name, 'name', { min: 2, max: 60 });
+    // A display name is seen by every teammate and on every leaderboard, so
+    // it goes through the same filter as anything else somebody types.
+    if (refusedTerm(name)) {
+      throw new ValidationError('name', 'Pick a different name.');
+    }
     const email = requireEmail(req.body?.email);
     const password = requirePassword(req.body?.password);
 
@@ -79,6 +85,11 @@ authRouter.get('/me', requireAuth, (req, res) => {
 authRouter.patch('/me', requireAuth, async (req, res, next) => {
   try {
     const name = requireString(req.body?.name, 'name', { min: 2, max: 60 });
+    // A display name is seen by every teammate and on every leaderboard, so
+    // it goes through the same filter as anything else somebody types.
+    if (refusedTerm(name)) {
+      throw new ValidationError('name', 'Pick a different name.');
+    }
     const { id } = req.user;
 
     const updated = await write((data) => {

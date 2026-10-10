@@ -54,22 +54,26 @@ export function useChat(eventId: string) {
 
   /* --------------------------------------------------------------- history */
 
-  useEffect(() => {
+  /**
+   * Re-read the channel from scratch.
+   *
+   * Replaces rather than merges, which `absorb` would not do: blocking
+   * somebody removes their messages server-side, and a merge would keep
+   * every one of them on screen.
+   */
+  const reload = useCallback(async () => {
     if (!token) return;
-    let live = true;
-    void chatApi.history(token, eventId).then((result) => {
-      if (!live || !mounted.current) return;
-      if (result.ok) {
-        setMessages(result.data.messages);
-        setHasMore(result.data.hasMore);
-        setCanPost(result.data.canPost);
-      }
-      setLoading(false);
-    });
-    return () => {
-      live = false;
-    };
+    const result = await chatApi.history(token, eventId);
+    if (!mounted.current || !result.ok) return;
+    setMessages(result.data.messages);
+    setHasMore(result.data.hasMore);
+    setCanPost(result.data.canPost);
+    setLoading(false);
   }, [eventId, token]);
+
+  useEffect(() => {
+    void reload();
+  }, [reload]);
 
   const loadOlder = useCallback(async () => {
     if (!token || !hasMore || messages.length === 0) return;
@@ -186,6 +190,7 @@ export function useChat(eventId: string) {
     send,
     remove,
     loadOlder,
+    reload,
     notifyTyping,
   };
 }

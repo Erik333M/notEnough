@@ -140,6 +140,9 @@ A daily workbook that opens on today and asks for almost nothing.
   override it. Colours are roles rather than hues, so both themes answer the same questions;
   `npm run test:contrast` measures forty pairs against WCAG AA in both. See
   [docs/design](docs/design/).
+- **Blocking and reporting** — on every message and post. Blocking works both ways and
+  takes effect at once; reports survive the account they concern. Obvious slurs are
+  refused before they post, names included. See [docs/STORE.md](docs/STORE.md).
 - **Onboarding** — three screens, all skippable. The health questions sit behind an explicit
   "why we ask" gate and never leave the device. See [PRIVACY.md](PRIVACY.md).
 

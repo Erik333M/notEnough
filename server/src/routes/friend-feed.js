@@ -4,8 +4,9 @@ import { Router } from 'express';
 import { requireAuth } from '../auth.js';
 import { read, write } from '../db.js';
 import { avatarUrlFor } from '../avatar-store.js';
-import { areFriends, canRemoveShare } from '../permissions.js';
-import { SHARE_PAGE, requireShareInput } from '../validate.js';
+import { areFriends, canRemoveShare, hiddenFrom } from '../permissions.js';
+import { refusedTerm } from '../moderation.js';
+import { SHARE_PAGE, ValidationError, requireShareInput } from '../validate.js';
 
 /**
  * What your friends have shown off.
@@ -60,8 +61,17 @@ friendFeedRouter.get('/feed', async (req, res, next) => {
         .filter((id) => id !== userId),
     );
 
+    // A block beats a friendship, and areFriends already knows that — but the
+    // feed is built from the friendship rows directly, so it has to ask too.
+    const hidden = hiddenFrom(data, userId);
+
     const feed = data.shares
-      .filter((row) => !row.teamId && (row.userId === userId || friends.has(row.userId)))
+      .filter(
+        (row) =>
+          !row.teamId &&
+          !hidden.has(row.userId) &&
+          (row.userId === userId || friends.has(row.userId)),
+      )
       .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
       .slice(0, SHARE_PAGE)
       .map((row) => shape(data, row));
@@ -76,6 +86,10 @@ friendFeedRouter.get('/feed', async (req, res, next) => {
 friendFeedRouter.post('/shares', async (req, res, next) => {
   try {
     const input = requireShareInput(req.body);
+    const refused = refusedTerm(`${input.title} ${input.detail} ${input.note ?? ''}`);
+    if (refused) {
+      throw new ValidationError('note', 'That wording is not allowed here. Change it and try again.');
+    }
     const userId = req.user.id;
     const name = req.user.name;
 

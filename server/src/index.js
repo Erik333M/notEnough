@@ -15,6 +15,7 @@ import { eventTeamsRouter } from './routes/event-teams.js';
 import { eventsRouter } from './routes/events.js';
 import { friendFeedRouter } from './routes/friend-feed.js';
 import { friendsRouter } from './routes/friends.js';
+import { moderationRouter } from './routes/moderation.js';
 import { profilesRouter } from './routes/profiles.js';
 import { sessionActionsRouter } from './routes/session-actions.js';
 import { sharesRouter } from './routes/shares.js';
@@ -65,6 +66,7 @@ app.use('/api/events', eventGamesRouter);
 app.use('/api/events', eventChatRouter);
 app.use('/api/friends', friendFeedRouter);
 app.use('/api/friends', friendsRouter);
+app.use('/api/moderation', moderationRouter);
 app.use('/api/friends', profilesRouter);
 // Two routers, one path: session-actions holds the verbs (hand out, start from
 // template) that would have pushed the sessions file past a readable size.

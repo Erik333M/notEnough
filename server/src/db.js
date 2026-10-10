@@ -65,6 +65,8 @@ import { config } from './config.js';
  * @property {Object[]} games
  * @property {Object[]} gameStats
  * @property {Object[]} messages
+ * @property {Object[]} blocks
+ * @property {Object[]} reports
  */
 
 /**
@@ -97,6 +99,8 @@ const EMPTY = {
   games: [],
   gameStats: [],
   messages: [],
+  blocks: [],
+  reports: [],
 };
 
 /** @type {Schema | null} */
@@ -161,6 +165,8 @@ async function load() {
     statFields: Array.isArray(parsed.statFields) ? parsed.statFields : [],
     games: Array.isArray(parsed.games) ? parsed.games : [],
     gameStats: Array.isArray(parsed.gameStats) ? parsed.gameStats : [],
+    blocks: Array.isArray(parsed.blocks) ? parsed.blocks : [],
+    reports: Array.isArray(parsed.reports) ? parsed.reports : [],
     messages,
   };
 
@@ -265,6 +271,21 @@ export function purgeUserData(data, userId) {
     (row) => row.requesterId !== userId && row.addresseeId !== userId,
   );
   data.profiles = data.profiles.filter((row) => row.userId !== userId);
+  // Blocks in both directions go: a row pointing at nobody can never be
+  // undone by either side, and would keep hiding content from a live user.
+  data.blocks = data.blocks.filter(
+    (row) => row.userId !== userId && row.blockedUserId !== userId,
+  );
+  /*
+   * Reports are kept, with the reporter detached.
+   *
+   * A report is a record that something was flagged, and it has to outlive
+   * the person who flagged it — otherwise deleting an account erases the
+   * evidence of what was reported about it, which is precisely backwards.
+   */
+  for (const row of data.reports) {
+    if (row.reporterId === userId) row.reporterId = null;
+  }
   // The row goes here; the file on disk is removed by the caller, which can
   // await. Returning the name is the only way this synchronous mutator can
   // hand that job on without leaving an orphan in the avatar directory.

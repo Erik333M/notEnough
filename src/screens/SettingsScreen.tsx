@@ -8,6 +8,7 @@ import {
   scheduledCount,
 } from '../notifications/notifications';
 import { API_BASE_URL, pingApi } from '../api/client';
+import { BlockedSection } from '../features/moderation/BlockedSection';
 import { useAuth } from '../state/AuthContext';
 import { useActions, useAppState, useSync } from '../state/DataContext';
 import { radius } from '../theme/theme';
@@ -266,6 +267,10 @@ export default function SettingsScreen({
             onPress={handleProbe}
           />
         </GlassCard>
+      </Appear>
+
+      <Appear delay={120}>
+        <BlockedSection />
       </Appear>
 
       <Appear delay={130}>
